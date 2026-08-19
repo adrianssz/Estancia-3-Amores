@@ -1,0 +1,180 @@
+.feira-card {
+  width: 100%;
+
+  border: 1px solid #777777;
+
+  background-color: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+
+.feira-card-image {
+  min-height: 110px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #f4f4f4;
+
+  font-size: 42px;
+}
+
+
+.feira-card-content {
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.feira-card-content h3 {
+  margin: 0;
+
+  font-size: 16px;
+
+  color: #333333;
+}
+
+
+.feira-card-content p {
+  margin: 0;
+
+  font-size: 13px;
+
+  color: #555555;
+}
+
+
+.feira-card-content strong {
+  font-size: 15px;
+
+  color: #333333;
+}
+
+
+.quantidade-selector {
+  display: grid;
+
+  grid-template-columns:
+    42px
+    1fr
+    42px;
+
+  align-items: center;
+
+  border-top:
+    1px solid #dddddd;
+
+  border-bottom:
+    1px solid #dddddd;
+}
+
+
+.quantidade-selector button {
+  height: 42px;
+
+  border: none;
+
+  background-color: #eeeeee;
+
+  font-size: 20px;
+
+  cursor: pointer;
+}
+
+
+.quantidade-selector button:disabled {
+  opacity: 0.4;
+
+  cursor: not-allowed;
+}
+
+
+.quantidade-selector span {
+  text-align: center;
+
+  font-weight: 600;
+
+  font-size: 16px;
+}
+
+
+.estoque-info {
+  margin: 8px 5px;
+
+  text-align: center;
+
+  font-size: 11px;
+
+  color: #666666;
+}
+
+
+.adicionar-button {
+  width: 100%;
+
+  min-height: 40px;
+
+  border: none;
+
+  border-top:
+    1px solid #777777;
+
+  background-color: #ffffff;
+
+  cursor: pointer;
+
+  font-size: 14px;
+}
+
+
+.adicionar-button:hover {
+  background-color: #eeeeee;
+}
+
+
+.adicionar-button:active {
+  transform: scale(0.98);
+}
+
+
+.produto-crescimento {
+  opacity: 0.85;
+}
+
+
+.crescimento-info {
+  padding: 12px;
+
+  text-align: center;
+
+  font-size: 13px;
+
+  background-color: #eeeeee;
+
+  color: #555555;
+}
+
+
+@media (max-width: 480px) {
+
+  .feira-card-image {
+    min-height: 90px;
+
+    font-size: 35px;
+  }
+
+
+  .feira-card-content h3 {
+    font-size: 14px;
+  }
+
+}

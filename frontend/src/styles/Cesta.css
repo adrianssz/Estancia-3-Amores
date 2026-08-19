@@ -1,0 +1,124 @@
+.cesta-page {
+  min-height: calc(100vh - 140px);
+
+  padding: 25px 20px 110px;
+
+  background-color: #ffffff;
+}
+
+
+.cesta-title {
+  font-size: 18px;
+  font-weight: 500;
+
+  margin-bottom: 30px;
+
+  color: #333333;
+}
+
+
+.cesta-container {
+  width: 100%;
+  max-width: 520px;
+
+  margin: 0 auto;
+
+  padding: 15px;
+
+  background-color: #d3d3d3;
+
+  border: 1px solid #666666;
+}
+
+
+.cesta-vazia {
+  min-height: 250px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+}
+
+
+.cesta-total-area {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 5px;
+
+  margin-top: 25px;
+  margin-bottom: 15px;
+}
+
+
+.cesta-total-area span {
+  font-size: 22px;
+}
+
+
+.cesta-total-area strong {
+  font-size: 18px;
+}
+
+
+.realizar-pedido-button {
+  width: 100%;
+  max-width: 220px;
+
+  min-height: 45px;
+
+  display: block;
+
+  margin: 0 auto;
+
+  border: 1px solid #444444;
+
+  border-radius: 5px;
+
+  background-color: #ffffff;
+
+  color: #333333;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+
+.realizar-pedido-button:hover:not(:disabled) {
+  background-color: #eeeeee;
+}
+
+
+.realizar-pedido-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+
+.realizar-pedido-button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+@media (max-width: 480px) {
+
+  .cesta-page {
+    padding:
+      20px
+      15px
+      100px;
+  }
+
+
+  .cesta-container {
+    padding: 10px;
+  }
+
+}
