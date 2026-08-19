@@ -1,0 +1,90 @@
+.feira-page {
+  min-height: 100vh;
+
+  padding:
+    25px
+    20px
+    140px;
+
+  background-color: #ffffff;
+}
+
+
+.feira-title {
+  margin-bottom: 20px;
+
+  font-size: 18px;
+
+  font-weight: 500;
+}
+
+
+.feira-section {
+  margin-bottom: 35px;
+}
+
+
+.feira-section h2 {
+  margin-bottom: 15px;
+
+  font-size: 16px;
+
+  font-weight: 500;
+
+  color: #333333;
+}
+
+
+.feira-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 18px 12px;
+}
+
+
+.sem-produtos {
+  padding: 30px 15px;
+
+  text-align: center;
+
+  color: #666666;
+}
+
+
+@media (min-width: 768px) {
+
+  .feira-page {
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding-bottom: 140px;
+  }
+
+
+  .feira-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+}
+
+
+@media (max-width: 400px) {
+
+  .feira-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+
+  .feira-grid {
+    gap: 12px 8px;
+  }
+
+}

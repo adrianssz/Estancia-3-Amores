@@ -1,0 +1,51 @@
+.sobre-page {
+
+padding:20px;
+
+text-align:center;
+
+}
+
+
+.sobre-logo {
+
+width:100px;
+
+height:100px;
+
+border-radius:50%;
+
+background:#ddd;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+margin:auto;
+
+}
+
+
+.subtitulo {
+
+font-size:14px;
+
+margin-bottom:30px;
+
+}
+
+
+.sobre-page section {
+
+margin-top:30px;
+
+}
+
+
+.visita {
+
+margin-top:30px;
+
+}

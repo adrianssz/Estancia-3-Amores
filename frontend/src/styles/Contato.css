@@ -1,0 +1,125 @@
+.contato-page {
+  min-height: calc(100vh - 140px);
+  padding: 25px 20px 100px;
+  background-color: #ffffff;
+}
+
+.contato-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 30px;
+}
+
+.contato-box {
+  width: 100%;
+  max-width: 420px;
+  min-height: 470px;
+
+  margin: 0 auto;
+
+  background-color: #d3d3d3;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 30px;
+
+  padding: 35px 20px;
+
+  border: 1px solid #777777;
+}
+
+.contato-link {
+  width: 80px;
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #333333;
+
+  text-decoration: none;
+
+  border-radius: 12px;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.contato-link:hover {
+  transform: scale(1.08);
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.contato-link:active {
+  transform: scale(0.95);
+}
+
+.contato-icon {
+  font-size: 55px;
+}
+
+.localizacao-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 5px;
+
+  text-decoration: none;
+  color: #333333;
+
+  cursor: pointer;
+}
+
+.localizacao-area:hover .contato-endereco {
+  text-decoration: underline;
+}
+
+.contato-endereco {
+  font-size: 20px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Tablets e telas maiores */
+@media (min-width: 768px) {
+  .contato-page {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  .contato-box {
+    max-width: 500px;
+  }
+}
+
+/* Celulares menores */
+@media (max-width: 480px) {
+  .contato-page {
+    padding: 20px 15px 100px;
+  }
+
+  .contato-box {
+    min-height: 450px;
+    gap: 22px;
+  }
+
+  .contato-link {
+    width: 70px;
+    height: 70px;
+  }
+
+  .contato-icon {
+    font-size: 48px;
+  }
+
+  .contato-endereco {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,15 @@
+.visit-map div {
+
+height:220px;
+
+background:#ddd;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:10px;
+
+}
