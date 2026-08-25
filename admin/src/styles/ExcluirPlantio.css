@@ -1,0 +1,112 @@
+.excluir-plantio-page {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.excluir-plantio-page__title {
+  margin-bottom: 45px;
+
+  text-align: center;
+  font-size: 32px;
+  color: #222222;
+}
+
+.excluir-plantio-form {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.excluir-plantio-form__grupo {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.excluir-plantio-form__grupo label {
+  width: 100%;
+  padding: 8px;
+
+  background-color: #a0a0a0;
+  color: #222222;
+
+  text-align: center;
+  font-weight: 600;
+}
+
+.excluir-plantio-form__grupo input {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+
+  background-color: #f5f5f5;
+  color: #555555;
+
+  border: 1px solid #555555;
+
+  cursor: not-allowed;
+}
+
+.excluir-plantio-alert {
+  width: 100%;
+  padding: 16px 20px;
+
+  background-color: #eeeeee;
+  color: #222222;
+
+  border: 1px solid #777777;
+  border-radius: 6px;
+
+  text-align: center;
+  line-height: 1.5;
+}
+
+.excluir-plantio-form__acoes {
+  margin-top: 30px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.excluir-plantio-form__excluir,
+.excluir-plantio-form__retornar {
+  width: 210px;
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #555555;
+  border-radius: 6px;
+
+  font-size: 16px;
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.excluir-plantio-form__excluir {
+  background-color: #b3261e;
+  color: #ffffff;
+}
+
+.excluir-plantio-form__excluir:hover {
+  background-color: #8f1f19;
+}
+
+.excluir-plantio-form__retornar {
+  background-color: #ffffff;
+  color: #222222;
+}
+
+.excluir-plantio-form__retornar:hover {
+  background-color: #eeeeee;
+}
