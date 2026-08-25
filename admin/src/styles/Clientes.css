@@ -1,0 +1,106 @@
+.clientes-page {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.clientes-page__title {
+  margin-bottom: 35px;
+
+  text-align: center;
+  font-size: 32px;
+  color: #222222;
+}
+
+.clientes-busca {
+  width: 100%;
+  margin-bottom: 30px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.clientes-busca__campo {
+  width: 100%;
+  max-width: 650px;
+  min-height: 44px;
+  padding: 10px 14px;
+
+  background-color: #ffffff;
+  color: #222222;
+
+  border: 1px solid #555555;
+  border-right: none;
+
+  outline: none;
+}
+
+.clientes-busca__campo:focus {
+  border-width: 2px;
+}
+
+.clientes-busca__botao {
+  min-width: 110px;
+  min-height: 44px;
+  padding: 10px 16px;
+
+  background-color: #a0a0a0;
+  color: #222222;
+
+  border: 1px solid #555555;
+
+  cursor: pointer;
+}
+
+.clientes-busca__botao:hover {
+  background-color: #909090;
+}
+
+.clientes-acoes {
+  margin-bottom: 25px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.clientes-adicionar {
+  padding: 12px 24px;
+
+  background-color: #ffffff;
+  color: #222222;
+
+  border: 1px solid #555555;
+  border-radius: 6px;
+
+  cursor: pointer;
+}
+
+.clientes-adicionar:hover {
+  background-color: #f1f1f1;
+}
+
+.clientes-tabela {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.clientes-tabela th,
+.clientes-tabela td {
+  padding: 12px;
+
+  border: 1px solid #555555;
+
+  text-align: center;
+}
+
+.clientes-tabela th {
+  background-color: #a0a0a0;
+
+  font-weight: bold;
+}
+
+.clientes-tabela tbody tr:nth-child(even) {
+  background-color: #eeeeee;
+}
