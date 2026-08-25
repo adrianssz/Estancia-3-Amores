@@ -1,0 +1,47 @@
+.admin-header {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px 32px;
+
+  display: flex;
+  align-items: center;
+  gap: 40px;
+
+  background-color: #8f8f8f;
+}
+
+.admin-header__logo {
+  width: 70px;
+  height: 70px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #ffffff;
+  color: #222222;
+
+  border: 1px solid #444444;
+  border-radius: 50%;
+
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.admin-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.admin-header__link {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.admin-header__link:hover {
+  text-decoration: underline;
+}
