@@ -1,28 +1,67 @@
+import { useState } from 'react'
+
 import '../styles/ProductCard.css'
 
-function ProductCard({ imagem, nome, preco }) {
+
+function ProductCard({
+  imagem,
+  nome,
+  preco
+}) {
+
+  const [erroImagem, setErroImagem] =
+    useState(false)
+
+
+  const mostrarImagem =
+    imagem && !erroImagem
+
 
   return (
-    <div className="product-card">
+    <article className="product-card">
 
-      <img
-        src={imagem}
-        alt={nome}
-      />
+      <div className="product-card-image-area">
+
+        {
+          mostrarImagem
+
+            ?
+
+            <img
+              src={imagem}
+              alt={nome}
+              className="product-card-image"
+              loading="lazy"
+              onError={() =>
+                setErroImagem(true)
+              }
+            />
+
+            :
+
+            <div className="product-card-no-image">
+              Sem Foto
+            </div>
+        }
+
+      </div>
 
 
-      <h3>
-        {nome}
-      </h3>
+      <div className="product-card-content">
 
+        <h3>
+          {nome}
+        </h3>
 
-      <span>
-        R$ {preco}
-      </span>
+        <strong>
+          R$ {preco}
+        </strong>
 
+      </div>
 
-    </div>
+    </article>
   )
 }
+
 
 export default ProductCard

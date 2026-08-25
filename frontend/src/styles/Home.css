@@ -1,0 +1,65 @@
+.home-page {
+  width: 100%;
+
+  padding-bottom: 110px;
+
+  background-color: #ffffff;
+}
+
+
+.home-content {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  padding: 30px 20px;
+}
+
+
+.home-section-title {
+  margin-bottom: 20px;
+
+  text-align: center;
+
+  font-size: 24px;
+  font-weight: 600;
+
+  color: #333333;
+}
+
+
+.home-products-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 20px;
+
+  margin-bottom: 40px;
+}
+
+
+@media (max-width: 600px) {
+
+  .home-content {
+    padding: 25px 12px;
+  }
+
+
+  .home-section-title {
+    font-size: 21px;
+  }
+
+
+  .home-products-grid {
+    width: 100%;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+  }
+
+}
