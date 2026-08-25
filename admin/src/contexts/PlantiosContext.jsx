@@ -1,60 +1,12 @@
 import {
   createContext,
   useContext,
-  useState,
 } from 'react'
 
-import plantiosIniciais from '../data/plantios'
-
-const PlantiosContext = createContext(null)
-
-function PlantiosProvider({ children }) {
-  const [plantios, setPlantios] = useState(plantiosIniciais)
-
-  function adicionarPlantio(novoPlantio) {
-    setPlantios((plantiosAtuais) => [
-      ...plantiosAtuais,
-      novoPlantio,
-    ])
-  }
-
-  function editarPlantio(id, dadosAtualizados) {
-    setPlantios((plantiosAtuais) =>
-      plantiosAtuais.map((plantio) =>
-        plantio.id === id
-          ? {
-              ...plantio,
-              ...dadosAtualizados,
-            }
-          : plantio
-      )
-    )
-  }
-
-  function excluirPlantio(id) {
-    setPlantios((plantiosAtuais) =>
-      plantiosAtuais.filter(
-        (plantio) => plantio.id !== id
-      )
-    )
-  }
-
-  return (
-    <PlantiosContext.Provider
-      value={{
-        plantios,
-        adicionarPlantio,
-        editarPlantio,
-        excluirPlantio,
-      }}
-    >
-      {children}
-    </PlantiosContext.Provider>
-  )
-}
+const plantiosContext = createContext(null)
 
 function usePlantios() {
-  const context = useContext(PlantiosContext)
+  const context = useContext(plantiosContext)
 
   if (!context) {
     throw new Error(
@@ -65,7 +17,5 @@ function usePlantios() {
   return context
 }
 
-export {
-  PlantiosProvider,
-  usePlantios,
-}
+export { usePlantios }
+export default plantiosContext

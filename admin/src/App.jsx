@@ -1,10 +1,13 @@
-import { PlantiosProvider } from './contexts/PlantiosContext'
+import ClientesProvider from './contexts/ClientesProvider'
+import PlantiosProvider from './contexts/PlantiosProvider'
 import AppRoutes from './routes/AppRoutes'
 
 function App() {
   return (
     <PlantiosProvider>
-      <AppRoutes />
+      <ClientesProvider>
+        <AppRoutes />
+      </ClientesProvider>
     </PlantiosProvider>
   )
 }
