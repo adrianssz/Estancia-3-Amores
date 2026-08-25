@@ -1,7 +1,12 @@
+import { PlantiosProvider } from './contexts/PlantiosContext'
 import AppRoutes from './routes/AppRoutes'
 
 function App() {
-  return <AppRoutes />
+  return (
+    <PlantiosProvider>
+      <AppRoutes />
+    </PlantiosProvider>
+  )
 }
 
 export default App
