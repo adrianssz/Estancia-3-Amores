@@ -1,51 +1,51 @@
 .sobre-page {
-
-padding:20px;
-
-text-align:center;
-
+  width: 100%;
+  padding: 20px 20px 120px;
+  text-align: center;
 }
-
 
 .sobre-logo {
+  width: 100px;
+  height: 100px;
 
-width:100px;
+  margin: 0 auto;
 
-height:100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-border-radius:50%;
-
-background:#ddd;
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-margin:auto;
-
+  background-color: #dddddd;
+  border-radius: 50%;
 }
 
+.sobre-page h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
 
 .subtitulo {
+  margin-top: 0;
+  margin-bottom: 30px;
 
-font-size:14px;
-
-margin-bottom:30px;
-
+  font-size: 14px;
 }
-
 
 .sobre-page section {
-
-margin-top:30px;
-
+  margin-top: 30px;
 }
 
-
 .visita {
+  margin-top: 40px;
+  text-align: center;
+}
 
-margin-top:30px;
+@media (max-width: 480px) {
+  .sobre-page {
+    padding: 15px 15px 120px;
+  }
 
+  .sobre-logo {
+    width: 90px;
+    height: 90px;
+  }
 }

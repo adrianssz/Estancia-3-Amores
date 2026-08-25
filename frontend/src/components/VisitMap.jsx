@@ -1,29 +1,69 @@
 import '../styles/VisitMap.css'
 
 
-function VisitMap(){
+function VisitMap() {
+
+  const mapaUrl =
+    'https://maps.app.goo.gl/s7JwjgHhYp22uj2j8'
 
 
-return (
+  function abrirMapa(event) {
 
-<section className="visit-map">
+    event.preventDefault()
 
-<h2>
-Localização
-</h2>
+    try {
+
+      const novaJanela = window.open(
+        mapaUrl,
+        '_blank',
+        'noopener,noreferrer'
+      )
+
+      if (!novaJanela) {
+        alert('Não foi possível abrir a localização')
+      }
+
+    } catch {
+
+      alert('Não foi possível abrir a localização')
+
+    }
+
+  }
 
 
-<div>
+  return (
+    <section className="visit-map">
 
-Mapa da Estância
+      <h2 className="visit-map-title">
+        Localização
+      </h2>
 
-</div>
+      <a
+        href={mapaUrl}
+        className="visit-map-link"
+        onClick={abrirMapa}
+        aria-label="Abrir localização da Estância 3 Amores no Google Maps"
+      >
+        <div className="visit-map-box">
 
+          <span className="visit-map-icon">
+            📍
+          </span>
 
-</section>
+          <span className="visit-map-text">
+            Ver localização da Estância
+          </span>
 
-)
+          <span className="visit-map-helper">
+            Abrir no Google Maps
+          </span>
 
+        </div>
+      </a>
+
+    </section>
+  )
 }
 
 
