@@ -1,14 +1,30 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-import plantios from '../data/plantios'
+import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/ExcluirPlantio.css'
 
 function ExcluirPlantio() {
   const { id } = useParams()
 
-  const plantioSelecionado = plantios.find(
-    (plantio) => plantio.id === Number(id)
+  const {
+    plantios,
+    excluirPlantio,
+  } = usePlantios()
+
+  const [plantioSelecionado] = useState(() =>
+    plantios.find(
+      (plantio) => plantio.id === Number(id)
+    )
   )
+
+  const [excluidoComSucesso, setExcluidoComSucesso] =
+    useState(false)
+
+  function handleExcluir() {
+    excluirPlantio(Number(id))
+    setExcluidoComSucesso(true)
+  }
 
   if (!plantioSelecionado) {
     return (
@@ -88,13 +104,29 @@ function ExcluirPlantio() {
           />
         </div>
 
-        <div className="excluir-plantio-form__acoes">
-          <button
-            type="button"
-            className="excluir-plantio-form__excluir"
+        {excluidoComSucesso && (
+          <div
+            className="excluir-plantio-alert"
+            role="alert"
           >
-            Excluir
-          </button>
+            Plantio excluído! Clique em
+            {' '}
+            &apos;Retornar a Plantios&apos;
+            {' '}
+            para retornar.
+          </div>
+        )}
+
+        <div className="excluir-plantio-form__acoes">
+          {!excluidoComSucesso && (
+            <button
+              type="button"
+              className="excluir-plantio-form__excluir"
+              onClick={handleExcluir}
+            >
+              Excluir
+            </button>
+          )}
 
           <Link
             to="/plantios"

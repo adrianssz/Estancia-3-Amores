@@ -1,12 +1,10 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/AdicionarPlantio.css'
 
 function AdicionarPlantio() {
-  const navigate = useNavigate()
-
   const {
     plantios,
     adicionarPlantio,
@@ -16,6 +14,9 @@ function AdicionarPlantio() {
   const [tipoPlanta, setTipoPlanta] = useState('')
   const [area, setArea] = useState('')
   const [quantidade, setQuantidade] = useState('')
+
+  const [adicionadoComSucesso, setAdicionadoComSucesso] =
+    useState(false)
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -38,7 +39,15 @@ function AdicionarPlantio() {
 
     adicionarPlantio(novoPlantio)
 
-    navigate('/plantios')
+    setAdicionadoComSucesso(true)
+  }
+
+  function handleNovoPlantio() {
+    setPlantio('')
+    setTipoPlanta('')
+    setArea('')
+    setQuantidade('')
+    setAdicionadoComSucesso(false)
   }
 
   return (
@@ -64,6 +73,7 @@ function AdicionarPlantio() {
               setPlantio(event.target.value)
             }
             placeholder="Digite o nome do plantio"
+            disabled={adicionadoComSucesso}
             required
           />
         </div>
@@ -81,6 +91,7 @@ function AdicionarPlantio() {
               setTipoPlanta(event.target.value)
             }
             placeholder="Ex: Fruta"
+            disabled={adicionadoComSucesso}
             required
           />
         </div>
@@ -99,6 +110,7 @@ function AdicionarPlantio() {
               setArea(event.target.value)
             }
             placeholder="Ex: 18"
+            disabled={adicionadoComSucesso}
             required
           />
         </div>
@@ -118,17 +130,47 @@ function AdicionarPlantio() {
               setQuantidade(event.target.value)
             }
             placeholder="Ex: 250"
+            disabled={adicionadoComSucesso}
             required
           />
         </div>
 
-        <div className="adicionar-plantio-form__acoes">
-          <button
-            type="submit"
-            className="adicionar-plantio-form__adicionar"
+        {adicionadoComSucesso && (
+          <div
+            className="adicionar-plantio-alert"
+            role="alert"
           >
-            + Adicionar Plantio
-          </button>
+            Plantio adicionado! Clique em
+            {' '}
+            &apos;Retornar a Plantios&apos;
+            {' '}
+            para retornar, ou
+            {' '}
+            &apos;+ Adicionar Plantio&apos;
+            {' '}
+            para cadastrar um novo plantio.
+          </div>
+        )}
+
+        <div className="adicionar-plantio-form__acoes">
+          {!adicionadoComSucesso && (
+            <button
+              type="submit"
+              className="adicionar-plantio-form__adicionar"
+            >
+              + Adicionar Plantio
+            </button>
+          )}
+
+          {adicionadoComSucesso && (
+            <button
+              type="button"
+              className="adicionar-plantio-form__adicionar"
+              onClick={handleNovoPlantio}
+            >
+              + Adicionar Plantio
+            </button>
+          )}
 
           <Link
             to="/plantios"

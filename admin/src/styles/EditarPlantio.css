@@ -55,8 +55,23 @@
   border-width: 2px;
 }
 
+.editar-plantio-alert {
+  width: 100%;
+  margin-top: 10px;
+  padding: 16px 20px;
+
+  background-color: #eeeeee;
+  color: #222222;
+
+  border: 1px solid #777777;
+  border-radius: 6px;
+
+  text-align: center;
+  line-height: 1.5;
+}
+
 .editar-plantio-form__acoes {
-  margin-top: 55px;
+  margin-top: 30px;
 
   display: flex;
   flex-direction: column;
@@ -88,12 +103,4 @@
 .editar-plantio-form__salvar:hover,
 .editar-plantio-form__retornar:hover {
   background-color: #eeeeee;
-}
-
-.editar-plantio-page__registro {
-  margin-top: 30px;
-
-  text-align: center;
-  font-size: 13px;
-  color: #777777;
 }

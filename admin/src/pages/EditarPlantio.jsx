@@ -1,11 +1,16 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-import plantios from '../data/plantios'
+import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/EditarPlantio.css'
 
 function EditarPlantio() {
   const { id } = useParams()
+
+  const {
+    plantios,
+    editarPlantio,
+  } = usePlantios()
 
   const plantioSelecionado = plantios.find(
     (plantio) => plantio.id === Number(id)
@@ -27,8 +32,23 @@ function EditarPlantio() {
     plantioSelecionado?.quantidade ?? ''
   )
 
+  const [editadoComSucesso, setEditadoComSucesso] =
+    useState(false)
+
   function handleSubmit(event) {
     event.preventDefault()
+
+    editarPlantio(
+      Number(id),
+      {
+        nome: nome.trim(),
+        tipo: tipoPlanta.trim(),
+        area: Number(area),
+        quantidade: Number(quantidade),
+      }
+    )
+
+    setEditadoComSucesso(true)
   }
 
   if (!plantioSelecionado) {
@@ -69,7 +89,9 @@ function EditarPlantio() {
             id="plantio"
             type="text"
             value={nome}
-            onChange={(event) => setNome(event.target.value)}
+            onChange={(event) =>
+              setNome(event.target.value)
+            }
             required
           />
         </div>
@@ -83,7 +105,9 @@ function EditarPlantio() {
             id="tipoPlanta"
             type="text"
             value={tipoPlanta}
-            onChange={(event) => setTipoPlanta(event.target.value)}
+            onChange={(event) =>
+              setTipoPlanta(event.target.value)
+            }
             required
           />
         </div>
@@ -98,7 +122,9 @@ function EditarPlantio() {
             type="number"
             min="1"
             value={area}
-            onChange={(event) => setArea(event.target.value)}
+            onChange={(event) =>
+              setArea(event.target.value)
+            }
             required
           />
         </div>
@@ -114,10 +140,26 @@ function EditarPlantio() {
             min="1"
             step="1"
             value={quantidade}
-            onChange={(event) => setQuantidade(event.target.value)}
+            onChange={(event) =>
+              setQuantidade(event.target.value)
+            }
             required
           />
         </div>
+
+        {editadoComSucesso && (
+          <div
+            className="editar-plantio-alert"
+            role="alert"
+          >
+            Plantio editado! Clique em
+            {' '}
+            &apos;Retornar a Plantios&apos;
+            {' '}
+            para retornar, ou continue editando
+            para realizar novas alterações.
+          </div>
+        )}
 
         <div className="editar-plantio-form__acoes">
           <button
