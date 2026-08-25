@@ -13,16 +13,16 @@ import '../styles/Contato.css'
 
 function Contato() {
 
-  const telefoneWhatsApp = '5511999999999'
+  const telefoneWhatsApp = '5544998125510'
 
   const instagramUrl =
-    'https://www.instagram.com/'
+    'https://www.instagram.com/estancia_3_amores/'
 
   const endereco =
     'Estrada x Fazenda Y'
 
   const mapaUrl =
-    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`
+    'https://maps.app.goo.gl/s7JwjgHhYp22uj2j8'
 
 
   function abrirLink(url, mensagemErro) {
@@ -39,7 +39,7 @@ function Contato() {
         alert(mensagemErro)
       }
 
-    } catch (erro) {
+    } catch {
 
       alert(mensagemErro)
 
@@ -91,13 +91,11 @@ function Contato() {
     <>
       <Header />
 
-
       <main className="contato-page">
 
         <h1 className="contato-title">
           Contato
         </h1>
-
 
         <section className="contato-box">
 
@@ -112,7 +110,6 @@ function Contato() {
             />
           </a>
 
-
           <a
             href={instagramUrl}
             className="contato-link"
@@ -123,7 +120,6 @@ function Contato() {
               className="contato-icon"
             />
           </a>
-
 
           <a
             href={mapaUrl}
@@ -136,14 +132,12 @@ function Contato() {
             />
           </a>
 
-
           <a
             href={mapaUrl}
             className="localizacao-area"
             onClick={abrirMapa}
             aria-label="Abrir endereço no mapa"
           >
-
             <FaMapMarkerAlt
               className="contato-icon"
             />
@@ -151,13 +145,11 @@ function Contato() {
             <p className="contato-endereco">
               {endereco}
             </p>
-
           </a>
 
         </section>
 
       </main>
-
 
       <BottomMenu />
     </>

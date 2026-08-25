@@ -9,8 +9,9 @@ import '../styles/Cesta.css'
 
 function Cesta() {
 
-
   const [cesta, setCesta] = useState([])
+
+  const telefoneWhatsApp = '5544998125510'
 
 
   useEffect(() => {
@@ -19,7 +20,6 @@ function Cesta() {
       JSON.parse(
         localStorage.getItem('cesta')
       ) || []
-
 
     setCesta(cestaSalva)
 
@@ -31,12 +31,10 @@ function Cesta() {
     const novaCesta =
       cesta.filter(
         produto =>
-        produto.id !== id
+          produto.id !== id
       )
 
-
     setCesta(novaCesta)
-
 
     localStorage.setItem(
       'cesta',
@@ -70,49 +68,63 @@ function Cesta() {
   function realizarPedido() {
 
     if (cesta.length === 0) {
-
       return
-
     }
+
+
+    const itensPedido =
+      cesta.map((produto) => {
+
+        const subtotal =
+          produto.preco *
+          produto.quantidadeCesta
+
+        const subtotalFormatado =
+          subtotal
+            .toFixed(2)
+            .replace('.', ',')
+
+        return (
+          `• ${produto.quantidadeCesta}x ${produto.nome}` +
+          ` (${produto.unidade})` +
+          ` - R$ ${subtotalFormatado}`
+        )
+
+      })
+
+
+    const totalFormatado =
+      total
+        .toFixed(2)
+        .replace('.', ',')
+
+
+    const mensagem = [
+      'Olá! Gostaria de realizar um pedido na Estância 3 Amores.',
+      '',
+      'Itens do pedido:',
+      ...itensPedido,
+      '',
+      `Total: R$ ${totalFormatado}`
+    ].join('\n')
+
+
+    const whatsappUrl =
+      `https://wa.me/${telefoneWhatsApp}?text=${encodeURIComponent(mensagem)}`
 
 
     try {
 
-      /*
-        FUTURAMENTE:
+      window.open(
+        whatsappUrl,
+        '_blank',
+        'noopener,noreferrer'
+      )
 
-        Aqui entraremos com:
-
-        - ID do usuário
-        - produtos
-        - quantidade
-        - total
-        - Supabase / PHP
-        - controle de estoque
-      */
-
+    } catch {
 
       alert(
-        'Pedido realizado com sucesso!'
-      )
-
-
-      setCesta([])
-
-
-      localStorage.removeItem(
-        'cesta'
-      )
-
-      window.dispatchEvent(
-        new Event('cestaAtualizada')
-      )
-
-
-    } catch (erro) {
-
-      alert(
-        'Falha ao processar pedido. Tente novamente em instantes'
+        'Não foi possível abrir o WhatsApp. Tente novamente em instantes.'
       )
 
     }
@@ -121,54 +133,41 @@ function Cesta() {
 
 
   return (
-
     <>
-
       <Header />
 
-
       <main className="cesta-page">
-
 
         <h1 className="cesta-title">
           Cesta
         </h1>
 
-
         <section className="cesta-container">
-
 
           {
             cesta.length > 0
 
-            ?
+              ?
 
-            cesta.map((produto) => (
+              cesta.map((produto) => (
 
-              <CartItem
+                <CartItem
+                  key={produto.id}
+                  produto={produto}
+                  removerProduto={removerProduto}
+                />
 
-                key={produto.id}
+              ))
 
-                produto={produto}
+              :
 
-                removerProduto={
-                  removerProduto
-                }
+              <div className="cesta-vazia">
 
-              />
+                <p>
+                  Sua cesta está vazia.
+                </p>
 
-            ))
-
-            :
-
-            <div className="cesta-vazia">
-
-              <p>
-                Sua cesta está vazia.
-              </p>
-
-            </div>
-
+              </div>
           }
 
 
@@ -178,45 +177,31 @@ function Cesta() {
               Total
             </span>
 
-
             <strong>
-
               R$ {total
                 .toFixed(2)
                 .replace('.', ',')}
-
             </strong>
 
           </div>
 
 
           <button
-
+            type="button"
             className="realizar-pedido-button"
-
             onClick={realizarPedido}
-
-            disabled={
-              cesta.length === 0
-            }
-
+            disabled={cesta.length === 0}
           >
             REALIZAR PEDIDO
           </button>
 
-
         </section>
-
 
       </main>
 
-
       <BottomMenu />
-
     </>
-
   )
-
 }
 
 
