@@ -3,9 +3,9 @@
 
   margin-bottom: 25px;
 
-  padding: 12px;
+  padding: 14px;
 
-  border: 1px solid #555555;
+  border: 1px solid #777777;
 
   background-color: #ffffff;
 }
@@ -14,7 +14,7 @@
 .category-title {
   display: block;
 
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 
   font-size: 14px;
 
@@ -22,22 +22,35 @@
 }
 
 
-.category-options {
+.category-groups {
+  width: 100%;
+
   display: grid;
 
   grid-template-columns:
-    repeat(2, 1fr);
+    repeat(2, minmax(0, 1fr));
 
-  gap: 10px 30px;
+  gap: 20px;
 }
 
 
-.category-options label {
+.category-group {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+.category-group label {
   display: flex;
 
   align-items: center;
 
   gap: 8px;
+
+  min-width: 0;
 
   font-size: 14px;
 
@@ -45,9 +58,11 @@
 }
 
 
-.category-options input {
+.category-group input {
   width: 20px;
   height: 20px;
+
+  flex-shrink: 0;
 
   cursor: pointer;
 }
@@ -55,13 +70,26 @@
 
 @media (max-width: 400px) {
 
-  .category-options {
-    gap: 8px 15px;
+  .category-filter {
+    padding: 12px;
   }
 
 
-  .category-options label {
+  .category-groups {
+    gap: 12px;
+  }
+
+
+  .category-group label {
+    gap: 6px;
+
     font-size: 13px;
+  }
+
+
+  .category-group input {
+    width: 18px;
+    height: 18px;
   }
 
 }

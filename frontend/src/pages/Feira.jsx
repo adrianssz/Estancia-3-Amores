@@ -13,8 +13,9 @@ import '../styles/Feira.css'
 function Feira() {
 
   const [filtros, setFiltros] = useState({
-    hortalicas: false,
+    graos: false,
     legumes: false,
+    verduras: false,
     frutas: false,
     colhidas: false,
     emCrescimento: false
@@ -46,12 +47,16 @@ function Feira() {
   const categoriasSelecionadas = []
 
 
-  if (filtros.hortalicas) {
-    categoriasSelecionadas.push('Hortaliças')
+  if (filtros.graos) {
+    categoriasSelecionadas.push('Grãos')
   }
 
   if (filtros.legumes) {
     categoriasSelecionadas.push('Legumes')
+  }
+
+  if (filtros.verduras) {
+    categoriasSelecionadas.push('Verduras')
   }
 
   if (filtros.frutas) {

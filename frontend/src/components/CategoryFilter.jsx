@@ -15,71 +15,92 @@ function CategoryFilter({
       </span>
 
 
-      <div className="category-options">
+      <div className="category-groups">
 
-        <label>
-          <input
-            type="checkbox"
-            checked={filtros.hortalicas}
-            onChange={() =>
-              alternarFiltro('hortalicas')
-            }
-          />
+        <div className="category-group">
 
-          Hortaliças
-        </label>
+          <label>
+            <input
+              type="checkbox"
+              checked={filtros.graos}
+              onChange={() =>
+                alternarFiltro('graos')
+              }
+            />
 
-
-        <label>
-          <input
-            type="checkbox"
-            checked={filtros.colhidas}
-            onChange={() =>
-              alternarFiltro('colhidas')
-            }
-          />
-
-          Colhidas
-        </label>
+            Grãos
+          </label>
 
 
-        <label>
-          <input
-            type="checkbox"
-            checked={filtros.legumes}
-            onChange={() =>
-              alternarFiltro('legumes')
-            }
-          />
+          <label>
+            <input
+              type="checkbox"
+              checked={filtros.legumes}
+              onChange={() =>
+                alternarFiltro('legumes')
+              }
+            />
 
-          Legumes
-        </label>
-
-
-        <label>
-          <input
-            type="checkbox"
-            checked={filtros.emCrescimento}
-            onChange={() =>
-              alternarFiltro('emCrescimento')
-            }
-          />
-
-          Em crescimento
-        </label>
+            Legumes
+          </label>
 
 
-        <label>
-          <input
-            type="checkbox"
-            checked={filtros.frutas}
-            onChange={() =>
-              alternarFiltro('frutas')
-            }
-          />
+          <label>
+            <input
+              type="checkbox"
+              checked={filtros.verduras}
+              onChange={() =>
+                alternarFiltro('verduras')
+              }
+            />
 
-          Frutas
-        </label>
+            Verduras
+          </label>
+
+
+          <label>
+            <input
+              type="checkbox"
+              checked={filtros.frutas}
+              onChange={() =>
+                alternarFiltro('frutas')
+              }
+            />
+
+            Frutas
+          </label>
+
+        </div>
+
+
+        <div className="category-group">
+
+          <label>
+            <input
+              type="checkbox"
+              checked={filtros.colhidas}
+              onChange={() =>
+                alternarFiltro('colhidas')
+              }
+            />
+
+            Colhidas
+          </label>
+
+
+          <label>
+            <input
+              type="checkbox"
+              checked={filtros.emCrescimento}
+              onChange={() =>
+                alternarFiltro('emCrescimento')
+              }
+            />
+
+            Em crescimento
+          </label>
+
+        </div>
 
       </div>
 

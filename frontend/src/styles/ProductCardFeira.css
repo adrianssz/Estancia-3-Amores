@@ -1,19 +1,21 @@
 .feira-card {
   width: 100%;
 
-  border: 1px solid #777777;
-
-  background-color: #ffffff;
-
   display: flex;
   flex-direction: column;
 
   overflow: hidden;
+
+  border: 1px solid #d0d0d0;
+  border-radius: 10px;
+
+  background-color: #ffffff;
 }
 
 
 .feira-card-image {
-  min-height: 110px;
+  width: 100%;
+  min-height: 120px;
 
   display: flex;
   align-items: center;
@@ -26,7 +28,7 @@
 
 
 .feira-card-content {
-  padding: 10px;
+  padding: 12px;
 
   display: flex;
   flex-direction: column;
@@ -39,8 +41,9 @@
   margin: 0;
 
   font-size: 16px;
+  line-height: 1.3;
 
-  color: #333333;
+  color: #222222;
 }
 
 
@@ -49,32 +52,33 @@
 
   font-size: 13px;
 
-  color: #555555;
+  color: #666666;
 }
 
 
 .feira-card-content strong {
-  font-size: 15px;
+  margin-top: 3px;
 
-  color: #333333;
+  font-size: 16px;
+
+  color: #222222;
 }
 
 
 .quantidade-selector {
+  width: 100%;
+
   display: grid;
 
   grid-template-columns:
     42px
-    1fr
+    minmax(0, 1fr)
     42px;
 
   align-items: center;
 
-  border-top:
-    1px solid #dddddd;
-
-  border-bottom:
-    1px solid #dddddd;
+  border-top: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
 }
 
 
@@ -83,11 +87,16 @@
 
   border: none;
 
-  background-color: #eeeeee;
+  background-color: #f3f3f3;
 
   font-size: 20px;
 
   cursor: pointer;
+}
+
+
+.quantidade-selector button:hover:not(:disabled) {
+  background-color: #e7e7e7;
 }
 
 
@@ -101,14 +110,17 @@
 .quantidade-selector span {
   text-align: center;
 
+  font-size: 16px;
   font-weight: 600;
 
-  font-size: 16px;
+  color: #222222;
 }
 
 
 .estoque-info {
-  margin: 8px 5px;
+  margin: 0;
+
+  padding: 9px 5px;
 
   text-align: center;
 
@@ -120,19 +132,19 @@
 
 .adicionar-button {
   width: 100%;
+  min-height: 42px;
 
-  min-height: 40px;
+  margin-top: auto;
 
   border: none;
-
-  border-top:
-    1px solid #777777;
+  border-top: 1px solid #dddddd;
 
   background-color: #ffffff;
 
-  cursor: pointer;
-
   font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
 }
 
 
@@ -151,30 +163,70 @@
 }
 
 
+.produto-crescimento .feira-card-image {
+  background-color: #eeeeee;
+}
+
+
 .crescimento-info {
+  margin-top: auto;
+
   padding: 12px;
 
   text-align: center;
 
   font-size: 13px;
+  font-weight: 500;
 
   background-color: #eeeeee;
 
   color: #555555;
+
+  border-top: 1px solid #dddddd;
 }
 
 
 @media (max-width: 480px) {
 
   .feira-card-image {
-    min-height: 90px;
+    min-height: 100px;
 
-    font-size: 35px;
+    font-size: 36px;
+  }
+
+
+  .feira-card-content {
+    padding: 10px;
   }
 
 
   .feira-card-content h3 {
     font-size: 14px;
+  }
+
+
+  .feira-card-content strong {
+    font-size: 14px;
+  }
+
+
+  .quantidade-selector {
+    grid-template-columns:
+      38px
+      minmax(0, 1fr)
+      38px;
+  }
+
+
+  .quantidade-selector button {
+    height: 40px;
+
+    font-size: 18px;
+  }
+
+
+  .estoque-info {
+    font-size: 10px;
   }
 
 }
