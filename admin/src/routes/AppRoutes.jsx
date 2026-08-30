@@ -28,6 +28,11 @@ import AdicionarEntrega from '../pages/AdicionarEntrega'
 import EditarEntrega from '../pages/EditarEntrega'
 import ExcluirEntrega from '../pages/ExcluirEntrega'
 
+import Produtos from '../pages/Produtos'
+import AdicionarProduto from '../pages/AdicionarProduto'
+import EditarProduto from '../pages/EditarProduto'
+import ExcluirProduto from '../pages/ExcluirProduto'
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -121,6 +126,26 @@ function AppRoutes() {
           <Route
             path="/entregas/:codigo/excluir"
             element={<ExcluirEntrega />}
+          />
+
+          <Route
+            path="/produtos"
+            element={<Produtos />}
+          />
+
+          <Route
+            path="/produtos/adicionar"
+            element={<AdicionarProduto />}
+          />
+
+          <Route
+            path="/produtos/:id/editar"
+            element={<EditarProduto />}
+          />
+
+          <Route
+            path="/produtos/:id/excluir"
+            element={<ExcluirProduto />}
           />
         </Route>
       </Routes>

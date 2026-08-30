@@ -2,6 +2,7 @@ import ClientesProvider from './contexts/ClientesProvider'
 import EntregasProvider from './contexts/EntregasProvider'
 import PedidosProvider from './contexts/PedidosProvider'
 import PlantiosProvider from './contexts/PlantiosProvider'
+import ProdutosProvider from './contexts/ProdutosProvider'
 import AppRoutes from './routes/AppRoutes'
 
 function App() {
@@ -10,7 +11,9 @@ function App() {
       <ClientesProvider>
         <PedidosProvider>
           <EntregasProvider>
-            <AppRoutes />
+            <ProdutosProvider>
+              <AppRoutes />
+            </ProdutosProvider>
           </EntregasProvider>
         </PedidosProvider>
       </ClientesProvider>
