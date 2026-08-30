@@ -23,6 +23,11 @@ import AdicionarPedido from '../pages/AdicionarPedido'
 import EditarPedido from '../pages/EditarPedido'
 import ExcluirPedido from '../pages/ExcluirPedido'
 
+import Entregas from '../pages/Entregas'
+import AdicionarEntrega from '../pages/AdicionarEntrega'
+import EditarEntrega from '../pages/EditarEntrega'
+import ExcluirEntrega from '../pages/ExcluirEntrega'
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -96,6 +101,26 @@ function AppRoutes() {
           <Route
             path="/pedidos/:id/excluir"
             element={<ExcluirPedido />}
+          />
+
+          <Route
+            path="/entregas"
+            element={<Entregas />}
+          />
+
+          <Route
+            path="/entregas/adicionar"
+            element={<AdicionarEntrega />}
+          />
+
+          <Route
+            path="/entregas/:codigo/editar"
+            element={<EditarEntrega />}
+          />
+
+          <Route
+            path="/entregas/:codigo/excluir"
+            element={<ExcluirEntrega />}
           />
         </Route>
       </Routes>

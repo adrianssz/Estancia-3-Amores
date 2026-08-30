@@ -1,4 +1,5 @@
 import ClientesProvider from './contexts/ClientesProvider'
+import EntregasProvider from './contexts/EntregasProvider'
 import PedidosProvider from './contexts/PedidosProvider'
 import PlantiosProvider from './contexts/PlantiosProvider'
 import AppRoutes from './routes/AppRoutes'
@@ -8,7 +9,9 @@ function App() {
     <PlantiosProvider>
       <ClientesProvider>
         <PedidosProvider>
-          <AppRoutes />
+          <EntregasProvider>
+            <AppRoutes />
+          </EntregasProvider>
         </PedidosProvider>
       </ClientesProvider>
     </PlantiosProvider>
