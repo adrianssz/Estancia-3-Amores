@@ -5,7 +5,10 @@ import {
   Routes,
 } from 'react-router-dom'
 
+import ProtectedRoute from '../components/ProtectedRoute'
 import AdminLayout from '../layouts/AdminLayout'
+
+import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
 
 import Plantios from '../pages/Plantios'
@@ -39,114 +42,121 @@ function AppRoutes() {
       <Routes>
         <Route
           path="/"
-          element={<Navigate to="/dashboard" replace />}
+          element={<Navigate to="/login" replace />}
         />
 
-        <Route element={<AdminLayout />}>
-          <Route
-            path="/dashboard"
-            element={<Dashboard />}
-          />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-          <Route
-            path="/plantios"
-            element={<Plantios />}
-          />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route
+              path="/dashboard"
+              element={<Dashboard />}
+            />
 
-          <Route
-            path="/plantios/adicionar"
-            element={<AdicionarPlantio />}
-          />
+            <Route
+              path="/plantios"
+              element={<Plantios />}
+            />
 
-          <Route
-            path="/plantios/:id/editar"
-            element={<EditarPlantio />}
-          />
+            <Route
+              path="/plantios/adicionar"
+              element={<AdicionarPlantio />}
+            />
 
-          <Route
-            path="/plantios/:id/excluir"
-            element={<ExcluirPlantio />}
-          />
+            <Route
+              path="/plantios/:id/editar"
+              element={<EditarPlantio />}
+            />
 
-          <Route
-            path="/clientes"
-            element={<Clientes />}
-          />
+            <Route
+              path="/plantios/:id/excluir"
+              element={<ExcluirPlantio />}
+            />
 
-          <Route
-            path="/clientes/adicionar"
-            element={<AdicionarCliente />}
-          />
+            <Route
+              path="/clientes"
+              element={<Clientes />}
+            />
 
-          <Route
-            path="/clientes/:codigo/editar"
-            element={<EditarCliente />}
-          />
+            <Route
+              path="/clientes/adicionar"
+              element={<AdicionarCliente />}
+            />
 
-          <Route
-            path="/clientes/:codigo/excluir"
-            element={<ExcluirCliente />}
-          />
+            <Route
+              path="/clientes/:codigo/editar"
+              element={<EditarCliente />}
+            />
 
-          <Route
-            path="/pedidos"
-            element={<Pedidos />}
-          />
+            <Route
+              path="/clientes/:codigo/excluir"
+              element={<ExcluirCliente />}
+            />
 
-          <Route
-            path="/pedidos/adicionar"
-            element={<AdicionarPedido />}
-          />
+            <Route
+              path="/pedidos"
+              element={<Pedidos />}
+            />
 
-          <Route
-            path="/pedidos/:id/editar"
-            element={<EditarPedido />}
-          />
+            <Route
+              path="/pedidos/adicionar"
+              element={<AdicionarPedido />}
+            />
 
-          <Route
-            path="/pedidos/:id/excluir"
-            element={<ExcluirPedido />}
-          />
+            <Route
+              path="/pedidos/:id/editar"
+              element={<EditarPedido />}
+            />
 
-          <Route
-            path="/entregas"
-            element={<Entregas />}
-          />
+            <Route
+              path="/pedidos/:id/excluir"
+              element={<ExcluirPedido />}
+            />
 
-          <Route
-            path="/entregas/adicionar"
-            element={<AdicionarEntrega />}
-          />
+            <Route
+              path="/entregas"
+              element={<Entregas />}
+            />
 
-          <Route
-            path="/entregas/:codigo/editar"
-            element={<EditarEntrega />}
-          />
+            <Route
+              path="/entregas/adicionar"
+              element={<AdicionarEntrega />}
+            />
 
-          <Route
-            path="/entregas/:codigo/excluir"
-            element={<ExcluirEntrega />}
-          />
+            <Route
+              path="/entregas/:codigo/editar"
+              element={<EditarEntrega />}
+            />
 
-          <Route
-            path="/produtos"
-            element={<Produtos />}
-          />
+            <Route
+              path="/entregas/:codigo/excluir"
+              element={<ExcluirEntrega />}
+            />
 
-          <Route
-            path="/produtos/adicionar"
-            element={<AdicionarProduto />}
-          />
+            <Route
+              path="/produtos"
+              element={<Produtos />}
+            />
 
-          <Route
-            path="/produtos/:id/editar"
-            element={<EditarProduto />}
-          />
+            <Route
+              path="/produtos/adicionar"
+              element={<AdicionarProduto />}
+            />
 
-          <Route
-            path="/produtos/:id/excluir"
-            element={<ExcluirProduto />}
-          />
+            <Route
+              path="/produtos/:id/editar"
+              element={<EditarProduto />}
+            />
+
+            <Route
+              path="/produtos/:id/excluir"
+              element={<ExcluirProduto />}
+            />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

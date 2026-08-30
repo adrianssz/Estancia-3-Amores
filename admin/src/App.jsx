@@ -1,3 +1,4 @@
+import AuthProvider from './contexts/AuthProvider'
 import ClientesProvider from './contexts/ClientesProvider'
 import EntregasProvider from './contexts/EntregasProvider'
 import PedidosProvider from './contexts/PedidosProvider'
@@ -7,17 +8,19 @@ import AppRoutes from './routes/AppRoutes'
 
 function App() {
   return (
-    <PlantiosProvider>
-      <ClientesProvider>
-        <PedidosProvider>
-          <EntregasProvider>
-            <ProdutosProvider>
-              <AppRoutes />
-            </ProdutosProvider>
-          </EntregasProvider>
-        </PedidosProvider>
-      </ClientesProvider>
-    </PlantiosProvider>
+    <AuthProvider>
+      <PlantiosProvider>
+        <ClientesProvider>
+          <PedidosProvider>
+            <EntregasProvider>
+              <ProdutosProvider>
+                <AppRoutes />
+              </ProdutosProvider>
+            </EntregasProvider>
+          </PedidosProvider>
+        </ClientesProvider>
+      </PlantiosProvider>
+    </AuthProvider>
   )
 }
 
