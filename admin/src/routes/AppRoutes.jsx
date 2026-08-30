@@ -36,6 +36,12 @@ import AdicionarProduto from '../pages/AdicionarProduto'
 import EditarProduto from '../pages/EditarProduto'
 import ExcluirProduto from '../pages/ExcluirProduto'
 
+import Relatorios from '../pages/Relatorios'
+import RelatorioPlantios from '../pages/RelatorioPlantios'
+import RelatorioPedidos from '../pages/RelatorioPedidos'
+import RelatorioClientes from '../pages/RelatorioClientes'
+import RelatorioEntregas from '../pages/RelatorioEntregas'
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -155,6 +161,31 @@ function AppRoutes() {
             <Route
               path="/produtos/:id/excluir"
               element={<ExcluirProduto />}
+            />
+
+            <Route
+              path="/relatorios"
+              element={<Relatorios />}
+            />
+
+            <Route
+              path="/relatorios/plantios"
+              element={<RelatorioPlantios />}
+            />
+
+            <Route
+              path="/relatorios/pedidos"
+              element={<RelatorioPedidos />}
+            />
+
+            <Route
+              path="/relatorios/clientes"
+              element={<RelatorioClientes />}
+            />
+
+            <Route
+              path="/relatorios/entregas"
+              element={<RelatorioEntregas />}
             />
           </Route>
         </Route>
