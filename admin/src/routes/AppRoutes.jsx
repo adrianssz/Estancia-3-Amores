@@ -18,6 +18,11 @@ import AdicionarCliente from '../pages/AdicionarCliente'
 import EditarCliente from '../pages/EditarCliente'
 import ExcluirCliente from '../pages/ExcluirCliente'
 
+import Pedidos from '../pages/Pedidos'
+import AdicionarPedido from '../pages/AdicionarPedido'
+import EditarPedido from '../pages/EditarPedido'
+import ExcluirPedido from '../pages/ExcluirPedido'
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -71,6 +76,26 @@ function AppRoutes() {
           <Route
             path="/clientes/:codigo/excluir"
             element={<ExcluirCliente />}
+          />
+
+          <Route
+            path="/pedidos"
+            element={<Pedidos />}
+          />
+
+          <Route
+            path="/pedidos/adicionar"
+            element={<AdicionarPedido />}
+          />
+
+          <Route
+            path="/pedidos/:id/editar"
+            element={<EditarPedido />}
+          />
+
+          <Route
+            path="/pedidos/:id/excluir"
+            element={<ExcluirPedido />}
           />
         </Route>
       </Routes>

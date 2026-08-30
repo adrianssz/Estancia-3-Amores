@@ -1,4 +1,5 @@
 import ClientesProvider from './contexts/ClientesProvider'
+import PedidosProvider from './contexts/PedidosProvider'
 import PlantiosProvider from './contexts/PlantiosProvider'
 import AppRoutes from './routes/AppRoutes'
 
@@ -6,7 +7,9 @@ function App() {
   return (
     <PlantiosProvider>
       <ClientesProvider>
-        <AppRoutes />
+        <PedidosProvider>
+          <AppRoutes />
+        </PedidosProvider>
       </ClientesProvider>
     </PlantiosProvider>
   )
