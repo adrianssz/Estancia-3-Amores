@@ -1,0 +1,126 @@
+.pedidos-page {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.pedidos-page__title {
+  margin-bottom: 35px;
+
+  text-align: center;
+  font-size: 32px;
+  color: #222222;
+}
+
+.pedidos-busca {
+  width: 100%;
+  margin-bottom: 30px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.pedidos-busca__campo {
+  width: 100%;
+  max-width: 650px;
+  min-height: 44px;
+  padding: 10px 14px;
+
+  background-color: #ffffff;
+  color: #222222;
+
+  border: 1px solid #555555;
+  border-right: none;
+
+  outline: none;
+}
+
+.pedidos-busca__campo:focus {
+  border-width: 2px;
+}
+
+.pedidos-busca__botao {
+  width: 52px;
+  min-height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #a0a0a0;
+  color: #222222;
+
+  border: 1px solid #555555;
+
+  cursor: pointer;
+}
+
+.pedidos-busca__botao:hover {
+  background-color: #909090;
+}
+
+.pedidos-busca__icone {
+  width: 22px;
+  height: 22px;
+}
+
+.pedidos-acoes {
+  margin-bottom: 30px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.pedidos-adicionar {
+  padding: 12px 24px;
+
+  background-color: #ffffff;
+  color: #222222;
+
+  border: 1px solid #555555;
+  border-radius: 6px;
+
+  cursor: pointer;
+}
+
+.pedidos-adicionar:hover {
+  background-color: #f1f1f1;
+}
+
+.pedidos-listagem__title {
+  margin-bottom: 12px;
+
+  text-align: center;
+  font-size: 18px;
+  color: #222222;
+}
+
+.pedidos-tabela {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.pedidos-tabela th,
+.pedidos-tabela td {
+  padding: 12px;
+
+  border: 1px solid #555555;
+
+  text-align: center;
+}
+
+.pedidos-tabela th {
+  background-color: #a0a0a0;
+
+  font-weight: bold;
+}
+
+.pedidos-tabela tbody tr:nth-child(even) {
+  background-color: #eeeeee;
+}
+
+.pedidos-tabela__vazio {
+  padding: 20px;
+}
