@@ -1,8 +1,12 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import {
+  Link,
+  useParams,
+} from 'react-router-dom'
 
 import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/ExcluirPlantio.css'
+
 
 function ExcluirPlantio() {
   const { id } = useParams()
@@ -14,45 +18,60 @@ function ExcluirPlantio() {
 
   const [plantioSelecionado] = useState(() =>
     plantios.find(
-      (plantio) => plantio.id === Number(id)
+      (plantio) =>
+        plantio.id === Number(id)
     )
   )
 
-  const [excluidoComSucesso, setExcluidoComSucesso] =
-    useState(false)
+  const [
+    excluidoComSucesso,
+    setExcluidoComSucesso,
+  ] = useState(false)
+
 
   function handleExcluir() {
     excluirPlantio(Number(id))
+
     setExcluidoComSucesso(true)
   }
+
 
   if (!plantioSelecionado) {
     return (
       <section className="excluir-plantio-page">
+
         <h1 className="excluir-plantio-page__title">
-          Plantio não encontrado
+          Registro não encontrado
         </h1>
 
         <div className="excluir-plantio-form__acoes">
+
           <Link
             to="/plantios"
             className="excluir-plantio-form__retornar"
           >
             Retornar a Plantios
           </Link>
+
         </div>
+
       </section>
     )
   }
 
+
   return (
     <section className="excluir-plantio-page">
+
       <h1 className="excluir-plantio-page__title">
         Excluir
       </h1>
 
+
       <div className="excluir-plantio-form">
+
         <div className="excluir-plantio-form__grupo">
+
           <label htmlFor="plantio">
             Plantio
           </label>
@@ -63,9 +82,12 @@ function ExcluirPlantio() {
             value={plantioSelecionado.nome}
             readOnly
           />
+
         </div>
 
+
         <div className="excluir-plantio-form__grupo">
+
           <label htmlFor="tipoPlanta">
             Tipo de Planta
           </label>
@@ -76,9 +98,12 @@ function ExcluirPlantio() {
             value={plantioSelecionado.tipo}
             readOnly
           />
+
         </div>
 
+
         <div className="excluir-plantio-form__grupo">
+
           <label htmlFor="area">
             Área
           </label>
@@ -89,9 +114,12 @@ function ExcluirPlantio() {
             value={plantioSelecionado.area}
             readOnly
           />
+
         </div>
 
+
         <div className="excluir-plantio-form__grupo">
+
           <label htmlFor="quantidade">
             Quantidade
           </label>
@@ -102,9 +130,12 @@ function ExcluirPlantio() {
             value={plantioSelecionado.quantidade}
             readOnly
           />
+
         </div>
 
+
         {excluidoComSucesso && (
+
           <div
             className="excluir-plantio-alert"
             role="alert"
@@ -115,10 +146,14 @@ function ExcluirPlantio() {
             {' '}
             para retornar.
           </div>
+
         )}
 
+
         <div className="excluir-plantio-form__acoes">
+
           {!excluidoComSucesso && (
+
             <button
               type="button"
               className="excluir-plantio-form__excluir"
@@ -126,7 +161,9 @@ function ExcluirPlantio() {
             >
               Excluir
             </button>
+
           )}
+
 
           <Link
             to="/plantios"
@@ -134,10 +171,14 @@ function ExcluirPlantio() {
           >
             Retornar a Plantios
           </Link>
+
         </div>
+
       </div>
+
     </section>
   )
 }
+
 
 export default ExcluirPlantio

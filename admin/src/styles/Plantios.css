@@ -1,48 +1,76 @@
 .plantios-page {
   width: 100%;
   max-width: 1000px;
+
   margin: 0 auto;
-  padding: 40px 24px;
+
+  padding: 40px 24px 60px;
 }
+
 
 .plantios-page__title {
-  margin-bottom: 35px;
+  margin: 0 0 35px;
 
   text-align: center;
+
   font-size: 32px;
-  color: #222222;
+  font-weight: 700;
+
+  color: #243528;
 }
+
+
+/* GRÁFICO */
 
 .plantios-grafico {
   width: 100%;
   min-height: 230px;
-  margin-bottom: 30px;
-  padding: 24px;
 
-  background-color: #a0a0a0;
+  margin-bottom: 28px;
+
+  padding: 28px 24px;
 
   display: flex;
   flex-direction: column;
+
   align-items: center;
   justify-content: center;
+
+  border: 1px solid #cbdccb;
+  border-radius: 14px;
+
+  background-color: #eef5ee;
+
+  box-shadow:
+    0 6px 18px
+    rgba(45, 80, 50, 0.08);
 }
+
 
 .plantios-grafico h2 {
-  margin-bottom: 10px;
+  margin: 0 0 24px;
 
   font-size: 20px;
+
+  text-align: center;
+
   text-transform: uppercase;
+
+  color: #2e4934;
 }
+
 
 .plantios-grafico__conteudo {
   width: 100%;
-  margin-top: 20px;
 
   display: flex;
+
   align-items: center;
   justify-content: center;
+
   gap: 70px;
 }
+
 
 .plantios-grafico__pizza {
   width: 150px;
@@ -50,21 +78,35 @@
 
   flex-shrink: 0;
 
-  border: 1px solid #555555;
+  border: 5px solid #ffffff;
   border-radius: 50%;
+
+  box-shadow:
+    0 4px 14px
+    rgba(40, 70, 45, 0.15);
 }
+
 
 .plantios-grafico__legenda {
   display: flex;
   flex-direction: column;
+
   gap: 18px;
 }
 
+
 .plantios-grafico__legenda div {
   display: flex;
+
   align-items: center;
+
   gap: 10px;
+
+  color: #35463a;
+
+  font-size: 14px;
 }
+
 
 .legenda-cor {
   width: 42px;
@@ -72,45 +114,101 @@
 
   display: inline-block;
 
-  border: 1px solid #555555;
+  flex-shrink: 0;
+
+  border: 1px solid #8ca68f;
+  border-radius: 5px;
 }
+
 
 .legenda-frutas {
-  background-color: #ffffff;
+  background-color: #4f8f5b;
 }
+
 
 .legenda-legumes {
-  background-color: #d8d8d8;
+  background-color: #8fbd72;
 }
+
 
 .legenda-hortalicas {
-  background-color: #bcbcbc;
+  background-color: #c9ddb9;
 }
 
+
+/* BOTÃO ADICIONAR */
+
 .plantios-acoes {
+  width: 100%;
+
   display: flex;
   justify-content: center;
 
   margin-bottom: 25px;
 }
 
+
 .plantios-adicionar {
-  padding: 12px 24px;
+  min-height: 44px;
 
-  background-color: #ffffff;
-  color: #222222;
+  padding: 10px 24px;
 
-  border: 1px solid #555555;
-  border-radius: 6px;
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #3d7748;
+  border-radius: 7px;
+
+  background-color: #4f8f5b;
+  color: #ffffff;
 
   text-decoration: none;
+  font-weight: 600;
 
   cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
+
 .plantios-adicionar:hover {
-  background-color: #f1f1f1;
+  background-color: #3f774a;
+
+  box-shadow:
+    0 5px 14px
+    rgba(47, 100, 60, 0.18);
+
+  transform: translateY(-1px);
 }
+
+
+.plantios-adicionar:active {
+  transform: translateY(0);
+}
+
+
+/* TABELA */
+
+.plantios-tabela-wrapper {
+  width: 100%;
+
+  overflow-x: auto;
+
+  border: 1px solid #cad8cc;
+  border-radius: 10px;
+
+  background-color: #ffffff;
+
+  box-shadow:
+    0 4px 14px
+    rgba(40, 70, 45, 0.06);
+}
+
 
 .plantios-tabela {
   width: 100%;
@@ -118,21 +216,335 @@
   border-collapse: collapse;
 }
 
+
 .plantios-tabela th,
 .plantios-tabela td {
-  padding: 12px;
+  padding: 13px 12px;
 
-  border: 1px solid #555555;
+  border-bottom: 1px solid #dfe7df;
 
   text-align: center;
+
+  vertical-align: middle;
 }
+
 
 .plantios-tabela th {
-  background-color: #a0a0a0;
+  background-color: #dceadd;
 
-  font-weight: bold;
+  color: #2d4031;
+
+  font-weight: 700;
 }
 
+
+.plantios-tabela td {
+  color: #354139;
+}
+
+
 .plantios-tabela tbody tr:nth-child(even) {
-  background-color: #eeeeee;
+  background-color: #f7faf7;
+}
+
+
+.plantios-tabela tbody tr:hover {
+  background-color: #eef6ef;
+}
+
+
+.plantios-tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+.plantios-tabela__nome {
+  color: #27402d;
+
+  font-weight: 700;
+}
+
+
+/* AÇÕES */
+
+.plantios-tabela__acoes-conteudo {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+}
+
+
+.plantios-acao {
+  width: 36px;
+  height: 36px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 7px;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.plantios-acao svg {
+  width: 19px;
+  height: 19px;
+}
+
+
+.plantios-acao--editar {
+  border: 1px solid #bdd5c1;
+
+  background-color: #edf6ef;
+  color: #3f7c4c;
+}
+
+
+.plantios-acao--editar:hover {
+  border-color: #8db696;
+
+  background-color: #dcecdf;
+
+  transform: translateY(-1px);
+}
+
+
+.plantios-acao--excluir {
+  border: 1px solid #e3aaaa;
+
+  background-color: #fff0f0;
+  color: #b3261e;
+}
+
+
+.plantios-acao--excluir:hover {
+  border-color: #d27d7d;
+
+  background-color: #f8dddd;
+
+  transform: translateY(-1px);
+}
+
+
+/* TABLET */
+
+@media (max-width: 768px) {
+
+  .plantios-page {
+    padding:
+      32px
+      16px
+      48px;
+  }
+
+
+  .plantios-page__title {
+    font-size: 28px;
+  }
+
+
+  .plantios-grafico__conteudo {
+    gap: 35px;
+  }
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .plantios-page {
+    padding:
+      28px
+      12px
+      40px;
+  }
+
+
+  .plantios-page__title {
+    margin-bottom: 25px;
+
+    font-size: 26px;
+  }
+
+
+  .plantios-grafico {
+    padding: 22px 14px;
+
+    border-radius: 12px;
+  }
+
+
+  .plantios-grafico h2 {
+    font-size: 17px;
+  }
+
+
+  .plantios-grafico__conteudo {
+    flex-direction: column;
+
+    gap: 24px;
+  }
+
+
+  .plantios-grafico__pizza {
+    width: 140px;
+    height: 140px;
+  }
+
+
+  .plantios-grafico__legenda {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+
+    gap: 8px;
+  }
+
+
+  .plantios-grafico__legenda div {
+    flex-direction: column;
+
+    gap: 6px;
+
+    text-align: center;
+
+    font-size: 11px;
+  }
+
+
+  .legenda-cor {
+    width: 30px;
+    height: 16px;
+  }
+
+
+  .plantios-adicionar {
+    width: 100%;
+  }
+
+
+  .plantios-tabela-wrapper {
+    overflow: visible;
+
+    border: none;
+
+    background-color: transparent;
+
+    box-shadow: none;
+  }
+
+
+  .plantios-tabela {
+    width: 100%;
+
+    display: block;
+  }
+
+
+  .plantios-tabela thead {
+    display: none;
+  }
+
+
+  .plantios-tabela tbody {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+  }
+
+
+  .plantios-tabela tr {
+    width: 100%;
+
+    display: block;
+
+    overflow: hidden;
+
+    border: 1px solid #cfddcf;
+    border-radius: 10px;
+
+    background-color: #ffffff;
+
+    box-shadow:
+      0 3px 12px
+      rgba(40, 70, 45, 0.06);
+  }
+
+
+  .plantios-tabela tbody tr:nth-child(even),
+  .plantios-tabela tbody tr:hover {
+    background-color: #ffffff;
+  }
+
+
+  .plantios-tabela td {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    border: none;
+    border-bottom: 1px solid #e5ebe5;
+
+    text-align: right;
+
+    font-size: 13px;
+  }
+
+
+  .plantios-tabela td:last-child {
+    border-bottom: none;
+  }
+
+
+  .plantios-tabela td::before {
+    content: attr(data-label);
+
+    flex-shrink: 0;
+
+    color: #55685a;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+  }
+
+
+  .plantios-tabela__nome {
+    background-color: #eef5ee;
+  }
+
+
+  .plantios-tabela__acoes-conteudo {
+    justify-content: flex-end;
+  }
+
 }
