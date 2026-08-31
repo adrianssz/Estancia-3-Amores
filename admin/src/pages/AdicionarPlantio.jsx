@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/AdicionarPlantio.css'
 
+
 function AdicionarPlantio() {
   const {
     plantios,
@@ -15,8 +16,11 @@ function AdicionarPlantio() {
   const [area, setArea] = useState('')
   const [quantidade, setQuantidade] = useState('')
 
-  const [adicionadoComSucesso, setAdicionadoComSucesso] =
-    useState(false)
+  const [
+    adicionadoComSucesso,
+    setAdicionadoComSucesso,
+  ] = useState(false)
+
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -42,6 +46,7 @@ function AdicionarPlantio() {
     setAdicionadoComSucesso(true)
   }
 
+
   function handleNovoPlantio() {
     setPlantio('')
     setTipoPlanta('')
@@ -50,17 +55,22 @@ function AdicionarPlantio() {
     setAdicionadoComSucesso(false)
   }
 
+
   return (
     <section className="adicionar-plantio-page">
+
       <h1 className="adicionar-plantio-page__title">
         Adicionar
       </h1>
+
 
       <form
         className="adicionar-plantio-form"
         onSubmit={handleSubmit}
       >
+
         <div className="adicionar-plantio-form__grupo">
+
           <label htmlFor="plantio">
             Plantio
           </label>
@@ -76,9 +86,12 @@ function AdicionarPlantio() {
             disabled={adicionadoComSucesso}
             required
           />
+
         </div>
 
+
         <div className="adicionar-plantio-form__grupo">
+
           <label htmlFor="tipoPlanta">
             Tipo de Planta
           </label>
@@ -94,9 +107,12 @@ function AdicionarPlantio() {
             disabled={adicionadoComSucesso}
             required
           />
+
         </div>
 
+
         <div className="adicionar-plantio-form__grupo">
+
           <label htmlFor="area">
             Área
           </label>
@@ -113,9 +129,12 @@ function AdicionarPlantio() {
             disabled={adicionadoComSucesso}
             required
           />
+
         </div>
 
+
         <div className="adicionar-plantio-form__grupo">
+
           <label htmlFor="quantidade">
             Quantidade
           </label>
@@ -133,9 +152,12 @@ function AdicionarPlantio() {
             disabled={adicionadoComSucesso}
             required
           />
+
         </div>
 
+
         {adicionadoComSucesso && (
+
           <div
             className="adicionar-plantio-alert"
             role="alert"
@@ -146,23 +168,30 @@ function AdicionarPlantio() {
             {' '}
             para retornar, ou
             {' '}
-            &apos;+ Adicionar Plantio&apos;
+            &apos;+ Adicionar plantio&apos;
             {' '}
             para cadastrar um novo plantio.
           </div>
+
         )}
 
+
         <div className="adicionar-plantio-form__acoes">
+
           {!adicionadoComSucesso && (
+
             <button
               type="submit"
               className="adicionar-plantio-form__adicionar"
             >
               + Adicionar Plantio
             </button>
+
           )}
 
+
           {adicionadoComSucesso && (
+
             <button
               type="button"
               className="adicionar-plantio-form__adicionar"
@@ -170,7 +199,9 @@ function AdicionarPlantio() {
             >
               + Adicionar Plantio
             </button>
+
           )}
+
 
           <Link
             to="/plantios"
@@ -178,10 +209,14 @@ function AdicionarPlantio() {
           >
             Retornar a Plantios
           </Link>
+
         </div>
+
       </form>
+
     </section>
   )
 }
+
 
 export default AdicionarPlantio

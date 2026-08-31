@@ -1,8 +1,12 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import {
+  Link,
+  useParams,
+} from 'react-router-dom'
 
 import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/EditarPlantio.css'
+
 
 function EditarPlantio() {
   const { id } = useParams()
@@ -13,7 +17,8 @@ function EditarPlantio() {
   } = usePlantios()
 
   const plantioSelecionado = plantios.find(
-    (plantio) => plantio.id === Number(id)
+    (plantio) =>
+      plantio.id === Number(id)
   )
 
   const [nome, setNome] = useState(
@@ -32,8 +37,11 @@ function EditarPlantio() {
     plantioSelecionado?.quantidade ?? ''
   )
 
-  const [editadoComSucesso, setEditadoComSucesso] =
-    useState(false)
+  const [
+    editadoComSucesso,
+    setEditadoComSucesso,
+  ] = useState(false)
+
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -51,36 +59,46 @@ function EditarPlantio() {
     setEditadoComSucesso(true)
   }
 
+
   if (!plantioSelecionado) {
     return (
       <section className="editar-plantio-page">
+
         <h1 className="editar-plantio-page__title">
-          Plantio não encontrado
+          Registro não encontrado
         </h1>
 
         <div className="editar-plantio-form__acoes">
+
           <Link
             to="/plantios"
             className="editar-plantio-form__retornar"
           >
             Retornar a Plantios
           </Link>
+
         </div>
+
       </section>
     )
   }
 
+
   return (
     <section className="editar-plantio-page">
+
       <h1 className="editar-plantio-page__title">
         Editar
       </h1>
+
 
       <form
         className="editar-plantio-form"
         onSubmit={handleSubmit}
       >
+
         <div className="editar-plantio-form__grupo">
+
           <label htmlFor="plantio">
             Plantio
           </label>
@@ -94,9 +112,12 @@ function EditarPlantio() {
             }
             required
           />
+
         </div>
 
+
         <div className="editar-plantio-form__grupo">
+
           <label htmlFor="tipoPlanta">
             Tipo de Planta
           </label>
@@ -110,9 +131,12 @@ function EditarPlantio() {
             }
             required
           />
+
         </div>
 
+
         <div className="editar-plantio-form__grupo">
+
           <label htmlFor="area">
             Área
           </label>
@@ -127,9 +151,12 @@ function EditarPlantio() {
             }
             required
           />
+
         </div>
 
+
         <div className="editar-plantio-form__grupo">
+
           <label htmlFor="quantidade">
             Quantidade
           </label>
@@ -145,9 +172,12 @@ function EditarPlantio() {
             }
             required
           />
+
         </div>
 
+
         {editadoComSucesso && (
+
           <div
             className="editar-plantio-alert"
             role="alert"
@@ -156,12 +186,18 @@ function EditarPlantio() {
             {' '}
             &apos;Retornar a Plantios&apos;
             {' '}
-            para retornar, ou continue editando
-            para realizar novas alterações.
+            para retornar, ou
+            {' '}
+            &apos;+ Editar Plantio&apos;
+            {' '}
+            para editar novamente.
           </div>
+
         )}
 
+
         <div className="editar-plantio-form__acoes">
+
           <button
             type="submit"
             className="editar-plantio-form__salvar"
@@ -169,16 +205,21 @@ function EditarPlantio() {
             Salvar alterações
           </button>
 
+
           <Link
             to="/plantios"
             className="editar-plantio-form__retornar"
           >
             Retornar a Plantios
           </Link>
+
         </div>
+
       </form>
+
     </section>
   )
 }
+
 
 export default EditarPlantio
