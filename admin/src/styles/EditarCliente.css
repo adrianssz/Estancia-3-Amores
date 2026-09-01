@@ -1,105 +1,255 @@
 .editar-cliente-page {
   width: 100%;
   max-width: 900px;
+
   margin: 0 auto;
-  padding: 40px 24px;
+
+  padding: 40px 24px 60px;
 }
+
 
 .editar-cliente-page__title {
-  margin-bottom: 45px;
+  margin: 0 0 40px;
 
   text-align: center;
+
   font-size: 32px;
-  color: #222222;
+  font-weight: 700;
+
+  color: #243528;
 }
+
+
+/* FORMULÁRIO */
 
 .editar-cliente-form {
   width: 100%;
 
+  padding: 28px;
+
   display: flex;
   flex-direction: column;
-  gap: 24px;
+
+  gap: 22px;
+
+  border: 1px solid #ccdccc;
+  border-radius: 14px;
+
+  background-color: #ffffff;
+
+  box-shadow:
+    0 6px 18px
+    rgba(45, 80, 50, 0.08);
 }
+
+
+/* CAMPOS */
 
 .editar-cliente-form__grupo {
   width: 100%;
 
   display: flex;
   flex-direction: column;
+
+  gap: 7px;
 }
+
 
 .editar-cliente-form__grupo label {
-  width: 100%;
-  padding: 8px;
+  color: #304436;
 
-  background-color: #a0a0a0;
-  color: #222222;
-
-  text-align: center;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
 }
+
 
 .editar-cliente-form__grupo input {
   width: 100%;
-  min-height: 42px;
-  padding: 8px 12px;
+  min-height: 46px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #bfd0c1;
+  border-radius: 7px;
 
   background-color: #ffffff;
-  color: #222222;
+  color: #2c382f;
 
-  border: 1px solid #555555;
   outline: none;
+
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
 
 .editar-cliente-form__grupo input:focus {
-  border-width: 2px;
+  border-color: #4f8f5b;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(79, 143, 91, 0.13);
 }
+
+
+.editar-cliente-form__grupo input:disabled {
+  border-color: #d6ddd7;
+
+  background-color: #f1f4f1;
+  color: #687169;
+
+  opacity: 1;
+
+  cursor: not-allowed;
+}
+
+
+/* ALERTA */
 
 .editar-cliente-alert {
   width: 100%;
+
   padding: 16px 20px;
 
-  background-color: #eeeeee;
-  color: #222222;
+  border: 1px solid #a9cbae;
+  border-radius: 8px;
 
-  border: 1px solid #777777;
-  border-radius: 6px;
+  background-color: #edf7ef;
+  color: #315c38;
 
   text-align: center;
+
   line-height: 1.5;
 }
 
+
+/* AÇÕES */
+
 .editar-cliente-form__acoes {
-  margin-top: 30px;
+  margin-top: 10px;
 
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
 
-.editar-cliente-form__salvar,
-.editar-cliente-form__retornar {
-  width: 210px;
-  min-height: 44px;
-
-  display: flex;
   align-items: center;
   justify-content: center;
 
-  background-color: #ffffff;
-  color: #222222;
+  gap: 12px;
 
-  border: 1px solid #555555;
-  border-radius: 6px;
-
-  text-decoration: none;
-  font-size: 16px;
-
-  cursor: pointer;
+  flex-wrap: wrap;
 }
 
-.editar-cliente-form__salvar:hover,
+
+.editar-cliente-form__salvar,
+.editar-cliente-form__retornar {
+  min-width: 210px;
+  min-height: 44px;
+
+  padding: 10px 18px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 7px;
+
+  text-decoration: none;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.editar-cliente-form__salvar {
+  border: 1px solid #3d7748;
+
+  background-color: #4f8f5b;
+  color: #ffffff;
+}
+
+
+.editar-cliente-form__salvar:hover {
+  background-color: #3f774a;
+
+  box-shadow:
+    0 4px 12px
+    rgba(47, 100, 60, 0.16);
+
+  transform: translateY(-1px);
+}
+
+
+.editar-cliente-form__salvar:active {
+  transform: translateY(0);
+}
+
+
+.editar-cliente-form__retornar {
+  border: 1px solid #b8c8ba;
+
+  background-color: #ffffff;
+  color: #405344;
+}
+
+
 .editar-cliente-form__retornar:hover {
-  background-color: #eeeeee;
+  background-color: #eef5ef;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  .editar-cliente-page {
+    padding:
+      32px
+      14px
+      48px;
+  }
+
+
+  .editar-cliente-page__title {
+    margin-bottom: 28px;
+
+    font-size: 27px;
+  }
+
+
+  .editar-cliente-form {
+    padding: 20px 16px;
+
+    gap: 18px;
+
+    border-radius: 10px;
+  }
+
+
+  .editar-cliente-form__grupo input {
+    font-size: 16px;
+  }
+
+
+  .editar-cliente-form__acoes {
+    flex-direction: column;
+  }
+
+
+  .editar-cliente-form__salvar,
+  .editar-cliente-form__retornar {
+    width: 100%;
+
+    min-width: 0;
+  }
+
 }
