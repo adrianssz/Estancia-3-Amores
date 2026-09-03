@@ -1,201 +1,447 @@
 .relatorios-page,
 .relatorio-page {
   width: 100%;
-  padding: 32px;
+
+  padding: 40px 24px 60px;
 }
 
-.relatorios-cabecalho,
-.relatorio-cabecalho {
-  margin-bottom: 32px;
+
+/* =========================================================
+   CENTRAL DE RELATÓRIOS
+   ========================================================= */
+
+.relatorios-page {
+  max-width: 1000px;
+
+  margin: 0 auto;
+}
+
+
+.relatorios-cabecalho {
+  margin-bottom: 34px;
+
   text-align: center;
 }
 
-.relatorios-cabecalho h1,
-.relatorio-cabecalho h1 {
+
+.relatorios-cabecalho h1 {
   margin: 0 0 10px;
-  font-size: 30px;
+
+  color: #243528;
+
+  font-size: 32px;
+  font-weight: 700;
 }
 
-.relatorios-cabecalho p,
-.relatorio-cabecalho p {
+
+.relatorios-cabecalho p {
   margin: 0;
-  color: #555555;
+
+  color: #68746b;
+
+  font-size: 15px;
+
+  line-height: 1.5;
 }
+
 
 .relatorios-opcoes {
   width: 100%;
-  max-width: 650px;
+  max-width: 680px;
+
   margin: 0 auto;
 
   display: flex;
   flex-direction: column;
-  gap: 18px;
+
+  gap: 16px;
 }
+
 
 .relatorios-opcao {
   width: 100%;
-  min-height: 90px;
+  min-height: 96px;
+
   padding: 20px 24px;
 
   display: flex;
   flex-direction: column;
   justify-content: center;
+
   gap: 6px;
 
-  border: 1px solid #777777;
+  border: 1px solid #c7d8c9;
+  border-radius: 10px;
+
   background-color: #ffffff;
-  color: #222222;
+  color: #27392c;
 
   text-decoration: none;
+
+  box-shadow:
+    0 4px 12px
+    rgba(40, 70, 45, 0.05);
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
+
 
 .relatorios-opcao:hover {
-  background-color: #eeeeee;
+  border-color: #8eb395;
+
+  background-color: #f0f7f1;
+
+  box-shadow:
+    0 6px 16px
+    rgba(40, 90, 50, 0.10);
+
+  transform: translateY(-1px);
 }
+
+
+.relatorios-opcao:active {
+  transform: translateY(0);
+}
+
+
+.relatorios-opcao:focus-visible {
+  outline: 3px solid
+    rgba(79, 143, 91, 0.22);
+
+  outline-offset: 2px;
+}
+
 
 .relatorios-opcao strong {
+  color: #366f43;
+
   font-size: 18px;
+  font-weight: 700;
 }
+
 
 .relatorios-opcao span {
-  color: #555555;
-  line-height: 1.4;
+  color: #68746b;
+
+  font-size: 14px;
+
+  line-height: 1.45;
 }
 
-.relatorio-conteudo {
-  width: 100%;
-  max-width: 900px;
+
+/* =========================================================
+   PÁGINAS INDIVIDUAIS
+   ========================================================= */
+
+.relatorio-page {
+  max-width: 1050px;
+
   margin: 0 auto;
-
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
 }
 
-.relatorio-placeholder {
-  min-height: 240px;
-  padding: 24px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: 1px dashed #888888;
-  background-color: #ffffff;
-  color: #666666;
+.relatorio-cabecalho {
+  margin-bottom: 34px;
 
   text-align: center;
 }
 
+
+.relatorio-cabecalho h1 {
+  margin: 0 0 10px;
+
+  color: #243528;
+
+  font-size: 32px;
+  font-weight: 700;
+}
+
+
+.relatorio-cabecalho p {
+  max-width: 650px;
+
+  margin: 0 auto;
+
+  color: #68746b;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+.relatorio-conteudo {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 22px;
+}
+
+
+.relatorio-placeholder {
+  min-height: 240px;
+
+  padding: 24px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 1px dashed #a8b8aa;
+  border-radius: 10px;
+
+  background-color: #ffffff;
+  color: #68746b;
+
+  text-align: center;
+}
+
+
+/* =========================================================
+   FORMULÁRIO DE FILTROS
+   ========================================================= */
+
 .relatorio-form {
   width: 100%;
+
   padding: 28px;
 
   display: flex;
   flex-direction: column;
+
   gap: 22px;
 
-  border: 1px solid #777777;
+  border: 1px solid #ccdccc;
+  border-radius: 14px;
+
   background-color: #ffffff;
+
+  box-shadow:
+    0 6px 18px
+    rgba(45, 80, 50, 0.08);
 }
+
 
 .relatorio-campo {
   width: 100%;
 
   display: flex;
   flex-direction: column;
+
   gap: 7px;
 }
 
+
 .relatorio-campo label {
-  font-weight: 600;
-  color: #222222;
+  color: #304436;
+
+  font-size: 14px;
+  font-weight: 700;
 }
+
 
 .relatorio-campo select,
 .relatorio-campo input {
   width: 100%;
-  min-height: 44px;
-  padding: 10px 12px;
+  min-height: 46px;
 
-  border: 1px solid #555555;
+  padding: 9px 12px;
+
+  border: 1px solid #bfd0c1;
+  border-radius: 7px;
+
   background-color: #ffffff;
-  color: #222222;
+  color: #2c382f;
+
+  outline: none;
+
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
+
+.relatorio-campo select:focus,
+.relatorio-campo input:focus {
+  border-color: #4f8f5b;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(79, 143, 91, 0.13);
+}
+
 
 .relatorio-campo select:disabled,
 .relatorio-campo input:disabled {
-  background-color: #eeeeee;
+  border-color: #d6ddd7;
+
+  background-color: #f1f4f1;
+  color: #687169;
+
+  opacity: 1;
+
   cursor: not-allowed;
 }
+
+
+/* =========================================================
+   ALERTAS
+   ========================================================= */
 
 .relatorio-alerta {
   width: 100%;
+
   padding: 14px 18px;
 
-  border: 1px solid #777777;
-  background-color: #eeeeee;
-  color: #222222;
+  border: 1px solid #dfc58a;
+  border-radius: 8px;
+
+  background-color: #fff9e9;
+  color: #715c20;
 
   text-align: center;
+
+  font-size: 14px;
+
+  line-height: 1.5;
 }
+
+
+/* =========================================================
+   GERAR RELATÓRIO
+   ========================================================= */
 
 .relatorio-gerar {
-  min-width: 190px;
+  min-width: 200px;
   min-height: 46px;
-  margin: 16px auto 0;
-  padding: 11px 20px;
 
-  border: 1px solid #555555;
-  background-color: #ffffff;
-  color: #222222;
+  margin: 10px auto 0;
+
+  padding: 10px 22px;
+
+  border: 1px solid #3d7748;
+  border-radius: 7px;
+
+  background-color: #4f8f5b;
+  color: #ffffff;
+
+  font-size: 15px;
+  font-weight: 600;
 
   cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
+
 
 .relatorio-gerar:hover:not(:disabled) {
-  background-color: #eeeeee;
+  background-color: #3f774a;
+
+  box-shadow:
+    0 4px 12px
+    rgba(47, 100, 60, 0.16);
+
+  transform: translateY(-1px);
 }
 
+
+.relatorio-gerar:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+
 .relatorio-gerar:disabled {
-  background-color: #eeeeee;
-  color: #888888;
+  border-color: #c7cec8;
+
+  background-color: #e5e9e6;
+  color: #8a918b;
+
   cursor: not-allowed;
 }
+
+
+/* =========================================================
+   RESULTADO DO RELATÓRIO
+   ========================================================= */
 
 .relatorio-resultado {
   width: 100%;
   max-width: 1100px;
+
   margin: 0 auto;
 }
 
+
 .relatorio-impressao {
   width: 100%;
+
   padding: 28px;
 
-  border: 1px solid #777777;
+  border: 1px solid #ccdccc;
+  border-radius: 14px;
+
   background-color: #ffffff;
+
+  box-shadow:
+    0 6px 18px
+    rgba(45, 80, 50, 0.08);
 }
+
 
 .relatorio-impressao__cabecalho {
   margin-bottom: 26px;
+
   text-align: center;
 }
 
+
 .relatorio-impressao__cabecalho h1 {
   margin: 0 0 8px;
+
+  color: #243528;
+
   font-size: 28px;
+  font-weight: 700;
 }
+
 
 .relatorio-impressao__cabecalho p {
   margin: 0;
-  color: #555555;
+
+  color: #68746b;
+
+  font-size: 13px;
 }
+
+
+/* =========================================================
+   TABELA
+   ========================================================= */
 
 .relatorio-tabela-container {
   width: 100%;
+
   overflow-x: auto;
+
+  border: 1px solid #cad8cc;
+  border-radius: 9px;
 }
+
 
 .relatorio-tabela {
   width: 100%;
@@ -203,112 +449,324 @@
   border-collapse: collapse;
 }
 
+
 .relatorio-tabela th,
 .relatorio-tabela td {
   padding: 12px 14px;
 
-  border: 1px solid #aaaaaa;
+  border-bottom: 1px solid #dfe7df;
+
+  color: #354139;
 
   text-align: left;
+
+  font-size: 14px;
+
+  vertical-align: middle;
 }
 
+
 .relatorio-tabela th {
-  background-color: #eeeeee;
+  background-color: #dceadd;
+  color: #2d4031;
+
+  font-weight: 700;
 }
+
+
+.relatorio-tabela tbody tr:nth-child(even) {
+  background-color: #f7faf7;
+}
+
+
+.relatorio-tabela tbody tr:hover {
+  background-color: #eef6ef;
+}
+
+
+.relatorio-tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* =========================================================
+   AÇÕES
+   ========================================================= */
 
 .relatorio-acoes {
   margin-top: 24px;
 
   display: flex;
+
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  justify-content: center;
+
+  gap: 12px;
+
+  flex-wrap: wrap;
 }
+
 
 .relatorio-retornar,
 .relatorio-imprimir {
   min-width: 190px;
-  padding: 12px 18px;
+  min-height: 44px;
 
-  border: 1px solid #555555;
-  background-color: #ffffff;
-  color: #222222;
+  padding: 10px 18px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 7px;
 
   text-align: center;
   text-decoration: none;
 
+  font-size: 15px;
+  font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.relatorio-retornar:hover,
+
+.relatorio-retornar {
+  border: 1px solid #b8c8ba;
+
+  background-color: #ffffff;
+  color: #405344;
+}
+
+
+.relatorio-retornar:hover {
+  background-color: #eef5ef;
+}
+
+
+.relatorio-imprimir {
+  border: 1px solid #3d7748;
+
+  background-color: #4f8f5b;
+  color: #ffffff;
+}
+
+
 .relatorio-imprimir:hover {
-  background-color: #eeeeee;
+  background-color: #3f774a;
+
+  box-shadow:
+    0 4px 12px
+    rgba(47, 100, 60, 0.16);
+
+  transform: translateY(-1px);
 }
 
-@media (max-width: 600px) {
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 768px) {
+
   .relatorios-page,
   .relatorio-page {
-    padding: 20px 16px;
+    padding:
+      32px
+      16px
+      48px;
   }
 
-  .relatorios-opcao {
-    min-height: 80px;
-    padding: 18px;
+
+  .relatorios-cabecalho h1,
+  .relatorio-cabecalho h1 {
+    font-size: 28px;
   }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .relatorios-page,
+  .relatorio-page {
+    padding:
+      28px
+      14px
+      48px;
+  }
+
+
+  .relatorios-cabecalho,
+  .relatorio-cabecalho {
+    margin-bottom: 26px;
+  }
+
+
+  .relatorios-cabecalho h1,
+  .relatorio-cabecalho h1 {
+    font-size: 27px;
+  }
+
+
+  .relatorios-cabecalho p,
+  .relatorio-cabecalho p {
+    font-size: 13px;
+  }
+
+
+  .relatorios-opcoes {
+    gap: 13px;
+  }
+
+
+  .relatorios-opcao {
+    min-height: 86px;
+
+    padding: 17px 18px;
+
+    border-radius: 9px;
+  }
+
+
+  .relatorios-opcao strong {
+    font-size: 16px;
+  }
+
+
+  .relatorios-opcao span {
+    font-size: 13px;
+  }
+
 
   .relatorio-form,
   .relatorio-impressao {
-    padding: 18px;
+    padding: 20px 16px;
+
+    border-radius: 10px;
   }
 
-  .relatorio-acoes {
-    align-items: stretch;
-    flex-direction: column;
+
+  .relatorio-campo select,
+  .relatorio-campo input {
+    font-size: 16px;
   }
+
 
   .relatorio-gerar,
   .relatorio-retornar,
   .relatorio-imprimir {
     width: 100%;
+
+    min-width: 0;
   }
+
+
+  .relatorio-acoes {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+
+  .relatorio-tabela th,
+  .relatorio-tabela td {
+    padding: 10px;
+
+    font-size: 12px;
+  }
+
 }
 
+
+/* =========================================================
+   IMPRESSÃO
+   ========================================================= */
+
 @media print {
+
   @page {
     size: A4;
+
     margin: 15mm;
   }
+
 
   body * {
     visibility: hidden;
   }
+
 
   .relatorio-impressao,
   .relatorio-impressao * {
     visibility: visible;
   }
 
+
   .relatorio-impressao {
     position: absolute;
+
     top: 0;
     left: 0;
 
     width: 100%;
+
     padding: 0;
 
     border: 0;
+    border-radius: 0;
+
+    box-shadow: none;
   }
+
+
+  .relatorio-impressao__cabecalho h1 {
+    color: #000000;
+  }
+
+
+  .relatorio-impressao__cabecalho p {
+    color: #000000;
+  }
+
 
   .relatorio-tabela-container {
     overflow: visible;
+
+    border: 0;
+    border-radius: 0;
   }
+
 
   .relatorio-tabela {
     font-size: 11pt;
   }
 
+
   .relatorio-tabela th,
   .relatorio-tabela td {
     padding: 7px;
+
+    border: 1px solid #777777;
+
+    color: #000000;
   }
+
+
+  .relatorio-tabela th {
+    background-color: #eeeeee !important;
+
+    color: #000000;
+  }
+
 }
