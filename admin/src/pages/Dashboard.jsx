@@ -7,6 +7,7 @@ import { usePlantios } from '../contexts/PlantiosContext'
 
 import '../styles/Dashboard.css'
 
+
 function converterDataParaNumero(data) {
   if (!data) {
     return 0
@@ -27,6 +28,45 @@ function converterDataParaNumero(data) {
   ).getTime()
 }
 
+
+function obterCorTipoPlantio(tipo, indice) {
+  const tipoNormalizado = tipo
+    .trim()
+    .toLowerCase()
+
+  if (
+    tipoNormalizado === 'fruta' ||
+    tipoNormalizado === 'frutas'
+  ) {
+    return '#4f8f5b'
+  }
+
+  if (
+    tipoNormalizado === 'legume' ||
+    tipoNormalizado === 'legumes'
+  ) {
+    return '#8fbd72'
+  }
+
+  if (
+    tipoNormalizado === 'hortaliça' ||
+    tipoNormalizado === 'hortaliças'
+  ) {
+    return '#c9ddb9'
+  }
+
+  const coresExtras = [
+    '#6fa966',
+    '#a7c98e',
+    '#d8e7cc',
+  ]
+
+  return coresExtras[
+    indice % coresExtras.length
+  ]
+}
+
+
 function Dashboard() {
   const { clientes } = useClientes()
   const { entregas } = useEntregas()
@@ -44,7 +84,8 @@ function Dashboard() {
 
   const entregasRealizadas = entregasDisponiveis
     ? entregas.filter(
-        (entrega) => entrega.status === 'Entregue'
+        (entrega) =>
+          entrega.status === 'Entregue'
       ).length
     : 0
 
@@ -59,20 +100,21 @@ function Dashboard() {
     ? plantios.length
     : 0
 
-  const quantidadePedidosPorStatus = pedidosDisponiveis
-    ? pedidos.reduce(
-        (resultado, pedido) => {
-          const status =
-            pedido.status || 'Sem Status'
+  const quantidadePedidosPorStatus =
+    pedidosDisponiveis
+      ? pedidos.reduce(
+          (resultado, pedido) => {
+            const status =
+              pedido.status || 'Sem Status'
 
-          resultado[status] =
-            (resultado[status] || 0) + 1
+            resultado[status] =
+              (resultado[status] || 0) + 1
 
-          return resultado
-        },
-        {}
-      )
-    : {}
+            return resultado
+          },
+          {}
+        )
+      : {}
 
   const statusPedidos = Object.entries(
     quantidadePedidosPorStatus
@@ -116,23 +158,25 @@ function Dashboard() {
 
   const partesGraficoPlantios =
     tiposPlantio.map(
-      ([, quantidade], indice) => {
+      ([tipo, quantidade], indice) => {
         const percentual =
           totalPlantios > 0
-            ? (quantidade / totalPlantios) * 100
+            ? (
+                quantidade /
+                totalPlantios
+              ) * 100
             : 0
 
         const fimGrafico =
           inicioGrafico + percentual
 
-        const tons = [
-          '#444444',
-          '#777777',
-          '#aaaaaa',
-          '#cccccc',
-        ]
+        const cor = obterCorTipoPlantio(
+          tipo,
+          indice
+        )
 
-        const parte = `${tons[indice % tons.length]} ${inicioGrafico}% ${fimGrafico}%`
+        const parte =
+          `${cor} ${inicioGrafico}% ${fimGrafico}%`
 
         inicioGrafico = fimGrafico
 
@@ -143,9 +187,12 @@ function Dashboard() {
   const estiloGraficoPlantios =
     totalPlantios > 0
       ? {
-          background: `conic-gradient(${partesGraficoPlantios.join(', ')})`,
+          background:
+            `conic-gradient(${partesGraficoPlantios.join(', ')})`,
         }
-      : {}
+      : {
+          background: '#eeeeee',
+        }
 
   const ultimosPedidos = pedidosDisponiveis
     ? [...pedidos]
@@ -178,18 +225,27 @@ function Dashboard() {
     pedidosDisponiveis &&
     plantiosDisponiveis
 
+
   return (
     <main className="dashboard-page">
+
       <section className="dashboard-cabecalho">
+
         <div>
-          <h1>Dashboard</h1>
+
+          <h1>
+            Dashboard
+          </h1>
 
           <p>
             Visão geral da operação da
             Estância 3 Amores.
           </p>
+
         </div>
+
       </section>
+
 
       {!dadosDisponiveis && (
         <div
@@ -200,11 +256,14 @@ function Dashboard() {
         </div>
       )}
 
+
       <section
         className="dashboard-indicadores"
         aria-label="Indicadores administrativos"
       >
+
         <article className="dashboard-card">
+
           <span className="dashboard-card__titulo">
             Clientes Totais
           </span>
@@ -212,9 +271,12 @@ function Dashboard() {
           <strong className="dashboard-card__valor">
             {totalClientes}
           </strong>
+
         </article>
 
+
         <article className="dashboard-card">
+
           <span className="dashboard-card__titulo">
             Entregas Realizadas
           </span>
@@ -222,9 +284,12 @@ function Dashboard() {
           <strong className="dashboard-card__valor">
             {entregasRealizadas}
           </strong>
+
         </article>
 
+
         <article className="dashboard-card">
+
           <span className="dashboard-card__titulo">
             Plantios Ativos
           </span>
@@ -232,36 +297,50 @@ function Dashboard() {
           <strong className="dashboard-card__valor">
             {plantiosAtivos}
           </strong>
+
         </article>
+
       </section>
 
+
       <section className="dashboard-graficos">
+
         <article className="dashboard-painel">
-          <h2>Status Pedido</h2>
+
+          <h2>
+            Status Pedido
+          </h2>
 
           {statusPedidos.length === 0 ? (
+
             <div className="dashboard-vazio">
               Dados indisponíveis
             </div>
+
           ) : (
+
             <div className="dashboard-barras">
+
               {statusPedidos.map(
                 ([status, quantidade]) => {
                   const altura =
-                    (quantidade /
-                      maiorQuantidadeStatus) *
-                    100
+                    (
+                      quantidade /
+                      maiorQuantidadeStatus
+                    ) * 100
 
                   return (
                     <div
                       className="dashboard-barra-item"
                       key={status}
                     >
+
                       <span className="dashboard-barra-valor">
                         {quantidade}
                       </span>
 
                       <div className="dashboard-barra-area">
+
                         <div
                           className="dashboard-barra"
                           style={{
@@ -269,71 +348,120 @@ function Dashboard() {
                           }}
                           title={`${status}: ${quantidade}`}
                         />
+
                       </div>
 
                       <span className="dashboard-barra-label">
                         {status}
                       </span>
+
                     </div>
                   )
                 }
               )}
+
             </div>
+
           )}
+
         </article>
 
+
         <article className="dashboard-painel">
-          <h2>Plantios por Tipo</h2>
+
+          <h2>
+            Plantios por Tipo
+          </h2>
 
           {totalPlantios === 0 ? (
+
             <div className="dashboard-vazio">
               Dados indisponíveis
             </div>
+
           ) : (
+
             <div className="dashboard-pizza-conteudo">
+
               <div
                 className="dashboard-pizza"
                 style={estiloGraficoPlantios}
                 aria-label="Distribuição dos plantios por tipo"
               />
 
+
               <div className="dashboard-legenda">
+
                 {tiposPlantio.map(
-                  ([tipo, quantidade]) => {
+                  (
+                    [tipo, quantidade],
+                    indice
+                  ) => {
                     const percentual =
                       (
-                        (quantidade /
-                          totalPlantios) *
-                        100
+                        (
+                          quantidade /
+                          totalPlantios
+                        ) * 100
                       ).toFixed(0)
+
+                    const cor =
+                      obterCorTipoPlantio(
+                        tipo,
+                        indice
+                      )
 
                     return (
                       <div
                         className="dashboard-legenda-item"
                         key={tipo}
                       >
-                        <span>
-                          {tipo}
-                        </span>
+
+                        <div className="dashboard-legenda-identificacao">
+
+                          <span
+                            className="dashboard-legenda-cor"
+                            style={{
+                              backgroundColor: cor,
+                            }}
+                            aria-hidden="true"
+                          />
+
+                          <span>
+                            {tipo}
+                          </span>
+
+                        </div>
 
                         <strong>
                           {quantidade}
                           {' '}
                           ({percentual}%)
                         </strong>
+
                       </div>
                     )
                   }
                 )}
+
               </div>
+
             </div>
+
           )}
+
         </article>
+
       </section>
 
+
       <section className="dashboard-painel dashboard-pedidos">
+
         <div className="dashboard-pedidos__cabecalho">
-          <h2>Últimos Pedidos</h2>
+
+          <h2>
+            Últimos Pedidos
+          </h2>
 
           <Link
             to="/pedidos"
@@ -341,28 +469,41 @@ function Dashboard() {
           >
             Ver todos os pedidos
           </Link>
+
         </div>
 
+
         {ultimosPedidos.length === 0 ? (
+
           <div className="dashboard-vazio">
             Nenhum pedido encontrado.
           </div>
+
         ) : (
+
           <div className="dashboard-tabela-container">
+
             <table className="dashboard-tabela">
+
               <thead>
+
                 <tr>
                   <th>ID</th>
                   <th>Cliente</th>
                   <th>Telefone</th>
                   <th>Status</th>
                 </tr>
+
               </thead>
 
+
               <tbody>
+
                 {ultimosPedidos.map(
                   (pedido) => (
+
                     <tr key={pedido.id}>
+
                       <td>
                         {pedido.id}
                       </td>
@@ -378,16 +519,25 @@ function Dashboard() {
                       <td>
                         {pedido.status}
                       </td>
+
                     </tr>
+
                   )
                 )}
+
               </tbody>
+
             </table>
+
           </div>
+
         )}
+
       </section>
+
     </main>
   )
 }
+
 
 export default Dashboard
