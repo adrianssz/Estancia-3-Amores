@@ -4,50 +4,25 @@ import { Link, useParams } from 'react-router-dom'
 import { useProdutos } from '../contexts/ProdutosContext'
 import '../styles/EditarProduto.css'
 
-function EditarProduto() {
-  const { id } = useParams()
-
-  const {
-    produtos,
-    editarProduto,
-  } = useProdutos()
-
-  const produtoSelecionado = produtos.find(
-    (produto) => produto.id === Number(id)
-  )
-
-  const [nome, setNome] = useState(
-    produtoSelecionado?.nome ?? ''
-  )
-
-  const [unidade, setUnidade] = useState(
-    produtoSelecionado?.unidade ?? ''
-  )
-
-  const [preco, setPreco] = useState(
-    produtoSelecionado?.preco ?? ''
-  )
-
-  const [categoria, setCategoria] = useState(
-    produtoSelecionado?.categoria ?? 'Legumes'
-  )
-
-  const [status, setStatus] = useState(
-    produtoSelecionado?.status ?? 'pronta-entrega'
-  )
-
-  const [estoque, setEstoque] = useState(
-    produtoSelecionado?.estoque ?? ''
-  )
-
-  const [imagem, setImagem] = useState(
-    produtoSelecionado?.imagem ?? ''
-  )
+function FormularioEditarProduto({
+  produto,
+  editarProduto,
+}) {
+  const [nome, setNome] = useState(produto.nome)
+  const [unidade, setUnidade] = useState(produto.unidade)
+  const [preco, setPreco] = useState(produto.preco)
+  const [categoria, setCategoria] = useState(produto.categoria)
+  const [status, setStatus] = useState(produto.status)
+  const [estoque, setEstoque] = useState(produto.estoque)
+  const [imagem, setImagem] = useState(produto.imagem)
 
   const [editadoComSucesso, setEditadoComSucesso] =
     useState(false)
 
-  function handleSubmit(event) {
+  const [salvando, setSalvando] = useState(false)
+  const [erroEdicao, setErroEdicao] = useState('')
+
+  async function handleSubmit(event) {
     event.preventDefault()
 
     const precoNumerico = Number(preco)
@@ -61,43 +36,41 @@ function EditarProduto() {
       return
     }
 
-    editarProduto(
-      Number(id),
-      {
-        nome: nome.trim(),
-        unidade: unidade.trim(),
-        preco: precoNumerico,
-        categoria,
-        status,
-        estoque: estoqueNumerico,
-        imagem: imagem.trim(),
-      }
-    )
+    setSalvando(true)
+    setErroEdicao('')
 
-    setEditadoComSucesso(true)
+    try {
+      await editarProduto(
+        produto.id,
+        {
+          nome: nome.trim(),
+          unidade: unidade.trim(),
+          preco: precoNumerico,
+          categoria,
+          status,
+          estoque: estoqueNumerico,
+          imagem: imagem.trim(),
+        }
+      )
+
+      setEditadoComSucesso(true)
+    } catch (error) {
+      console.error(
+        'Erro ao editar produto:',
+        error
+      )
+
+      setErroEdicao(
+        'Erro ao salvar as alterações. Tente novamente.'
+      )
+    } finally {
+      setSalvando(false)
+    }
   }
 
   function handleEditarNovamente() {
+    setErroEdicao('')
     setEditadoComSucesso(false)
-  }
-
-  if (!produtoSelecionado) {
-    return (
-      <section className="editar-produto-page">
-        <h1 className="editar-produto-page__title">
-          Produto não encontrado
-        </h1>
-
-        <div className="editar-produto-form__acoes">
-          <Link
-            to="/produtos"
-            className="editar-produto-form__retornar"
-          >
-            Retornar a Produtos
-          </Link>
-        </div>
-      </section>
-    )
   }
 
   return (
@@ -122,7 +95,7 @@ function EditarProduto() {
             onChange={(event) =>
               setNome(event.target.value)
             }
-            disabled={editadoComSucesso}
+            disabled={editadoComSucesso || salvando}
             required
           />
         </div>
@@ -140,7 +113,7 @@ function EditarProduto() {
               setUnidade(event.target.value)
             }
             placeholder="Ex.: Unidade, 1 KG, 500 g"
-            disabled={editadoComSucesso}
+            disabled={editadoComSucesso || salvando}
             required
           />
         </div>
@@ -159,7 +132,7 @@ function EditarProduto() {
             onChange={(event) =>
               setPreco(event.target.value)
             }
-            disabled={editadoComSucesso}
+            disabled={editadoComSucesso || salvando}
             required
           />
         </div>
@@ -175,7 +148,7 @@ function EditarProduto() {
             onChange={(event) =>
               setCategoria(event.target.value)
             }
-            disabled={editadoComSucesso}
+            disabled={editadoComSucesso || salvando}
             required
           >
             <option value="Legumes">
@@ -207,7 +180,7 @@ function EditarProduto() {
             onChange={(event) =>
               setStatus(event.target.value)
             }
-            disabled={editadoComSucesso}
+            disabled={editadoComSucesso || salvando}
             required
           >
             <option value="pronta-entrega">
@@ -234,7 +207,7 @@ function EditarProduto() {
             onChange={(event) =>
               setEstoque(event.target.value)
             }
-            disabled={editadoComSucesso}
+            disabled={editadoComSucesso || salvando}
             required
           />
         </div>
@@ -251,10 +224,19 @@ function EditarProduto() {
             onChange={(event) =>
               setImagem(event.target.value)
             }
-            disabled={editadoComSucesso}
+            disabled={editadoComSucesso || salvando}
             required
           />
         </div>
+
+        {erroEdicao && (
+          <div
+            className="editar-produto-alert"
+            role="alert"
+          >
+            {erroEdicao}
+          </div>
+        )}
 
         {editadoComSucesso && (
           <div
@@ -278,8 +260,11 @@ function EditarProduto() {
             <button
               type="submit"
               className="editar-produto-form__salvar"
+              disabled={salvando}
             >
-              Salvar alterações
+              {salvando
+                ? 'Salvando...'
+                : 'Salvar alterações'}
             </button>
           )}
 
@@ -302,6 +287,76 @@ function EditarProduto() {
         </div>
       </form>
     </section>
+  )
+}
+
+function EditarProduto() {
+  const { id } = useParams()
+
+  const {
+    produtos,
+    carregandoProdutos,
+    erroProdutos,
+    editarProduto,
+  } = useProdutos()
+
+  if (carregandoProdutos) {
+    return (
+      <section className="editar-produto-page">
+        <h1 className="editar-produto-page__title">
+          Carregando produto...
+        </h1>
+      </section>
+    )
+  }
+
+  if (erroProdutos) {
+    return (
+      <section className="editar-produto-page">
+        <h1 className="editar-produto-page__title">
+          Não foi possível carregar o produto
+        </h1>
+
+        <div className="editar-produto-form__acoes">
+          <Link
+            to="/produtos"
+            className="editar-produto-form__retornar"
+          >
+            Retornar a Produtos
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  const produtoSelecionado = produtos.find(
+    (produto) => produto.id === Number(id)
+  )
+
+  if (!produtoSelecionado) {
+    return (
+      <section className="editar-produto-page">
+        <h1 className="editar-produto-page__title">
+          Produto não encontrado
+        </h1>
+
+        <div className="editar-produto-form__acoes">
+          <Link
+            to="/produtos"
+            className="editar-produto-form__retornar"
+          >
+            Retornar a Produtos
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <FormularioEditarProduto
+      produto={produtoSelecionado}
+      editarProduto={editarProduto}
+    />
   )
 }
 
