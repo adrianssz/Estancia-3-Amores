@@ -1,4 +1,5 @@
 import { useState } from 'react'
+
 import {
   Link,
   useParams,
@@ -8,33 +9,25 @@ import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/EditarPlantio.css'
 
 
-function EditarPlantio() {
-  const { id } = useParams()
-
-  const {
-    plantios,
-    editarPlantio,
-  } = usePlantios()
-
-  const plantioSelecionado = plantios.find(
-    (plantio) =>
-      plantio.id === Number(id)
-  )
-
+function FormularioEditarPlantio({
+  plantioSelecionado,
+  id,
+  editarPlantio,
+}) {
   const [nome, setNome] = useState(
-    plantioSelecionado?.nome ?? ''
+    plantioSelecionado.nome ?? ''
   )
 
   const [tipoPlanta, setTipoPlanta] = useState(
-    plantioSelecionado?.tipo ?? ''
+    plantioSelecionado.tipo ?? ''
   )
 
   const [area, setArea] = useState(
-    plantioSelecionado?.area ?? ''
+    plantioSelecionado.area ?? ''
   )
 
   const [quantidade, setQuantidade] = useState(
-    plantioSelecionado?.quantidade ?? ''
+    plantioSelecionado.quantidade ?? ''
   )
 
   const [
@@ -42,11 +35,18 @@ function EditarPlantio() {
     setEditadoComSucesso,
   ] = useState(false)
 
+  const [salvando, setSalvando] = useState(false)
+  const [erro, setErro] = useState('')
 
-  function handleSubmit(event) {
+
+  async function handleSubmit(event) {
     event.preventDefault()
 
-    editarPlantio(
+    setErro('')
+    setEditadoComSucesso(false)
+    setSalvando(true)
+
+    const resultado = await editarPlantio(
       Number(id),
       {
         nome: nome.trim(),
@@ -56,7 +56,236 @@ function EditarPlantio() {
       }
     )
 
+    setSalvando(false)
+
+    if (!resultado.sucesso) {
+      setErro(resultado.mensagem)
+      return
+    }
+
     setEditadoComSucesso(true)
+  }
+
+
+  return (
+    <section className="editar-plantio-page">
+
+      <h1 className="editar-plantio-page__title">
+        Editar
+      </h1>
+
+
+      <form
+        className="editar-plantio-form"
+        onSubmit={handleSubmit}
+      >
+
+        <div className="editar-plantio-form__grupo">
+
+          <label htmlFor="plantio">
+            Plantio
+          </label>
+
+          <input
+            id="plantio"
+            type="text"
+            value={nome}
+            onChange={(event) => {
+              setNome(event.target.value)
+              setErro('')
+              setEditadoComSucesso(false)
+            }}
+            disabled={salvando}
+            required
+          />
+
+        </div>
+
+
+        <div className="editar-plantio-form__grupo">
+
+          <label htmlFor="tipoPlanta">
+            Tipo de Planta
+          </label>
+
+          <input
+            id="tipoPlanta"
+            type="text"
+            value={tipoPlanta}
+            onChange={(event) => {
+              setTipoPlanta(event.target.value)
+              setErro('')
+              setEditadoComSucesso(false)
+            }}
+            disabled={salvando}
+            required
+          />
+
+        </div>
+
+
+        <div className="editar-plantio-form__grupo">
+
+          <label htmlFor="area">
+            Área
+          </label>
+
+          <input
+            id="area"
+            type="number"
+            min="1"
+            value={area}
+            onChange={(event) => {
+              setArea(event.target.value)
+              setErro('')
+              setEditadoComSucesso(false)
+            }}
+            disabled={salvando}
+            required
+          />
+
+        </div>
+
+
+        <div className="editar-plantio-form__grupo">
+
+          <label htmlFor="quantidade">
+            Quantidade
+          </label>
+
+          <input
+            id="quantidade"
+            type="number"
+            min="1"
+            step="1"
+            value={quantidade}
+            onChange={(event) => {
+              setQuantidade(event.target.value)
+              setErro('')
+              setEditadoComSucesso(false)
+            }}
+            disabled={salvando}
+            required
+          />
+
+        </div>
+
+
+        {erro && (
+
+          <div
+            className="editar-plantio-alert"
+            role="alert"
+          >
+            {erro}
+          </div>
+
+        )}
+
+
+        {editadoComSucesso && (
+
+          <div
+            className="editar-plantio-alert"
+            role="alert"
+          >
+            Plantio editado! Clique em
+            {' '}
+            &apos;Retornar a Plantios&apos;
+            {' '}
+            para retornar, ou altere os campos
+            para editar novamente.
+          </div>
+
+        )}
+
+
+        <div className="editar-plantio-form__acoes">
+
+          <button
+            type="submit"
+            className="editar-plantio-form__salvar"
+            disabled={salvando}
+          >
+            {salvando
+              ? 'Salvando...'
+              : 'Salvar alterações'}
+          </button>
+
+
+          <Link
+            to="/plantios"
+            className="editar-plantio-form__retornar"
+          >
+            Retornar a Plantios
+          </Link>
+
+        </div>
+
+      </form>
+
+    </section>
+  )
+}
+
+
+function EditarPlantio() {
+  const { id } = useParams()
+
+  const {
+    plantios,
+    carregando,
+    erro: erroCarregamento,
+    editarPlantio,
+  } = usePlantios()
+
+  const plantioSelecionado = plantios.find(
+    (plantio) =>
+      plantio.id === Number(id)
+  )
+
+
+  if (carregando) {
+    return (
+      <section className="editar-plantio-page">
+
+        <h1 className="editar-plantio-page__title">
+          Carregando...
+        </h1>
+
+      </section>
+    )
+  }
+
+
+  if (erroCarregamento) {
+    return (
+      <section className="editar-plantio-page">
+
+        <h1 className="editar-plantio-page__title">
+          Erro ao carregar plantio
+        </h1>
+
+        <div
+          className="editar-plantio-alert"
+          role="alert"
+        >
+          {erroCarregamento}
+        </div>
+
+        <div className="editar-plantio-form__acoes">
+
+          <Link
+            to="/plantios"
+            className="editar-plantio-form__retornar"
+          >
+            Retornar a Plantios
+          </Link>
+
+        </div>
+
+      </section>
+    )
   }
 
 
@@ -85,139 +314,12 @@ function EditarPlantio() {
 
 
   return (
-    <section className="editar-plantio-page">
-
-      <h1 className="editar-plantio-page__title">
-        Editar
-      </h1>
-
-
-      <form
-        className="editar-plantio-form"
-        onSubmit={handleSubmit}
-      >
-
-        <div className="editar-plantio-form__grupo">
-
-          <label htmlFor="plantio">
-            Plantio
-          </label>
-
-          <input
-            id="plantio"
-            type="text"
-            value={nome}
-            onChange={(event) =>
-              setNome(event.target.value)
-            }
-            required
-          />
-
-        </div>
-
-
-        <div className="editar-plantio-form__grupo">
-
-          <label htmlFor="tipoPlanta">
-            Tipo de Planta
-          </label>
-
-          <input
-            id="tipoPlanta"
-            type="text"
-            value={tipoPlanta}
-            onChange={(event) =>
-              setTipoPlanta(event.target.value)
-            }
-            required
-          />
-
-        </div>
-
-
-        <div className="editar-plantio-form__grupo">
-
-          <label htmlFor="area">
-            Área
-          </label>
-
-          <input
-            id="area"
-            type="number"
-            min="1"
-            value={area}
-            onChange={(event) =>
-              setArea(event.target.value)
-            }
-            required
-          />
-
-        </div>
-
-
-        <div className="editar-plantio-form__grupo">
-
-          <label htmlFor="quantidade">
-            Quantidade
-          </label>
-
-          <input
-            id="quantidade"
-            type="number"
-            min="1"
-            step="1"
-            value={quantidade}
-            onChange={(event) =>
-              setQuantidade(event.target.value)
-            }
-            required
-          />
-
-        </div>
-
-
-        {editadoComSucesso && (
-
-          <div
-            className="editar-plantio-alert"
-            role="alert"
-          >
-            Plantio editado! Clique em
-            {' '}
-            &apos;Retornar a Plantios&apos;
-            {' '}
-            para retornar, ou
-            {' '}
-            &apos;+ Editar Plantio&apos;
-            {' '}
-            para editar novamente.
-          </div>
-
-        )}
-
-
-        <div className="editar-plantio-form__acoes">
-
-          <button
-            type="submit"
-            className="editar-plantio-form__salvar"
-          >
-            Salvar alterações
-          </button>
-
-
-          <Link
-            to="/plantios"
-            className="editar-plantio-form__retornar"
-          >
-            Retornar a Plantios
-          </Link>
-
-        </div>
-
-      </form>
-
-    </section>
+    <FormularioEditarPlantio
+      key={plantioSelecionado.id}
+      plantioSelecionado={plantioSelecionado}
+      id={id}
+      editarPlantio={editarPlantio}
+    />
   )
 }
 
