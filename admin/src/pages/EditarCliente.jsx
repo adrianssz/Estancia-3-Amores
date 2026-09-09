@@ -4,31 +4,17 @@ import { Link, useParams } from 'react-router-dom'
 import { useClientes } from '../contexts/ClientesContext'
 import '../styles/EditarCliente.css'
 
-
-function EditarCliente() {
-  const { codigo } = useParams()
-
-  const {
-    clientes,
-    editarCliente,
-  } = useClientes()
-
-
-  const clienteSelecionado = clientes.find(
-    (cliente) => cliente.codigo === Number(codigo)
-  )
-
-
-  const [nome, setNome] = useState(
-    clienteSelecionado?.nome ?? ''
-  )
-
+function FormularioEditarCliente({
+  cliente,
+  codigo,
+  editarCliente,
+}) {
+  const [nome, setNome] = useState(cliente.nome)
   const [telefone, setTelefone] = useState(
-    clienteSelecionado?.telefone ?? ''
+    cliente.telefone
   )
-
   const [endereco, setEndereco] = useState(
-    clienteSelecionado?.endereco ?? ''
+    cliente.endereco
   )
 
   const [
@@ -36,6 +22,8 @@ function EditarCliente() {
     setEditadoComSucesso,
   ] = useState(false)
 
+  const [salvando, setSalvando] = useState(false)
+  const [erroEdicao, setErroEdicao] = useState('')
 
   function formatarTelefone(valor) {
     const numeros = valor
@@ -53,75 +41,69 @@ function EditarCliente() {
     return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`
   }
 
-
   function handleTelefoneChange(event) {
     setTelefone(
       formatarTelefone(event.target.value)
     )
   }
 
-
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
 
-    editarCliente(
-      Number(codigo),
-      {
-        nome: nome.trim(),
-        telefone,
-        endereco: endereco.trim(),
-      }
-    )
+    const nomeTratado = nome.trim()
+    const enderecoTratado = endereco.trim()
 
-    setEditadoComSucesso(true)
+    if (nomeTratado.length < 3) {
+      setErroEdicao(
+        'O nome deve possuir pelo menos 3 caracteres.'
+      )
+      return
+    }
+
+    setSalvando(true)
+    setErroEdicao('')
+
+    try {
+      await editarCliente(
+        codigo,
+        {
+          nome: nomeTratado,
+          telefone,
+          endereco: enderecoTratado,
+        }
+      )
+
+      setEditadoComSucesso(true)
+    } catch (error) {
+      console.error(
+        'Erro ao editar cliente:',
+        error
+      )
+
+      setErroEdicao(
+        'Erro ao salvar as alterações. Tente novamente.'
+      )
+    } finally {
+      setSalvando(false)
+    }
   }
 
-
   function handleEditarNovamente() {
+    setErroEdicao('')
     setEditadoComSucesso(false)
   }
 
-
-  if (!clienteSelecionado) {
-    return (
-      <section className="editar-cliente-page">
-
-        <h1 className="editar-cliente-page__title">
-          Cliente não encontrado
-        </h1>
-
-
-        <div className="editar-cliente-form__acoes">
-
-          <Link
-            to="/clientes"
-            className="editar-cliente-form__retornar"
-          >
-            Retornar a Clientes
-          </Link>
-
-        </div>
-
-      </section>
-    )
-  }
-
-
   return (
     <section className="editar-cliente-page">
-
       <h1 className="editar-cliente-page__title">
         Editar
       </h1>
-
 
       <form
         className="editar-cliente-form"
         onSubmit={handleSubmit}
       >
-
         <div className="editar-cliente-form__grupo">
-
           <label htmlFor="nome">
             Nome
           </label>
@@ -134,15 +116,12 @@ function EditarCliente() {
             onChange={(event) =>
               setNome(event.target.value)
             }
-            disabled={editadoComSucesso}
+            disabled={editadoComSucesso || salvando}
             required
           />
-
         </div>
 
-
         <div className="editar-cliente-form__grupo">
-
           <label htmlFor="telefone">
             Telefone
           </label>
@@ -152,15 +131,12 @@ function EditarCliente() {
             type="tel"
             value={telefone}
             onChange={handleTelefoneChange}
-            disabled={editadoComSucesso}
+            disabled={editadoComSucesso || salvando}
             required
           />
-
         </div>
 
-
         <div className="editar-cliente-form__grupo">
-
           <label htmlFor="endereco">
             Endereço
           </label>
@@ -172,15 +148,21 @@ function EditarCliente() {
             onChange={(event) =>
               setEndereco(event.target.value)
             }
-            disabled={editadoComSucesso}
+            disabled={editadoComSucesso || salvando}
             required
           />
-
         </div>
 
+        {erroEdicao && (
+          <div
+            className="editar-cliente-alert"
+            role="alert"
+          >
+            {erroEdicao}
+          </div>
+        )}
 
         {editadoComSucesso && (
-
           <div
             className="editar-cliente-alert"
             role="alert"
@@ -195,26 +177,22 @@ function EditarCliente() {
             {' '}
             para editar novamente.
           </div>
-
         )}
 
-
         <div className="editar-cliente-form__acoes">
-
           {!editadoComSucesso && (
-
             <button
               type="submit"
               className="editar-cliente-form__salvar"
+              disabled={salvando}
             >
-              Salvar alterações
+              {salvando
+                ? 'Salvando...'
+                : 'Salvar alterações'}
             </button>
-
           )}
 
-
           {editadoComSucesso && (
-
             <button
               type="button"
               className="editar-cliente-form__salvar"
@@ -222,9 +200,7 @@ function EditarCliente() {
             >
               + Editar Cliente
             </button>
-
           )}
-
 
           <Link
             to="/clientes"
@@ -232,14 +208,88 @@ function EditarCliente() {
           >
             Retornar a Clientes
           </Link>
-
         </div>
-
       </form>
-
     </section>
   )
 }
 
+function EditarCliente() {
+  const { codigo } = useParams()
+
+  const {
+    clientes,
+    carregandoClientes,
+    erroClientes,
+    editarCliente,
+  } = useClientes()
+
+  const codigoNumerico = Number(codigo)
+
+  if (carregandoClientes) {
+    return (
+      <section className="editar-cliente-page">
+        <h1 className="editar-cliente-page__title">
+          Editar
+        </h1>
+
+        <p>Carregando cliente...</p>
+      </section>
+    )
+  }
+
+  if (erroClientes) {
+    return (
+      <section className="editar-cliente-page">
+        <h1 className="editar-cliente-page__title">
+          Editar
+        </h1>
+
+        <p>{erroClientes}</p>
+
+        <div className="editar-cliente-form__acoes">
+          <Link
+            to="/clientes"
+            className="editar-cliente-form__retornar"
+          >
+            Retornar a Clientes
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  const clienteSelecionado = clientes.find(
+    (cliente) =>
+      cliente.codigo === codigoNumerico
+  )
+
+  if (!clienteSelecionado) {
+    return (
+      <section className="editar-cliente-page">
+        <h1 className="editar-cliente-page__title">
+          Cliente não encontrado
+        </h1>
+
+        <div className="editar-cliente-form__acoes">
+          <Link
+            to="/clientes"
+            className="editar-cliente-form__retornar"
+          >
+            Retornar a Clientes
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <FormularioEditarCliente
+      cliente={clienteSelecionado}
+      codigo={codigoNumerico}
+      editarCliente={editarCliente}
+    />
+  )
+}
 
 export default EditarCliente
