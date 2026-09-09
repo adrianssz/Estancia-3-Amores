@@ -1,4 +1,5 @@
 import { useState } from 'react'
+
 import {
   Link,
   useParams,
@@ -8,35 +9,23 @@ import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/ExcluirPlantio.css'
 
 
-function ExcluirPlantio() {
-  const { id } = useParams()
-
-  const {
-    plantios,
-    excluirPlantio,
-  } = usePlantios()
-
-  const [plantioSelecionado] = useState(() =>
-    plantios.find(
-      (plantio) =>
-        plantio.id === Number(id)
-    )
-  )
+function FormularioExcluirPlantio({
+  plantioSelecionado,
+  id,
+  excluirPlantio,
+}) {
+  const [plantio] = useState(plantioSelecionado)
 
   const [
     excluidoComSucesso,
     setExcluidoComSucesso,
   ] = useState(false)
 
-
-  function handleExcluir() {
-    excluirPlantio(Number(id))
-
-    setExcluidoComSucesso(true)
-  }
+  const [excluindo, setExcluindo] = useState(false)
+  const [erro, setErro] = useState('')
 
 
-  if (!plantioSelecionado) {
+  if (!plantio) {
     return (
       <section className="excluir-plantio-page">
 
@@ -60,6 +49,25 @@ function ExcluirPlantio() {
   }
 
 
+  async function handleExcluir() {
+    setErro('')
+    setExcluindo(true)
+
+    const resultado = await excluirPlantio(
+      Number(id)
+    )
+
+    setExcluindo(false)
+
+    if (!resultado.sucesso) {
+      setErro(resultado.mensagem)
+      return
+    }
+
+    setExcluidoComSucesso(true)
+  }
+
+
   return (
     <section className="excluir-plantio-page">
 
@@ -79,7 +87,7 @@ function ExcluirPlantio() {
           <input
             id="plantio"
             type="text"
-            value={plantioSelecionado.nome}
+            value={plantio.nome}
             readOnly
           />
 
@@ -95,7 +103,7 @@ function ExcluirPlantio() {
           <input
             id="tipoPlanta"
             type="text"
-            value={plantioSelecionado.tipo}
+            value={plantio.tipo}
             readOnly
           />
 
@@ -111,7 +119,7 @@ function ExcluirPlantio() {
           <input
             id="area"
             type="text"
-            value={plantioSelecionado.area}
+            value={plantio.area}
             readOnly
           />
 
@@ -127,11 +135,23 @@ function ExcluirPlantio() {
           <input
             id="quantidade"
             type="text"
-            value={plantioSelecionado.quantidade}
+            value={plantio.quantidade}
             readOnly
           />
 
         </div>
+
+
+        {erro && (
+
+          <div
+            className="excluir-plantio-alert"
+            role="alert"
+          >
+            {erro}
+          </div>
+
+        )}
 
 
         {excluidoComSucesso && (
@@ -158,8 +178,11 @@ function ExcluirPlantio() {
               type="button"
               className="excluir-plantio-form__excluir"
               onClick={handleExcluir}
+              disabled={excluindo}
             >
-              Excluir
+              {excluindo
+                ? 'Excluindo...'
+                : 'Excluir'}
             </button>
 
           )}
@@ -177,6 +200,77 @@ function ExcluirPlantio() {
       </div>
 
     </section>
+  )
+}
+
+
+function ExcluirPlantio() {
+  const { id } = useParams()
+
+  const {
+    plantios,
+    carregando,
+    erro: erroCarregamento,
+    excluirPlantio,
+  } = usePlantios()
+
+  const plantioSelecionado = plantios.find(
+    (plantio) =>
+      plantio.id === Number(id)
+  )
+
+
+  if (carregando) {
+    return (
+      <section className="excluir-plantio-page">
+
+        <h1 className="excluir-plantio-page__title">
+          Carregando...
+        </h1>
+
+      </section>
+    )
+  }
+
+
+  if (erroCarregamento) {
+    return (
+      <section className="excluir-plantio-page">
+
+        <h1 className="excluir-plantio-page__title">
+          Erro ao carregar plantio
+        </h1>
+
+        <div
+          className="excluir-plantio-alert"
+          role="alert"
+        >
+          {erroCarregamento}
+        </div>
+
+        <div className="excluir-plantio-form__acoes">
+
+          <Link
+            to="/plantios"
+            className="excluir-plantio-form__retornar"
+          >
+            Retornar a Plantios
+          </Link>
+
+        </div>
+
+      </section>
+    )
+  }
+
+
+  return (
+    <FormularioExcluirPlantio
+      key={id}
+      plantioSelecionado={plantioSelecionado}
+      id={id}
+      excluirPlantio={excluirPlantio}
+    />
   )
 }
 

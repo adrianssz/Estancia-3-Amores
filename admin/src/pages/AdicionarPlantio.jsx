@@ -7,7 +7,6 @@ import '../styles/AdicionarPlantio.css'
 
 function AdicionarPlantio() {
   const {
-    plantios,
     adicionarPlantio,
   } = usePlantios()
 
@@ -21,27 +20,29 @@ function AdicionarPlantio() {
     setAdicionadoComSucesso,
   ] = useState(false)
 
+  const [salvando, setSalvando] = useState(false)
+  const [erro, setErro] = useState('')
 
-  function handleSubmit(event) {
+
+  async function handleSubmit(event) {
     event.preventDefault()
 
-    const maiorId = plantios.reduce(
-      (maior, item) =>
-        item.id > maior
-          ? item.id
-          : maior,
-      0
-    )
+    setErro('')
+    setSalvando(true)
 
-    const novoPlantio = {
-      id: maiorId + 1,
+    const resultado = await adicionarPlantio({
       nome: plantio.trim(),
       tipo: tipoPlanta.trim(),
       area: Number(area),
       quantidade: Number(quantidade),
-    }
+    })
 
-    adicionarPlantio(novoPlantio)
+    setSalvando(false)
+
+    if (!resultado.sucesso) {
+      setErro(resultado.mensagem)
+      return
+    }
 
     setAdicionadoComSucesso(true)
   }
@@ -52,6 +53,7 @@ function AdicionarPlantio() {
     setTipoPlanta('')
     setArea('')
     setQuantidade('')
+    setErro('')
     setAdicionadoComSucesso(false)
   }
 
@@ -83,7 +85,10 @@ function AdicionarPlantio() {
               setPlantio(event.target.value)
             }
             placeholder="Digite o nome do plantio"
-            disabled={adicionadoComSucesso}
+            disabled={
+              adicionadoComSucesso ||
+              salvando
+            }
             required
           />
 
@@ -104,7 +109,10 @@ function AdicionarPlantio() {
               setTipoPlanta(event.target.value)
             }
             placeholder="Ex: Fruta"
-            disabled={adicionadoComSucesso}
+            disabled={
+              adicionadoComSucesso ||
+              salvando
+            }
             required
           />
 
@@ -126,7 +134,10 @@ function AdicionarPlantio() {
               setArea(event.target.value)
             }
             placeholder="Ex: 18"
-            disabled={adicionadoComSucesso}
+            disabled={
+              adicionadoComSucesso ||
+              salvando
+            }
             required
           />
 
@@ -149,11 +160,24 @@ function AdicionarPlantio() {
               setQuantidade(event.target.value)
             }
             placeholder="Ex: 250"
-            disabled={adicionadoComSucesso}
+            disabled={
+              adicionadoComSucesso ||
+              salvando
+            }
             required
           />
 
         </div>
+
+
+        {erro && (
+          <div
+            className="adicionar-plantio-alert"
+            role="alert"
+          >
+            {erro}
+          </div>
+        )}
 
 
         {adicionadoComSucesso && (
@@ -183,8 +207,11 @@ function AdicionarPlantio() {
             <button
               type="submit"
               className="adicionar-plantio-form__adicionar"
+              disabled={salvando}
             >
-              + Adicionar Plantio
+              {salvando
+                ? 'Adicionando...'
+                : '+ Adicionar Plantio'}
             </button>
 
           )}
