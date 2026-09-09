@@ -29,7 +29,7 @@ function Login() {
     setErro('')
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
 
     const usuarioNormalizado = usuario.trim()
@@ -39,10 +39,10 @@ function Login() {
       return
     }
 
-    const loginRealizado = entrar(
+    const loginRealizado = await entrar(
       usuarioNormalizado,
       senha
-    )
+     )
 
     if (!loginRealizado) {
       setErro('Senha incorreta! Tente novamente.')

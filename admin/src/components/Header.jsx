@@ -1,7 +1,11 @@
 import { Link, NavLink } from 'react-router-dom'
+
+import { useAuth } from '../contexts/AuthContext'
 import '../styles/Header.css'
 
 function Header() {
+  const { sair } = useAuth()
+
   return (
     <header className="admin-header">
       <Link
@@ -46,6 +50,14 @@ function Header() {
         >
           Relatórios
         </NavLink>
+
+        <button
+          type="button"
+          className="admin-header__logout"
+          onClick={sair}
+        >
+          Sair
+        </button>
       </nav>
     </header>
   )
