@@ -124,4 +124,19 @@
     font-size: 12px;
   }
 
+
+  .admin-header__logout {
+    border: none;
+    background: transparent;
+    color: #ffffff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .admin-header__logout:hover {
+    text-decoration: underline;
+  }
+
 }

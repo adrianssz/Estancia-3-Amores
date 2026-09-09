@@ -6,7 +6,14 @@ import {
 import { useAuth } from '../contexts/AuthContext'
 
 function ProtectedRoute() {
-  const { autenticado } = useAuth()
+  const {
+    autenticado,
+    carregando,
+  } = useAuth()
+
+  if (carregando) {
+    return null
+  }
 
   if (!autenticado) {
     return (
