@@ -5,10 +5,7 @@ import { useProdutos } from '../contexts/ProdutosContext'
 import '../styles/AdicionarProduto.css'
 
 function AdicionarProduto() {
-  const {
-    produtos,
-    adicionarProduto,
-  } = useProdutos()
+  const { adicionarProduto } = useProdutos()
 
   const [nome, setNome] = useState('')
   const [unidade, setUnidade] = useState('')
@@ -21,7 +18,10 @@ function AdicionarProduto() {
   const [adicionadoComSucesso, setAdicionadoComSucesso] =
     useState(false)
 
-  function handleSubmit(event) {
+  const [salvando, setSalvando] = useState(false)
+  const [erroCadastro, setErroCadastro] = useState('')
+
+  async function handleSubmit(event) {
     event.preventDefault()
 
     const precoNumerico = Number(preco)
@@ -35,16 +35,7 @@ function AdicionarProduto() {
       return
     }
 
-    const maiorId = produtos.reduce(
-      (maior, produto) =>
-        produto.id > maior
-          ? produto.id
-          : maior,
-      0
-    )
-
     const novoProduto = {
-      id: maiorId + 1,
       nome: nome.trim(),
       unidade: unidade.trim(),
       preco: precoNumerico,
@@ -54,8 +45,25 @@ function AdicionarProduto() {
       imagem: imagem.trim(),
     }
 
-    adicionarProduto(novoProduto)
-    setAdicionadoComSucesso(true)
+    setSalvando(true)
+    setErroCadastro('')
+
+    try {
+      await adicionarProduto(novoProduto)
+
+      setAdicionadoComSucesso(true)
+    } catch (error) {
+      console.error(
+        'Erro ao adicionar produto:',
+        error
+      )
+
+      setErroCadastro(
+        'Erro ao salvar produto. Tente novamente.'
+      )
+    } finally {
+      setSalvando(false)
+    }
   }
 
   function handleNovoProduto() {
@@ -66,6 +74,7 @@ function AdicionarProduto() {
     setStatus('pronta-entrega')
     setEstoque('')
     setImagem('')
+    setErroCadastro('')
     setAdicionadoComSucesso(false)
   }
 
@@ -91,7 +100,7 @@ function AdicionarProduto() {
             onChange={(event) =>
               setNome(event.target.value)
             }
-            disabled={adicionadoComSucesso}
+            disabled={adicionadoComSucesso || salvando}
             required
           />
         </div>
@@ -109,7 +118,7 @@ function AdicionarProduto() {
               setUnidade(event.target.value)
             }
             placeholder="Ex.: Unidade, 1 KG, 500 g"
-            disabled={adicionadoComSucesso}
+            disabled={adicionadoComSucesso || salvando}
             required
           />
         </div>
@@ -129,7 +138,7 @@ function AdicionarProduto() {
               setPreco(event.target.value)
             }
             placeholder="0,00"
-            disabled={adicionadoComSucesso}
+            disabled={adicionadoComSucesso || salvando}
             required
           />
         </div>
@@ -145,7 +154,7 @@ function AdicionarProduto() {
             onChange={(event) =>
               setCategoria(event.target.value)
             }
-            disabled={adicionadoComSucesso}
+            disabled={adicionadoComSucesso || salvando}
             required
           >
             <option value="Legumes">
@@ -177,7 +186,7 @@ function AdicionarProduto() {
             onChange={(event) =>
               setStatus(event.target.value)
             }
-            disabled={adicionadoComSucesso}
+            disabled={adicionadoComSucesso || salvando}
             required
           >
             <option value="pronta-entrega">
@@ -204,7 +213,7 @@ function AdicionarProduto() {
             onChange={(event) =>
               setEstoque(event.target.value)
             }
-            disabled={adicionadoComSucesso}
+            disabled={adicionadoComSucesso || salvando}
             required
           />
         </div>
@@ -221,11 +230,20 @@ function AdicionarProduto() {
             onChange={(event) =>
               setImagem(event.target.value)
             }
-            placeholder="Ex.: 🌽 ou referência temporária"
-            disabled={adicionadoComSucesso}
+            placeholder="Informe a referência da imagem"
+            disabled={adicionadoComSucesso || salvando}
             required
           />
         </div>
+
+        {erroCadastro && (
+          <div
+            className="adicionar-produto-alert"
+            role="alert"
+          >
+            {erroCadastro}
+          </div>
+        )}
 
         {adicionadoComSucesso && (
           <div
@@ -249,8 +267,11 @@ function AdicionarProduto() {
             <button
               type="submit"
               className="adicionar-produto-form__adicionar"
+              disabled={salvando}
             >
-              + Adicionar Produto
+              {salvando
+                ? 'Salvando...'
+                : '+ Adicionar Produto'}
             </button>
           )}
 

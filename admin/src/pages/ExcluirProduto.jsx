@@ -4,22 +4,17 @@ import { Link, useParams } from 'react-router-dom'
 import { useProdutos } from '../contexts/ProdutosContext'
 import '../styles/ExcluirProduto.css'
 
-function ExcluirProduto() {
-  const { id } = useParams()
-
-  const {
-    produtos,
-    excluirProduto,
-  } = useProdutos()
-
-  const produtoInicial = produtos.find(
-    (produto) => produto.id === Number(id)
-  )
-
-  const [produtoExibido] = useState(produtoInicial)
+function ConteudoExcluirProduto({
+  produto,
+  excluirProduto,
+}) {
+  const [produtoExibido] = useState(produto)
 
   const [excluidoComSucesso, setExcluidoComSucesso] =
     useState(false)
+
+  const [excluindo, setExcluindo] = useState(false)
+  const [erroExclusao, setErroExclusao] = useState('')
 
   function formatarPreco(valor) {
     return Number(valor).toLocaleString(
@@ -43,9 +38,32 @@ function ExcluirProduto() {
     return status
   }
 
-  function handleExcluir() {
-    excluirProduto(Number(id))
-    setExcluidoComSucesso(true)
+  async function handleExcluir() {
+    setExcluindo(true)
+    setErroExclusao('')
+
+    try {
+      await excluirProduto(produtoExibido.id)
+
+      setExcluidoComSucesso(true)
+    } catch (error) {
+      console.error(
+        'Erro ao excluir produto:',
+        error
+      )
+
+      if (error?.code === '23503') {
+        setErroExclusao(
+          'Este produto não pode ser excluído pois possui registros vinculados.'
+        )
+      } else {
+        setErroExclusao(
+          'Erro ao excluir produto. Tente novamente.'
+        )
+      }
+    } finally {
+      setExcluindo(false)
+    }
   }
 
   if (!produtoExibido) {
@@ -84,7 +102,7 @@ function ExcluirProduto() {
             type="text"
             value={produtoExibido.nome}
             readOnly
-            disabled={excluidoComSucesso}
+            disabled={excluidoComSucesso || excluindo}
           />
         </div>
 
@@ -98,7 +116,7 @@ function ExcluirProduto() {
             type="text"
             value={produtoExibido.unidade}
             readOnly
-            disabled={excluidoComSucesso}
+            disabled={excluidoComSucesso || excluindo}
           />
         </div>
 
@@ -112,7 +130,7 @@ function ExcluirProduto() {
             type="text"
             value={formatarPreco(produtoExibido.preco)}
             readOnly
-            disabled={excluidoComSucesso}
+            disabled={excluidoComSucesso || excluindo}
           />
         </div>
 
@@ -126,7 +144,7 @@ function ExcluirProduto() {
             type="text"
             value={produtoExibido.categoria}
             readOnly
-            disabled={excluidoComSucesso}
+            disabled={excluidoComSucesso || excluindo}
           />
         </div>
 
@@ -140,7 +158,7 @@ function ExcluirProduto() {
             type="text"
             value={formatarStatus(produtoExibido.status)}
             readOnly
-            disabled={excluidoComSucesso}
+            disabled={excluidoComSucesso || excluindo}
           />
         </div>
 
@@ -154,7 +172,7 @@ function ExcluirProduto() {
             type="text"
             value={produtoExibido.estoque}
             readOnly
-            disabled={excluidoComSucesso}
+            disabled={excluidoComSucesso || excluindo}
           />
         </div>
 
@@ -168,9 +186,18 @@ function ExcluirProduto() {
             type="text"
             value={produtoExibido.imagem}
             readOnly
-            disabled={excluidoComSucesso}
+            disabled={excluidoComSucesso || excluindo}
           />
         </div>
+
+        {erroExclusao && (
+          <div
+            className="excluir-produto-alert"
+            role="alert"
+          >
+            {erroExclusao}
+          </div>
+        )}
 
         {excluidoComSucesso && (
           <div
@@ -191,8 +218,11 @@ function ExcluirProduto() {
               type="button"
               className="excluir-produto-form__excluir"
               onClick={handleExcluir}
+              disabled={excluindo}
             >
-              Excluir
+              {excluindo
+                ? 'Excluindo...'
+                : 'Excluir'}
             </button>
           )}
 
@@ -205,6 +235,57 @@ function ExcluirProduto() {
         </div>
       </div>
     </section>
+  )
+}
+
+function ExcluirProduto() {
+  const { id } = useParams()
+
+  const {
+    produtos,
+    carregandoProdutos,
+    erroProdutos,
+    excluirProduto,
+  } = useProdutos()
+
+  if (carregandoProdutos) {
+    return (
+      <section className="excluir-produto-page">
+        <h1 className="excluir-produto-page__title">
+          Carregando produto...
+        </h1>
+      </section>
+    )
+  }
+
+  if (erroProdutos) {
+    return (
+      <section className="excluir-produto-page">
+        <h1 className="excluir-produto-page__title">
+          Não foi possível carregar o produto
+        </h1>
+
+        <div className="excluir-produto-form__acoes">
+          <Link
+            to="/produtos"
+            className="excluir-produto-form__retornar"
+          >
+            Retornar a Produtos
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  const produtoSelecionado = produtos.find(
+    (produto) => produto.id === Number(id)
+  )
+
+  return (
+    <ConteudoExcluirProduto
+      produto={produtoSelecionado}
+      excluirProduto={excluirProduto}
+    />
   )
 }
 
