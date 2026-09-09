@@ -7,50 +7,51 @@ import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/Relatorios.css'
 
 function RelatorioPlantios() {
-  const { plantios } = usePlantios()
+  const {
+    plantios,
+    carregando,
+    erro,
+  } = usePlantios()
 
   const [plantioSelecionado, setPlantioSelecionado] =
     useState('')
+
   const [areaSelecionada, setAreaSelecionada] =
     useState('')
+
   const [resultados, setResultados] = useState([])
   const [mensagem, setMensagem] = useState('')
+
   const [relatorioGerado, setRelatorioGerado] =
     useState(false)
 
-  const dadosDisponiveis = Array.isArray(plantios)
+  const nomesPlantios = [
+    ...new Set(
+      plantios
+        .map((plantio) => plantio.nome)
+        .filter(Boolean)
+    ),
+  ].sort((nomeA, nomeB) =>
+    nomeA.localeCompare(nomeB, 'pt-BR')
+  )
 
-  const nomesPlantios = dadosDisponiveis
-    ? [
-        ...new Set(
-          plantios
-            .map((plantio) => plantio.nome)
-            .filter(Boolean)
-        ),
-      ].sort((nomeA, nomeB) =>
-        nomeA.localeCompare(nomeB, 'pt-BR')
-      )
-    : []
-
-  const areas = dadosDisponiveis
-    ? [
-        ...new Set(
-          plantios
-            .map((plantio) => plantio.area)
-            .filter(
-              (area) =>
-                area !== undefined &&
-                area !== null &&
-                area !== ''
-            )
-            .map(String)
-        ),
-      ].sort((areaA, areaB) =>
-        areaA.localeCompare(areaB, 'pt-BR', {
-          numeric: true,
-        })
-      )
-    : []
+  const areas = [
+    ...new Set(
+      plantios
+        .map((plantio) => plantio.area)
+        .filter(
+          (area) =>
+            area !== undefined &&
+            area !== null &&
+            area !== ''
+        )
+        .map(String)
+    ),
+  ].sort((areaA, areaB) =>
+    areaA.localeCompare(areaB, 'pt-BR', {
+      numeric: true,
+    })
+  )
 
   const colunas = [
     {
@@ -90,13 +91,6 @@ function RelatorioPlantios() {
   function handleSubmit(event) {
     event.preventDefault()
 
-    if (!dadosDisponiveis) {
-      setMensagem('Erro ao carregar opções')
-      setResultados([])
-      setRelatorioGerado(false)
-      return
-    }
-
     if (!plantioSelecionado || !areaSelecionada) {
       setMensagem(
         'Selecione Plantio e Área para gerar o relatório.'
@@ -124,6 +118,44 @@ function RelatorioPlantios() {
     setResultados(plantiosFiltrados)
     setMensagem('')
     setRelatorioGerado(true)
+  }
+
+  if (carregando) {
+    return (
+      <main className="relatorio-page">
+        <section className="relatorio-cabecalho">
+          <h1>Relatório Plantios</h1>
+
+          <p>Carregando dados dos plantios...</p>
+        </section>
+      </main>
+    )
+  }
+
+  if (erro) {
+    return (
+      <main className="relatorio-page">
+        <section className="relatorio-cabecalho">
+          <h1>Relatório Plantios</h1>
+        </section>
+
+        <section className="relatorio-conteudo">
+          <div
+            className="relatorio-alerta"
+            role="alert"
+          >
+            {erro}
+          </div>
+
+          <Link
+            to="/relatorios"
+            className="relatorio-retornar"
+          >
+            Retornar a Relatórios
+          </Link>
+        </section>
+      </main>
+    )
   }
 
   if (relatorioGerado) {
@@ -154,15 +186,6 @@ function RelatorioPlantios() {
       </section>
 
       <section className="relatorio-conteudo">
-        {!dadosDisponiveis && (
-          <div
-            className="relatorio-alerta"
-            role="alert"
-          >
-            Erro ao carregar opções
-          </div>
-        )}
-
         <form
           className="relatorio-form"
           onSubmit={handleSubmit}
@@ -176,10 +199,7 @@ function RelatorioPlantios() {
               id="relatorio-plantio"
               value={plantioSelecionado}
               onChange={handlePlantioChange}
-              disabled={
-                !dadosDisponiveis ||
-                nomesPlantios.length === 0
-              }
+              disabled={nomesPlantios.length === 0}
             >
               <option value="">
                 {nomesPlantios.length === 0
@@ -207,10 +227,7 @@ function RelatorioPlantios() {
               id="relatorio-area"
               value={areaSelecionada}
               onChange={handleAreaChange}
-              disabled={
-                !dadosDisponiveis ||
-                areas.length === 0
-              }
+              disabled={areas.length === 0}
             >
               <option value="">
                 {areas.length === 0
@@ -243,7 +260,6 @@ function RelatorioPlantios() {
             type="submit"
             className="relatorio-gerar"
             disabled={
-              !dadosDisponiveis ||
               nomesPlantios.length === 0 ||
               areas.length === 0
             }
