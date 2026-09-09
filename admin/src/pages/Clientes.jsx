@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import { useClientes } from '../contexts/ClientesContext'
 import '../styles/Clientes.css'
 
-
 function IconePesquisar() {
   return (
     <svg
@@ -32,7 +31,6 @@ function IconePesquisar() {
   )
 }
 
-
 function IconeEditar() {
   return (
     <svg
@@ -59,7 +57,6 @@ function IconeEditar() {
     </svg>
   )
 }
-
 
 function IconeExcluir() {
   return (
@@ -105,18 +102,19 @@ function IconeExcluir() {
   )
 }
 
-
 function Clientes() {
-  const { clientes } = useClientes()
+  const {
+    clientes,
+    carregandoClientes,
+    erroClientes,
+  } = useClientes()
 
   const [busca, setBusca] = useState('')
   const [termoPesquisa, setTermoPesquisa] = useState('')
 
-
   const termoNormalizado = termoPesquisa
     .trim()
     .toLowerCase()
-
 
   const clientesFiltrados = clientes.filter((cliente) => {
     if (!termoNormalizado) {
@@ -135,13 +133,11 @@ function Clientes() {
     return nomeCorresponde || codigoCorresponde
   })
 
-
   function handlePesquisar(event) {
     event.preventDefault()
 
     setTermoPesquisa(busca)
   }
-
 
   function handleBuscaChange(event) {
     const novoValor = event.target.value
@@ -153,20 +149,40 @@ function Clientes() {
     }
   }
 
+  if (carregandoClientes) {
+    return (
+      <section className="clientes-page">
+        <h1 className="clientes-page__title">
+          Clientes
+        </h1>
+
+        <p>Carregando clientes...</p>
+      </section>
+    )
+  }
+
+  if (erroClientes) {
+    return (
+      <section className="clientes-page">
+        <h1 className="clientes-page__title">
+          Clientes
+        </h1>
+
+        <p>{erroClientes}</p>
+      </section>
+    )
+  }
 
   return (
     <section className="clientes-page">
-
       <h1 className="clientes-page__title">
         Clientes
       </h1>
-
 
       <form
         className="clientes-busca"
         onSubmit={handlePesquisar}
       >
-
         <input
           type="text"
           className="clientes-busca__campo"
@@ -174,7 +190,6 @@ function Clientes() {
           value={busca}
           onChange={handleBuscaChange}
         />
-
 
         <button
           type="submit"
@@ -184,26 +199,19 @@ function Clientes() {
         >
           <IconePesquisar />
         </button>
-
       </form>
 
-
       <div className="clientes-acoes">
-
         <Link
           to="/clientes/adicionar"
           className="clientes-adicionar"
         >
           + Adicionar Cliente
         </Link>
-
       </div>
 
-
       <div className="clientes-tabela-wrapper">
-
         <table className="clientes-tabela">
-
           <thead>
             <tr>
               <th>Código</th>
@@ -213,19 +221,13 @@ function Clientes() {
             </tr>
           </thead>
 
-
           <tbody>
-
             {clientesFiltrados.length > 0 ? (
-
               clientesFiltrados.map((cliente) => (
-
                 <tr key={cliente.codigo}>
-
                   <td data-label="Código">
                     {cliente.codigo}
                   </td>
-
 
                   <td
                     className="clientes-tabela__nome"
@@ -234,19 +236,15 @@ function Clientes() {
                     {cliente.nome}
                   </td>
 
-
                   <td data-label="Telefone">
                     {cliente.telefone}
                   </td>
-
 
                   <td
                     className="clientes-tabela__acoes"
                     data-label="Ações"
                   >
-
                     <div className="clientes-tabela__acoes-conteudo">
-
                       <Link
                         to={`/clientes/${cliente.codigo}/editar`}
                         className="clientes-acao clientes-acao--editar"
@@ -256,7 +254,6 @@ function Clientes() {
                         <IconeEditar />
                       </Link>
 
-
                       <Link
                         to={`/clientes/${cliente.codigo}/excluir`}
                         className="clientes-acao clientes-acao--excluir"
@@ -265,39 +262,25 @@ function Clientes() {
                       >
                         <IconeExcluir />
                       </Link>
-
                     </div>
-
                   </td>
-
                 </tr>
-
               ))
-
             ) : (
-
               <tr>
-
                 <td
                   colSpan="4"
                   className="clientes-tabela__vazio"
                 >
                   Nenhum cliente encontrado
                 </td>
-
               </tr>
-
             )}
-
           </tbody>
-
         </table>
-
       </div>
-
     </section>
   )
 }
-
 
 export default Clientes

@@ -5,10 +5,7 @@ import { useClientes } from '../contexts/ClientesContext'
 import '../styles/AdicionarCliente.css'
 
 function AdicionarCliente() {
-  const {
-    clientes,
-    adicionarCliente,
-  } = useClientes()
+  const { adicionarCliente } = useClientes()
 
   const [nome, setNome] = useState('')
   const [telefone, setTelefone] = useState('')
@@ -16,6 +13,9 @@ function AdicionarCliente() {
 
   const [adicionadoComSucesso, setAdicionadoComSucesso] =
     useState(false)
+
+  const [salvando, setSalvando] = useState(false)
+  const [erroCadastro, setErroCadastro] = useState('')
 
   function formatarTelefone(valor) {
     const numeros = valor
@@ -39,33 +39,51 @@ function AdicionarCliente() {
     )
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
 
-    const maiorCodigo = clientes.reduce(
-      (maior, cliente) =>
-        cliente.codigo > maior
-          ? cliente.codigo
-          : maior,
-      0
-    )
+    const nomeTratado = nome.trim()
+    const enderecoTratado = endereco.trim()
 
-    const novoCliente = {
-      codigo: maiorCodigo + 1,
-      nome: nome.trim(),
-      telefone,
-      endereco: endereco.trim(),
+    if (nomeTratado.length < 3) {
+      setErroCadastro(
+        'O nome deve possuir pelo menos 3 caracteres.'
+      )
+      return
     }
 
-    adicionarCliente(novoCliente)
+    const novoCliente = {
+      nome: nomeTratado,
+      telefone,
+      endereco: enderecoTratado,
+    }
 
-    setAdicionadoComSucesso(true)
+    setSalvando(true)
+    setErroCadastro('')
+
+    try {
+      await adicionarCliente(novoCliente)
+
+      setAdicionadoComSucesso(true)
+    } catch (error) {
+      console.error(
+        'Erro ao adicionar cliente:',
+        error
+      )
+
+      setErroCadastro(
+        'Erro ao salvar cliente. Tente novamente.'
+      )
+    } finally {
+      setSalvando(false)
+    }
   }
 
   function handleNovoCliente() {
     setNome('')
     setTelefone('')
     setEndereco('')
+    setErroCadastro('')
     setAdicionadoComSucesso(false)
   }
 
@@ -87,11 +105,12 @@ function AdicionarCliente() {
           <input
             id="nome"
             type="text"
+            minLength="3"
             value={nome}
             onChange={(event) =>
               setNome(event.target.value)
             }
-            disabled={adicionadoComSucesso}
+            disabled={adicionadoComSucesso || salvando}
             required
           />
         </div>
@@ -107,7 +126,7 @@ function AdicionarCliente() {
             value={telefone}
             onChange={handleTelefoneChange}
             placeholder="(44) 99999-9999"
-            disabled={adicionadoComSucesso}
+            disabled={adicionadoComSucesso || salvando}
             required
           />
         </div>
@@ -124,10 +143,19 @@ function AdicionarCliente() {
             onChange={(event) =>
               setEndereco(event.target.value)
             }
-            disabled={adicionadoComSucesso}
+            disabled={adicionadoComSucesso || salvando}
             required
           />
         </div>
+
+        {erroCadastro && (
+          <div
+            className="adicionar-cliente-alert"
+            role="alert"
+          >
+            {erroCadastro}
+          </div>
+        )}
 
         {adicionadoComSucesso && (
           <div
@@ -151,8 +179,11 @@ function AdicionarCliente() {
             <button
               type="submit"
               className="adicionar-cliente-form__adicionar"
+              disabled={salvando}
             >
-              + Adicionar Cliente
+              {salvando
+                ? 'Salvando...'
+                : '+ Adicionar Cliente'}
             </button>
           )}
 

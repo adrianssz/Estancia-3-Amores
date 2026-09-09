@@ -4,45 +4,45 @@ import { Link, useParams } from 'react-router-dom'
 import { useClientes } from '../contexts/ClientesContext'
 import '../styles/ExcluirCliente.css'
 
-function ExcluirCliente() {
-  const { codigo } = useParams()
-
-  const {
-    clientes,
-    excluirCliente,
-  } = useClientes()
-
-  const clienteInicial = clientes.find(
-    (cliente) => cliente.codigo === Number(codigo)
-  )
-
-  const [clienteExibido] = useState(clienteInicial)
+function ConteudoExcluirCliente({
+  cliente,
+  codigo,
+  excluirCliente,
+}) {
+  const [clienteExibido] = useState(cliente)
 
   const [excluidoComSucesso, setExcluidoComSucesso] =
     useState(false)
 
-  function handleExcluir() {
-    excluirCliente(Number(codigo))
-    setExcluidoComSucesso(true)
-  }
+  const [excluindo, setExcluindo] = useState(false)
+  const [erroExclusao, setErroExclusao] = useState('')
 
-  if (!clienteExibido) {
-    return (
-      <section className="excluir-cliente-page">
-        <h1 className="excluir-cliente-page__title">
-          Cliente não encontrado
-        </h1>
+  async function handleExcluir() {
+    setExcluindo(true)
+    setErroExclusao('')
 
-        <div className="excluir-cliente-form__acoes">
-          <Link
-            to="/clientes"
-            className="excluir-cliente-form__retornar"
-          >
-            Retornar a Clientes
-          </Link>
-        </div>
-      </section>
-    )
+    try {
+      await excluirCliente(codigo)
+
+      setExcluidoComSucesso(true)
+    } catch (error) {
+      console.error(
+        'Erro ao excluir cliente:',
+        error
+      )
+
+      if (error.code === '23503') {
+        setErroExclusao(
+          'Este cliente não pode ser excluído pois possui registros vinculados.'
+        )
+      } else {
+        setErroExclusao(
+          'Erro ao excluir cliente. Tente novamente.'
+        )
+      }
+    } finally {
+      setExcluindo(false)
+    }
   }
 
   return (
@@ -62,7 +62,7 @@ function ExcluirCliente() {
             type="text"
             value={clienteExibido.nome}
             readOnly
-            disabled={excluidoComSucesso}
+            disabled={excluidoComSucesso || excluindo}
           />
         </div>
 
@@ -76,7 +76,7 @@ function ExcluirCliente() {
             type="text"
             value={clienteExibido.telefone}
             readOnly
-            disabled={excluidoComSucesso}
+            disabled={excluidoComSucesso || excluindo}
           />
         </div>
 
@@ -90,9 +90,18 @@ function ExcluirCliente() {
             type="text"
             value={clienteExibido.endereco}
             readOnly
-            disabled={excluidoComSucesso}
+            disabled={excluidoComSucesso || excluindo}
           />
         </div>
+
+        {erroExclusao && (
+          <div
+            className="excluir-cliente-alert"
+            role="alert"
+          >
+            {erroExclusao}
+          </div>
+        )}
 
         {excluidoComSucesso && (
           <div
@@ -113,8 +122,11 @@ function ExcluirCliente() {
               type="button"
               className="excluir-cliente-form__excluir"
               onClick={handleExcluir}
+              disabled={excluindo}
             >
-              Excluir
+              {excluindo
+                ? 'Excluindo...'
+                : 'Excluir'}
             </button>
           )}
 
@@ -127,6 +139,84 @@ function ExcluirCliente() {
         </div>
       </div>
     </section>
+  )
+}
+
+function ExcluirCliente() {
+  const { codigo } = useParams()
+
+  const {
+    clientes,
+    carregandoClientes,
+    erroClientes,
+    excluirCliente,
+  } = useClientes()
+
+  const codigoNumerico = Number(codigo)
+
+  if (carregandoClientes) {
+    return (
+      <section className="excluir-cliente-page">
+        <h1 className="excluir-cliente-page__title">
+          Excluir
+        </h1>
+
+        <p>Carregando cliente...</p>
+      </section>
+    )
+  }
+
+  if (erroClientes) {
+    return (
+      <section className="excluir-cliente-page">
+        <h1 className="excluir-cliente-page__title">
+          Excluir
+        </h1>
+
+        <p>{erroClientes}</p>
+
+        <div className="excluir-cliente-form__acoes">
+          <Link
+            to="/clientes"
+            className="excluir-cliente-form__retornar"
+          >
+            Retornar a Clientes
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  const clienteSelecionado = clientes.find(
+    (cliente) =>
+      cliente.codigo === codigoNumerico
+  )
+
+  if (!clienteSelecionado) {
+    return (
+      <section className="excluir-cliente-page">
+        <h1 className="excluir-cliente-page__title">
+          Cliente não encontrado
+        </h1>
+
+        <div className="excluir-cliente-form__acoes">
+          <Link
+            to="/clientes"
+            className="excluir-cliente-form__retornar"
+          >
+            Retornar a Clientes
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <ConteudoExcluirCliente
+      cliente={clienteSelecionado}
+      codigo={codigoNumerico}
+      excluirCliente={excluirCliente}
+    />
   )
 }
 
