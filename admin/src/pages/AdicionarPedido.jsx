@@ -1,40 +1,70 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { useClientes } from '../contexts/ClientesContext'
 import { usePedidos } from '../contexts/PedidosContext'
+import { useProdutos } from '../contexts/ProdutosContext'
+
 import '../styles/AdicionarPedido.css'
+
+
+function criarItemVazio() {
+  return {
+    produtoId: '',
+    quantidade: '1',
+  }
+}
+
 
 function AdicionarPedido() {
   const {
-    pedidos,
+    clientes,
+    carregandoClientes,
+    erroClientes,
+  } = useClientes()
+
+  const {
+    produtos,
+    carregandoProdutos,
+    erroProdutos,
+  } = useProdutos()
+
+  const {
     adicionarPedido,
   } = usePedidos()
 
-  const [cliente, setCliente] = useState('')
-  const [telefone, setTelefone] = useState('')
+  const [clienteId, setClienteId] = useState('')
   const [status, setStatus] = useState('Pendente')
   const [data, setData] = useState('')
 
-  const [adicionadoComSucesso, setAdicionadoComSucesso] =
-    useState(false)
+  const [itens, setItens] = useState([
+    criarItemVazio(),
+  ])
+
+  const [
+    adicionadoComSucesso,
+    setAdicionadoComSucesso,
+  ] = useState(false)
 
   const [erroData, setErroData] = useState(false)
+  const [erro, setErro] = useState('')
+  const [salvando, setSalvando] = useState(false)
 
-  function formatarTelefone(valor) {
-    const numeros = valor
-      .replace(/\D/g, '')
-      .slice(0, 11)
 
-    if (numeros.length <= 2) {
-      return numeros
-    }
+  const clienteSelecionado = clientes.find(
+    (cliente) =>
+      cliente.id === Number(clienteId)
+  )
 
-    if (numeros.length <= 7) {
-      return `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`
-    }
+  const telefone =
+    clienteSelecionado?.telefone ?? ''
 
-    return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`
-  }
+  const produtosDisponiveis = produtos.filter(
+    (produto) =>
+      produto.status === 'pronta-entrega' &&
+      Number(produto.estoque) > 0
+  )
+
 
   function formatarData(valor) {
     const numeros = valor
@@ -51,6 +81,7 @@ function AdicionarPedido() {
 
     return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4)}`
   }
+
 
   function dataValida(valor) {
     const formatoCorreto =
@@ -87,11 +118,13 @@ function AdicionarPedido() {
     return dataInformada <= hoje
   }
 
-  function handleTelefoneChange(event) {
-    setTelefone(
-      formatarTelefone(event.target.value)
-    )
+
+  function handleClienteChange(event) {
+    setClienteId(event.target.value)
+    setErro('')
+    setAdicionadoComSucesso(false)
   }
+
 
   function handleDataChange(event) {
     setData(
@@ -99,75 +132,230 @@ function AdicionarPedido() {
     )
 
     setErroData(false)
+    setErro('')
   }
 
-  function handleSubmit(event) {
+
+  function handleItemChange(
+    indice,
+    campo,
+    valor
+  ) {
+    setItens((itensAtuais) =>
+      itensAtuais.map(
+        (item, indiceAtual) =>
+          indiceAtual === indice
+            ? {
+                ...item,
+                [campo]: valor,
+              }
+            : item
+      )
+    )
+
+    setErro('')
+  }
+
+
+  function handleAdicionarItem() {
+    setItens((itensAtuais) => [
+      ...itensAtuais,
+      criarItemVazio(),
+    ])
+
+    setErro('')
+  }
+
+
+  function handleRemoverItem(indice) {
+    if (itens.length === 1) {
+      return
+    }
+
+    setItens((itensAtuais) =>
+      itensAtuais.filter(
+        (_, indiceAtual) =>
+          indiceAtual !== indice
+      )
+    )
+
+    setErro('')
+  }
+
+
+  async function handleSubmit(event) {
     event.preventDefault()
+
+    setErro('')
+    setErroData(false)
+
+    if (!clienteSelecionado) {
+      setErro(
+        'Selecione um cliente válido.'
+      )
+      return
+    }
 
     if (!dataValida(data)) {
       setErroData(true)
       return
     }
 
-    const maiorId = pedidos.reduce(
-      (maior, pedido) =>
-        pedido.id > maior
-          ? pedido.id
-          : maior,
-      0
+    const itensNormalizados = itens.map(
+      (item) => ({
+        produtoId: Number(item.produtoId),
+        quantidade: Number(item.quantidade),
+      })
     )
 
-    const novoPedido = {
-      id: maiorId + 1,
-      cliente: cliente.trim(),
-      telefone,
-      status,
-      data,
+    const possuiItemInvalido =
+      itensNormalizados.some(
+        (item) =>
+          !Number.isInteger(item.produtoId) ||
+          item.produtoId <= 0 ||
+          !Number.isInteger(item.quantidade) ||
+          item.quantidade <= 0
+      )
+
+    if (possuiItemInvalido) {
+      setErro(
+        'Selecione um produto e informe uma quantidade válida para cada item.'
+      )
+      return
     }
 
-    adicionarPedido(novoPedido)
+    const produtosSelecionados =
+      itensNormalizados.map(
+        (item) => item.produtoId
+      )
 
-    setErroData(false)
+    const possuiProdutoDuplicado =
+      new Set(produtosSelecionados).size !==
+      produtosSelecionados.length
+
+    if (possuiProdutoDuplicado) {
+      setErro(
+        'O mesmo produto não pode ser adicionado mais de uma vez ao pedido.'
+      )
+      return
+    }
+
+    const quantidadeAcimaDoEstoque =
+      itensNormalizados.some((item) => {
+        const produto = produtos.find(
+          (produtoAtual) =>
+            produtoAtual.id === item.produtoId
+        )
+
+        if (!produto) {
+          return true
+        }
+
+        return (
+          item.quantidade >
+          Number(produto.estoque)
+        )
+      })
+
+    if (quantidadeAcimaDoEstoque) {
+      setErro(
+        'A quantidade informada não pode ser maior que o estoque disponível.'
+      )
+      return
+    }
+
+    setSalvando(true)
+
+    const resultado = await adicionarPedido({
+      clienteId: clienteSelecionado.id,
+      cliente: clienteSelecionado.nome,
+      telefone: clienteSelecionado.telefone,
+      status,
+      data,
+      itens: itensNormalizados,
+    })
+
+    setSalvando(false)
+
+    if (!resultado.sucesso) {
+      setErro(resultado.mensagem)
+      return
+    }
+
     setAdicionadoComSucesso(true)
   }
 
+
   function handleNovoPedido() {
-    setCliente('')
-    setTelefone('')
+    setClienteId('')
     setStatus('Pendente')
     setData('')
+    setItens([
+      criarItemVazio(),
+    ])
     setErroData(false)
+    setErro('')
     setAdicionadoComSucesso(false)
   }
 
+
+  const carregandoOpcoes =
+    carregandoClientes ||
+    carregandoProdutos
+
+
   return (
     <section className="adicionar-pedido-page">
+
       <h1 className="adicionar-pedido-page__title">
         Adicionar
       </h1>
+
 
       <form
         className="adicionar-pedido-form"
         onSubmit={handleSubmit}
       >
+
         <div className="adicionar-pedido-form__grupo">
+
           <label htmlFor="cliente">
             Cliente
           </label>
 
-          <input
+          <select
             id="cliente"
-            type="text"
-            value={cliente}
-            onChange={(event) =>
-              setCliente(event.target.value)
+            value={clienteId}
+            onChange={handleClienteChange}
+            disabled={
+              adicionadoComSucesso ||
+              salvando ||
+              carregandoClientes
             }
-            disabled={adicionadoComSucesso}
             required
-          />
+          >
+            <option value="">
+              {carregandoClientes
+                ? 'Carregando clientes...'
+                : 'Selecione um cliente'}
+            </option>
+
+            {clientes.map((cliente) => (
+              <option
+                key={cliente.id}
+                value={cliente.id}
+              >
+                {cliente.nome}
+              </option>
+            ))}
+
+          </select>
+
         </div>
 
+
         <div className="adicionar-pedido-form__grupo">
+
           <label htmlFor="telefone">
             Telefone
           </label>
@@ -176,14 +364,19 @@ function AdicionarPedido() {
             id="telefone"
             type="tel"
             value={telefone}
-            onChange={handleTelefoneChange}
-            placeholder="(44) 99999-9999"
-            disabled={adicionadoComSucesso}
-            required
+            placeholder="Selecione o cliente"
+            readOnly
+            disabled={
+              adicionadoComSucesso ||
+              salvando
+            }
           />
+
         </div>
 
+
         <div className="adicionar-pedido-form__grupo">
+
           <label htmlFor="status">
             Status
           </label>
@@ -191,10 +384,14 @@ function AdicionarPedido() {
           <select
             id="status"
             value={status}
-            onChange={(event) =>
+            onChange={(event) => {
               setStatus(event.target.value)
+              setErro('')
+            }}
+            disabled={
+              adicionadoComSucesso ||
+              salvando
             }
-            disabled={adicionadoComSucesso}
             required
           >
             <option value="Pendente">
@@ -209,9 +406,12 @@ function AdicionarPedido() {
               Entregue
             </option>
           </select>
+
         </div>
 
+
         <div className="adicionar-pedido-form__grupo">
+
           <label htmlFor="data">
             Data
           </label>
@@ -223,7 +423,10 @@ function AdicionarPedido() {
             onChange={handleDataChange}
             placeholder="DD/MM/AAAA"
             maxLength="10"
-            disabled={adicionadoComSucesso}
+            disabled={
+              adicionadoComSucesso ||
+              salvando
+            }
             required
           />
 
@@ -232,9 +435,179 @@ function AdicionarPedido() {
               Data inválida! Por favor, corrija.
             </p>
           )}
+
         </div>
 
+
+        {itens.map((item, indice) => {
+          const produtoSelecionado =
+            produtos.find(
+              (produto) =>
+                produto.id ===
+                Number(item.produtoId)
+            )
+
+          return (
+            <div key={indice}>
+
+              <div className="adicionar-pedido-form__grupo">
+
+                <label
+                  htmlFor={`produto-${indice}`}
+                >
+                  Produto {indice + 1}
+                </label>
+
+                <select
+                  id={`produto-${indice}`}
+                  value={item.produtoId}
+                  onChange={(event) =>
+                    handleItemChange(
+                      indice,
+                      'produtoId',
+                      event.target.value
+                    )
+                  }
+                  disabled={
+                    adicionadoComSucesso ||
+                    salvando ||
+                    carregandoProdutos
+                  }
+                  required
+                >
+                  <option value="">
+                    {carregandoProdutos
+                      ? 'Carregando produtos...'
+                      : 'Selecione um produto'}
+                  </option>
+
+                  {produtosDisponiveis.map(
+                    (produto) => (
+                      <option
+                        key={produto.id}
+                        value={produto.id}
+                      >
+                        {produto.nome}
+                        {' - '}
+                        Estoque: {produto.estoque}
+                      </option>
+                    )
+                  )}
+
+                </select>
+
+              </div>
+
+
+              <div className="adicionar-pedido-form__grupo">
+
+                <label
+                  htmlFor={`quantidade-${indice}`}
+                >
+                  Quantidade
+                </label>
+
+                <input
+                  id={`quantidade-${indice}`}
+                  type="number"
+                  min="1"
+                  step="1"
+                  max={
+                    produtoSelecionado
+                      ? produtoSelecionado.estoque
+                      : undefined
+                  }
+                  value={item.quantidade}
+                  onChange={(event) =>
+                    handleItemChange(
+                      indice,
+                      'quantidade',
+                      event.target.value
+                    )
+                  }
+                  disabled={
+                    adicionadoComSucesso ||
+                    salvando
+                  }
+                  required
+                />
+
+              </div>
+
+
+              {itens.length > 1 &&
+                !adicionadoComSucesso && (
+
+                  <div className="adicionar-pedido-form__acoes">
+
+                    <button
+                      type="button"
+                      className="adicionar-pedido-form__retornar"
+                      onClick={() =>
+                        handleRemoverItem(indice)
+                      }
+                      disabled={salvando}
+                    >
+                      Remover produto
+                    </button>
+
+                  </div>
+
+                )}
+
+            </div>
+          )
+        })}
+
+
+        {!adicionadoComSucesso && (
+
+          <div className="adicionar-pedido-form__acoes">
+
+            <button
+              type="button"
+              className="adicionar-pedido-form__retornar"
+              onClick={handleAdicionarItem}
+              disabled={
+                salvando ||
+                carregandoOpcoes ||
+                produtosDisponiveis.length === 0
+              }
+            >
+              + Adicionar outro produto
+            </button>
+
+          </div>
+
+        )}
+
+
+        {(erroClientes || erroProdutos) && (
+
+          <div
+            className="adicionar-pedido-form__erro"
+            role="alert"
+          >
+            {erroClientes || erroProdutos}
+          </div>
+
+        )}
+
+
+        {erro && (
+
+          <div
+            className="adicionar-pedido-form__erro"
+            role="alert"
+          >
+            {erro}
+          </div>
+
+        )}
+
+
         {adicionadoComSucesso && (
+
           <div
             className="adicionar-pedido-alert"
             role="alert"
@@ -249,19 +622,34 @@ function AdicionarPedido() {
             {' '}
             para cadastrar um novo pedido.
           </div>
+
         )}
 
+
         <div className="adicionar-pedido-form__acoes">
+
           {!adicionadoComSucesso && (
+
             <button
               type="submit"
               className="adicionar-pedido-form__adicionar"
+              disabled={
+                salvando ||
+                carregandoOpcoes ||
+                clientes.length === 0 ||
+                produtosDisponiveis.length === 0
+              }
             >
-              + Adicionar Pedido
+              {salvando
+                ? 'Adicionando...'
+                : '+ Adicionar Pedido'}
             </button>
+
           )}
 
+
           {adicionadoComSucesso && (
+
             <button
               type="button"
               className="adicionar-pedido-form__adicionar"
@@ -269,7 +657,9 @@ function AdicionarPedido() {
             >
               + Adicionar Pedido
             </button>
+
           )}
+
 
           <Link
             to="/pedidos"
@@ -277,10 +667,14 @@ function AdicionarPedido() {
           >
             Retornar a Pedidos
           </Link>
+
         </div>
+
       </form>
+
     </section>
   )
 }
+
 
 export default AdicionarPedido
