@@ -128,7 +128,11 @@ function classeStatus(status) {
 
 
 function Entregas() {
-  const { entregas } = useEntregas()
+  const {
+    entregas,
+    carregando,
+    erro,
+  } = useEntregas()
 
   const [busca, setBusca] = useState('')
   const [termoPesquisa, setTermoPesquisa] = useState('')
@@ -139,22 +143,34 @@ function Entregas() {
     .toLowerCase()
 
 
-  const entregasFiltradas = entregas.filter((entrega) => {
-    if (!termoNormalizado) {
-      return true
+  const entregasFiltradas = entregas.filter(
+    (entrega) => {
+      if (!termoNormalizado) {
+        return true
+      }
+
+      const clienteEntrega = (
+        entrega.cliente ?? ''
+      ).toLowerCase()
+
+      const codigoEntrega = String(
+        entrega.codigo
+      )
+
+      const clienteCorresponde =
+        clienteEntrega.includes(
+          termoNormalizado
+        )
+
+      const codigoCorresponde =
+        codigoEntrega === termoNormalizado
+
+      return (
+        clienteCorresponde ||
+        codigoCorresponde
+      )
     }
-
-    const clienteEntrega = entrega.cliente.toLowerCase()
-    const codigoEntrega = String(entrega.codigo)
-
-    const clienteCorresponde =
-      clienteEntrega.includes(termoNormalizado)
-
-    const codigoCorresponde =
-      codigoEntrega === termoNormalizado
-
-    return clienteCorresponde || codigoCorresponde
-  })
+  )
 
 
   function handlePesquisar(event) {
@@ -194,6 +210,7 @@ function Entregas() {
           placeholder="Pesquisar por cliente ou código"
           value={busca}
           onChange={handleBuscaChange}
+          disabled={carregando}
         />
 
 
@@ -202,6 +219,7 @@ function Entregas() {
           className="entregas-busca__botao"
           aria-label="Pesquisar entregas"
           title="Pesquisar entregas"
+          disabled={carregando}
         >
           <IconePesquisar />
         </button>
@@ -243,76 +261,104 @@ function Entregas() {
 
           <tbody>
 
-            {entregasFiltradas.length > 0 ? (
+            {carregando ? (
 
-              entregasFiltradas.map((entrega) => (
+              <tr>
 
-                <tr key={entrega.codigo}>
+                <td
+                  colSpan="5"
+                  className="entregas-tabela__vazio"
+                >
+                  Carregando entregas...
+                </td>
 
-                  <td data-label="Código">
-                    {entrega.codigo}
-                  </td>
+              </tr>
+
+            ) : erro ? (
+
+              <tr>
+
+                <td
+                  colSpan="5"
+                  className="entregas-tabela__vazio"
+                >
+                  {erro}
+                </td>
+
+              </tr>
+
+            ) : entregasFiltradas.length > 0 ? (
+
+              entregasFiltradas.map(
+                (entrega) => (
+
+                  <tr key={entrega.codigo}>
+
+                    <td data-label="Código">
+                      {entrega.codigo}
+                    </td>
 
 
-                  <td
-                    className="entregas-tabela__cliente"
-                    data-label="Cliente"
-                  >
-                    {entrega.cliente}
-                  </td>
-
-
-                  <td data-label="Data">
-                    {entrega.data}
-                  </td>
-
-
-                  <td data-label="Status">
-
-                    <span
-                      className={`entregas-status ${classeStatus(
-                        entrega.status
-                      )}`}
+                    <td
+                      className="entregas-tabela__cliente"
+                      data-label="Cliente"
                     >
-                      {entrega.status}
-                    </span>
-
-                  </td>
+                      {entrega.cliente}
+                    </td>
 
 
-                  <td
-                    className="entregas-tabela__acoes"
-                    data-label="Ações"
-                  >
+                    <td data-label="Data">
+                      {entrega.data}
+                    </td>
 
-                    <div className="entregas-tabela__acoes-conteudo">
 
-                      <Link
-                        to={`/entregas/${entrega.codigo}/editar`}
-                        className="entregas-acao entregas-acao--editar"
-                        aria-label={`Editar entrega ${entrega.codigo}`}
-                        title="Editar"
+                    <td data-label="Status">
+
+                      <span
+                        className={`entregas-status ${classeStatus(
+                          entrega.status
+                        )}`}
                       >
-                        <IconeEditar />
-                      </Link>
+                        {entrega.status}
+                      </span>
+
+                    </td>
 
 
-                      <Link
-                        to={`/entregas/${entrega.codigo}/excluir`}
-                        className="entregas-acao entregas-acao--excluir"
-                        aria-label={`Excluir entrega ${entrega.codigo}`}
-                        title="Excluir"
-                      >
-                        <IconeExcluir />
-                      </Link>
+                    <td
+                      className="entregas-tabela__acoes"
+                      data-label="Ações"
+                    >
 
-                    </div>
+                      <div className="entregas-tabela__acoes-conteudo">
 
-                  </td>
+                        <Link
+                          to={`/entregas/${entrega.codigo}/editar`}
+                          className="entregas-acao entregas-acao--editar"
+                          aria-label={`Editar entrega ${entrega.codigo}`}
+                          title="Editar"
+                        >
+                          <IconeEditar />
+                        </Link>
 
-                </tr>
 
-              ))
+                        <Link
+                          to={`/entregas/${entrega.codigo}/excluir`}
+                          className="entregas-acao entregas-acao--excluir"
+                          aria-label={`Excluir entrega ${entrega.codigo}`}
+                          title="Excluir"
+                        >
+                          <IconeExcluir />
+                        </Link>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+
+                )
+              )
 
             ) : (
 

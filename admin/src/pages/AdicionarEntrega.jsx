@@ -1,24 +1,36 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { useClientes } from '../contexts/ClientesContext'
 import { useEntregas } from '../contexts/EntregasContext'
 import '../styles/AdicionarEntrega.css'
 
+
 function AdicionarEntrega() {
   const {
-    entregas,
+    clientes,
+    carregandoClientes,
+    erroClientes,
+  } = useClientes()
+
+  const {
     adicionarEntrega,
   } = useEntregas()
 
-  const [cliente, setCliente] = useState('')
+  const [clienteId, setClienteId] = useState('')
   const [data, setData] = useState('')
   const [status, setStatus] = useState('Pendente')
   const [endereco, setEndereco] = useState('')
 
   const [erroData, setErroData] = useState(false)
+  const [erro, setErro] = useState('')
+  const [adicionando, setAdicionando] = useState(false)
 
-  const [adicionadaComSucesso, setAdicionadaComSucesso] =
-    useState(false)
+  const [
+    adicionadaComSucesso,
+    setAdicionadaComSucesso,
+  ] = useState(false)
+
 
   function formatarData(valor) {
     const numeros = valor
@@ -35,6 +47,7 @@ function AdicionarEntrega() {
 
     return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4)}`
   }
+
 
   function dataValida(valor) {
     const formatoCorreto =
@@ -61,81 +74,147 @@ function AdicionarEntrega() {
     )
   }
 
+
+  function handleClienteChange(event) {
+    const novoClienteId = event.target.value
+
+    setClienteId(novoClienteId)
+    setErro('')
+
+    const clienteSelecionado = clientes.find(
+      (cliente) =>
+        cliente.id === Number(novoClienteId)
+    )
+
+    setEndereco(
+      clienteSelecionado?.endereco ?? ''
+    )
+  }
+
+
   function handleDataChange(event) {
     setData(
       formatarData(event.target.value)
     )
 
     setErroData(false)
+    setErro('')
   }
 
-  function handleSubmit(event) {
+
+  async function handleSubmit(event) {
     event.preventDefault()
+
+    setErro('')
+
+    if (!clienteId) {
+      setErro(
+        'Selecione um cliente para a entrega.'
+      )
+      return
+    }
 
     if (!dataValida(data)) {
       setErroData(true)
       return
     }
 
-    const maiorCodigo = entregas.reduce(
-      (maior, entrega) =>
-        entrega.codigo > maior
-          ? entrega.codigo
-          : maior,
-      0
+    const clienteSelecionado = clientes.find(
+      (cliente) =>
+        cliente.id === Number(clienteId)
     )
 
-    const novaEntrega = {
-      codigo: maiorCodigo + 1,
-      cliente: cliente.trim(),
-      endereco: endereco.trim(),
-      data,
-      status,
+    if (!clienteSelecionado) {
+      setErro(
+        'O cliente selecionado não foi encontrado.'
+      )
+      return
     }
 
-    adicionarEntrega(novaEntrega)
+    setAdicionando(true)
+
+    const resultado = await adicionarEntrega({
+      clienteId: clienteSelecionado.id,
+      cliente: clienteSelecionado.nome,
+      endereco,
+      data,
+      status,
+    })
+
+    setAdicionando(false)
+
+    if (!resultado.sucesso) {
+      setErro(resultado.mensagem)
+      return
+    }
 
     setErroData(false)
     setAdicionadaComSucesso(true)
   }
 
+
   function handleNovaEntrega() {
-    setCliente('')
+    setClienteId('')
     setData('')
     setStatus('Pendente')
     setEndereco('')
     setErroData(false)
+    setErro('')
     setAdicionadaComSucesso(false)
   }
 
+
   return (
     <section className="adicionar-entrega-page">
+
       <h1 className="adicionar-entrega-page__title">
         Adicionar
       </h1>
+
 
       <form
         className="adicionar-entrega-form"
         onSubmit={handleSubmit}
       >
+
         <div className="adicionar-entrega-form__grupo">
+
           <label htmlFor="cliente">
             Cliente
           </label>
 
-          <input
+          <select
             id="cliente"
-            type="text"
-            value={cliente}
-            onChange={(event) =>
-              setCliente(event.target.value)
+            value={clienteId}
+            onChange={handleClienteChange}
+            disabled={
+              adicionadaComSucesso ||
+              adicionando ||
+              carregandoClientes
             }
-            disabled={adicionadaComSucesso}
             required
-          />
+          >
+            <option value="">
+              {carregandoClientes
+                ? 'Carregando clientes...'
+                : 'Selecione um cliente'}
+            </option>
+
+            {clientes.map((cliente) => (
+              <option
+                key={cliente.id}
+                value={cliente.id}
+              >
+                {cliente.nome}
+              </option>
+            ))}
+          </select>
+
         </div>
 
+
         <div className="adicionar-entrega-form__grupo">
+
           <label htmlFor="data">
             Data
           </label>
@@ -147,7 +226,10 @@ function AdicionarEntrega() {
             onChange={handleDataChange}
             placeholder="DD/MM/AAAA"
             maxLength="10"
-            disabled={adicionadaComSucesso}
+            disabled={
+              adicionadaComSucesso ||
+              adicionando
+            }
             required
           />
 
@@ -156,9 +238,12 @@ function AdicionarEntrega() {
               Data Inválida
             </p>
           )}
+
         </div>
 
+
         <div className="adicionar-entrega-form__grupo">
+
           <label htmlFor="endereco">
             Endereço
           </label>
@@ -167,15 +252,22 @@ function AdicionarEntrega() {
             id="endereco"
             type="text"
             value={endereco}
-            onChange={(event) =>
+            onChange={(event) => {
               setEndereco(event.target.value)
+              setErro('')
+            }}
+            disabled={
+              adicionadaComSucesso ||
+              adicionando
             }
-            disabled={adicionadaComSucesso}
             required
           />
+
         </div>
 
+
         <div className="adicionar-entrega-form__grupo">
+
           <label htmlFor="status">
             Status
           </label>
@@ -186,7 +278,10 @@ function AdicionarEntrega() {
             onChange={(event) =>
               setStatus(event.target.value)
             }
-            disabled={adicionadaComSucesso}
+            disabled={
+              adicionadaComSucesso ||
+              adicionando
+            }
             required
           >
             <option value="Pendente">
@@ -205,7 +300,29 @@ function AdicionarEntrega() {
               Entregue
             </option>
           </select>
+
         </div>
+
+
+        {erroClientes && (
+          <div
+            className="adicionar-entrega-alert"
+            role="alert"
+          >
+            {erroClientes}
+          </div>
+        )}
+
+
+        {erro && (
+          <div
+            className="adicionar-entrega-alert"
+            role="alert"
+          >
+            {erro}
+          </div>
+        )}
+
 
         {adicionadaComSucesso && (
           <div
@@ -224,15 +341,24 @@ function AdicionarEntrega() {
           </div>
         )}
 
+
         <div className="adicionar-entrega-form__acoes">
+
           {!adicionadaComSucesso && (
             <button
               type="submit"
               className="adicionar-entrega-form__adicionar"
+              disabled={
+                adicionando ||
+                carregandoClientes
+              }
             >
-              + Adicionar Entrega
+              {adicionando
+                ? 'Adicionando...'
+                : '+ Adicionar Entrega'}
             </button>
           )}
+
 
           {adicionadaComSucesso && (
             <button
@@ -244,16 +370,21 @@ function AdicionarEntrega() {
             </button>
           )}
 
+
           <Link
             to="/entregas"
             className="adicionar-entrega-form__retornar"
           >
             Retornar a Entregas
           </Link>
+
         </div>
+
       </form>
+
     </section>
   )
 }
+
 
 export default AdicionarEntrega
