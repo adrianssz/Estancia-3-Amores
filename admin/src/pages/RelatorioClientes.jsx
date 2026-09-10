@@ -1,60 +1,101 @@
-import { useState } from 'react'
+import {
+  useEffect,
+  useState,
+} from 'react'
 import { Link } from 'react-router-dom'
 
 import RelatorioResultado from '../components/RelatorioResultado'
 import { useClientes } from '../contexts/ClientesContext'
-import { usePedidos } from '../contexts/PedidosContext'
+import { supabase } from '../services/supabase'
 
 import '../styles/Relatorios.css'
 
 function RelatorioClientes() {
-  const { clientes } = useClientes()
-  const { pedidos } = usePedidos()
+  const {
+    clientes,
+    carregandoClientes,
+    erroClientes,
+  } = useClientes()
+
+  const [pedidosPorCliente, setPedidosPorCliente] =
+    useState({})
+
+  const [carregandoPedidos, setCarregandoPedidos] =
+    useState(true)
+
+  const [erroPedidos, setErroPedidos] =
+    useState('')
 
   const [clienteSelecionado, setClienteSelecionado] =
     useState('')
-  const [statusSelecionado, setStatusSelecionado] =
-    useState('')
+
   const [resultados, setResultados] = useState([])
   const [mensagem, setMensagem] = useState('')
+
   const [relatorioGerado, setRelatorioGerado] =
     useState(false)
 
-  const clientesDisponiveis = Array.isArray(clientes)
-  const pedidosDisponiveis = Array.isArray(pedidos)
+  useEffect(() => {
+    let ativo = true
 
-  const nomesClientes = clientesDisponiveis
-    ? [
-        ...new Set(
-          clientes
-            .map((cliente) => cliente.nome)
-            .filter(Boolean)
-        ),
-      ].sort((clienteA, clienteB) =>
-        clienteA.localeCompare(clienteB, 'pt-BR')
+    async function carregarContagemPedidos() {
+      const { data, error } = await supabase
+        .from('pedidos')
+        .select('cliente_id')
+
+      if (!ativo) {
+        return
+      }
+
+      if (error) {
+        console.error(
+          'Erro ao carregar pedidos para o relatório:',
+          error
+        )
+
+        setPedidosPorCliente({})
+        setErroPedidos(
+          'Não foi possível carregar os pedidos.'
+        )
+        setCarregandoPedidos(false)
+        return
+      }
+
+      const contagem = (data ?? []).reduce(
+        (acumulador, pedido) => {
+          const clienteId = pedido.cliente_id
+
+          acumulador[clienteId] =
+            (acumulador[clienteId] ?? 0) + 1
+
+          return acumulador
+        },
+        {}
       )
-    : []
 
-  const statusClientes = clientesDisponiveis
-    ? [
-        ...new Set(
-          clientes
-            .map((cliente) => cliente.status)
-            .filter(Boolean)
-        ),
-      ].sort((statusA, statusB) =>
-        statusA.localeCompare(statusB, 'pt-BR')
-      )
-    : []
-
-  function contarPedidos(cliente) {
-    if (!pedidosDisponiveis) {
-      return 0
+      setPedidosPorCliente(contagem)
+      setCarregandoPedidos(false)
     }
 
-    return pedidos.filter(
-      (pedido) => pedido.cliente === cliente.nome
-    ).length
+    carregarContagemPedidos()
+
+    return () => {
+      ativo = false
+    }
+  }, [])
+
+  const nomesClientes = [
+    ...new Set(
+      clientes
+        .map((cliente) => cliente.nome)
+        .filter(Boolean)
+    ),
+  ].sort((clienteA, clienteB) =>
+    clienteA.localeCompare(clienteB, 'pt-BR')
+  )
+
+  function contarPedidos(cliente) {
+    return pedidosPorCliente[cliente.id] ?? 0
   }
 
   const colunas = [
@@ -77,8 +118,7 @@ function RelatorioClientes() {
     {
       chave: 'status',
       titulo: 'Status',
-      render: (cliente) =>
-        cliente.status || 'Não definido',
+      render: () => 'Não definido',
     },
     {
       chave: 'pedidos',
@@ -99,36 +139,13 @@ function RelatorioClientes() {
     limparResultadoAnterior()
   }
 
-  function handleStatusChange(event) {
-    setStatusSelecionado(event.target.value)
-    limparResultadoAnterior()
-  }
-
   function handleSubmit(event) {
     event.preventDefault()
 
-    if (!clientesDisponiveis) {
-      setMensagem('Erro ao carregar dados dos clientes.')
-      setResultados([])
-      setRelatorioGerado(false)
-      return
-    }
-
     const clientesFiltrados = clientes.filter(
-      (cliente) => {
-        const correspondeCliente =
-          !clienteSelecionado ||
-          cliente.nome === clienteSelecionado
-
-        const correspondeStatus =
-          !statusSelecionado ||
-          cliente.status === statusSelecionado
-
-        return (
-          correspondeCliente &&
-          correspondeStatus
-        )
-      }
+      (cliente) =>
+        !clienteSelecionado ||
+        cliente.nome === clienteSelecionado
     )
 
     if (clientesFiltrados.length === 0) {
@@ -143,6 +160,46 @@ function RelatorioClientes() {
     setResultados(clientesFiltrados)
     setMensagem('')
     setRelatorioGerado(true)
+  }
+
+  if (carregandoClientes || carregandoPedidos) {
+    return (
+      <main className="relatorio-page">
+        <section className="relatorio-cabecalho">
+          <h1>Relatório Clientes</h1>
+
+          <p>
+            Carregando dados dos clientes...
+          </p>
+        </section>
+      </main>
+    )
+  }
+
+  if (erroClientes || erroPedidos) {
+    return (
+      <main className="relatorio-page">
+        <section className="relatorio-cabecalho">
+          <h1>Relatório Clientes</h1>
+        </section>
+
+        <section className="relatorio-conteudo">
+          <div
+            className="relatorio-alerta"
+            role="alert"
+          >
+            {erroClientes || erroPedidos}
+          </div>
+
+          <Link
+            to="/relatorios"
+            className="relatorio-retornar"
+          >
+            Retornar a Relatórios
+          </Link>
+        </section>
+      </main>
+    )
   }
 
   if (relatorioGerado) {
@@ -173,15 +230,6 @@ function RelatorioClientes() {
       </section>
 
       <section className="relatorio-conteudo">
-        {!clientesDisponiveis && (
-          <div
-            className="relatorio-alerta"
-            role="alert"
-          >
-            Erro ao carregar dados dos clientes.
-          </div>
-        )}
-
         <form
           className="relatorio-form"
           onSubmit={handleSubmit}
@@ -195,7 +243,7 @@ function RelatorioClientes() {
               id="relatorio-cliente"
               value={clienteSelecionado}
               onChange={handleClienteChange}
-              disabled={!clientesDisponiveis}
+              disabled={clientes.length === 0}
             >
               <option value="">
                 Todos os clientes
@@ -219,27 +267,12 @@ function RelatorioClientes() {
 
             <select
               id="relatorio-cliente-status"
-              value={statusSelecionado}
-              onChange={handleStatusChange}
-              disabled={
-                !clientesDisponiveis ||
-                statusClientes.length === 0
-              }
+              value=""
+              disabled
             >
               <option value="">
-                {statusClientes.length === 0
-                  ? 'Status não disponível no modelo atual'
-                  : 'Todos os status'}
+                Status não disponível no modelo atual
               </option>
-
-              {statusClientes.map((status) => (
-                <option
-                  key={status}
-                  value={status}
-                >
-                  {status}
-                </option>
-              ))}
             </select>
           </div>
 
@@ -256,7 +289,7 @@ function RelatorioClientes() {
           <button
             type="submit"
             className="relatorio-gerar"
-            disabled={!clientesDisponiveis}
+            disabled={clientes.length === 0}
           >
             Gerar Relatório
           </button>
