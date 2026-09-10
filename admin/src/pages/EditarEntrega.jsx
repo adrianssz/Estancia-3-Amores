@@ -1,41 +1,46 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
 
+import {
+  Link,
+  useParams,
+} from 'react-router-dom'
+
+import { useClientes } from '../contexts/ClientesContext'
 import { useEntregas } from '../contexts/EntregasContext'
 import '../styles/EditarEntrega.css'
 
-function EditarEntrega() {
-  const { codigo } = useParams()
 
-  const {
-    entregas,
-    editarEntrega,
-  } = useEntregas()
-
-  const entregaSelecionada = entregas.find(
-    (entrega) => entrega.codigo === Number(codigo)
-  )
-
-  const [cliente, setCliente] = useState(
-    entregaSelecionada?.cliente ?? ''
+function FormularioEditarEntrega({
+  entregaSelecionada,
+  clientes,
+  erroClientes,
+  editarEntrega,
+}) {
+  const [clienteId, setClienteId] = useState(
+    String(entregaSelecionada.clienteId)
   )
 
   const [endereco, setEndereco] = useState(
-    entregaSelecionada?.endereco ?? ''
+    entregaSelecionada.endereco
   )
 
   const [data, setData] = useState(
-    entregaSelecionada?.data ?? ''
+    entregaSelecionada.data
   )
 
   const [status, setStatus] = useState(
-    entregaSelecionada?.status ?? 'Pendente'
+    entregaSelecionada.status
   )
 
   const [erroData, setErroData] = useState(false)
+  const [erro, setErro] = useState('')
+  const [editando, setEditando] = useState(false)
 
-  const [editadaComSucesso, setEditadaComSucesso] =
-    useState(false)
+  const [
+    editadaComSucesso,
+    setEditadaComSucesso,
+  ] = useState(false)
+
 
   function formatarData(valor) {
     const numeros = valor
@@ -52,6 +57,7 @@ function EditarEntrega() {
 
     return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4)}`
   }
+
 
   function dataValida(valor) {
     const formatoCorreto =
@@ -78,91 +84,149 @@ function EditarEntrega() {
     )
   }
 
+
+  function handleClienteChange(event) {
+    const novoClienteId = event.target.value
+
+    setClienteId(novoClienteId)
+    setErro('')
+
+    const clienteSelecionado = clientes.find(
+      (cliente) =>
+        cliente.id === Number(novoClienteId)
+    )
+
+    if (clienteSelecionado) {
+      setEndereco(
+        clienteSelecionado.endereco ?? ''
+      )
+    }
+  }
+
+
   function handleDataChange(event) {
     setData(
       formatarData(event.target.value)
     )
 
     setErroData(false)
+    setErro('')
   }
 
-  function handleSubmit(event) {
+
+  async function handleSubmit(event) {
     event.preventDefault()
+
+    setErro('')
+
+    if (!clienteId) {
+      setErro(
+        'Selecione um cliente para a entrega.'
+      )
+      return
+    }
 
     if (!dataValida(data)) {
       setErroData(true)
       return
     }
 
-    editarEntrega(
-      Number(codigo),
+    const clienteSelecionado = clientes.find(
+      (cliente) =>
+        cliente.id === Number(clienteId)
+    )
+
+    if (!clienteSelecionado) {
+      setErro(
+        'O cliente selecionado não foi encontrado.'
+      )
+      return
+    }
+
+    setEditando(true)
+
+    const resultado = await editarEntrega(
+      entregaSelecionada.codigo,
       {
-        cliente: cliente.trim(),
-        endereco: endereco.trim(),
+        clienteId: clienteSelecionado.id,
+        cliente: clienteSelecionado.nome,
+        endereco,
         data,
         status,
       }
     )
 
+    setEditando(false)
+
+    if (!resultado.sucesso) {
+      setErro(resultado.mensagem)
+      return
+    }
+
     setErroData(false)
     setEditadaComSucesso(true)
   }
 
+
   function handleEditarNovamente() {
+    setErro('')
     setEditadaComSucesso(false)
   }
 
-  if (!entregaSelecionada) {
-    return (
-      <section className="editar-entrega-page">
-        <h1 className="editar-entrega-page__title">
-          Entrega não encontrada
-        </h1>
-
-        <div className="editar-entrega-form__acoes">
-          <Link
-            to="/entregas"
-            className="editar-entrega-form__retornar"
-          >
-            Retornar a Entregas
-          </Link>
-        </div>
-      </section>
-    )
-  }
 
   return (
     <section className="editar-entrega-page">
+
       <h1 className="editar-entrega-page__title">
         Editar
       </h1>
+
 
       <h2 className="editar-entrega-page__subtitle">
         Entregas
       </h2>
 
+
       <form
         className="editar-entrega-form"
         onSubmit={handleSubmit}
       >
+
         <div className="editar-entrega-form__grupo">
+
           <label htmlFor="cliente">
             Cliente
           </label>
 
-          <input
+          <select
             id="cliente"
-            type="text"
-            value={cliente}
-            onChange={(event) =>
-              setCliente(event.target.value)
+            value={clienteId}
+            onChange={handleClienteChange}
+            disabled={
+              editadaComSucesso ||
+              editando
             }
-            disabled={editadaComSucesso}
             required
-          />
+          >
+            <option value="">
+              Selecione um cliente
+            </option>
+
+            {clientes.map((cliente) => (
+              <option
+                key={cliente.id}
+                value={cliente.id}
+              >
+                {cliente.nome}
+              </option>
+            ))}
+          </select>
+
         </div>
 
+
         <div className="editar-entrega-form__grupo">
+
           <label htmlFor="endereco">
             Endereço
           </label>
@@ -171,15 +235,22 @@ function EditarEntrega() {
             id="endereco"
             type="text"
             value={endereco}
-            onChange={(event) =>
+            onChange={(event) => {
               setEndereco(event.target.value)
+              setErro('')
+            }}
+            disabled={
+              editadaComSucesso ||
+              editando
             }
-            disabled={editadaComSucesso}
             required
           />
+
         </div>
 
+
         <div className="editar-entrega-form__grupo">
+
           <label htmlFor="data">
             Data
           </label>
@@ -191,7 +262,10 @@ function EditarEntrega() {
             onChange={handleDataChange}
             placeholder="DD/MM/AAAA"
             maxLength="10"
-            disabled={editadaComSucesso}
+            disabled={
+              editadaComSucesso ||
+              editando
+            }
             required
           />
 
@@ -200,9 +274,12 @@ function EditarEntrega() {
               Data Inválida
             </p>
           )}
+
         </div>
 
+
         <div className="editar-entrega-form__grupo">
+
           <label htmlFor="status">
             Status
           </label>
@@ -213,7 +290,10 @@ function EditarEntrega() {
             onChange={(event) =>
               setStatus(event.target.value)
             }
-            disabled={editadaComSucesso}
+            disabled={
+              editadaComSucesso ||
+              editando
+            }
             required
           >
             <option value="Pendente">
@@ -232,7 +312,29 @@ function EditarEntrega() {
               Entregue
             </option>
           </select>
+
         </div>
+
+
+        {erroClientes && (
+          <div
+            className="editar-entrega-alert"
+            role="alert"
+          >
+            {erroClientes}
+          </div>
+        )}
+
+
+        {erro && (
+          <div
+            className="editar-entrega-alert"
+            role="alert"
+          >
+            {erro}
+          </div>
+        )}
+
 
         {editadaComSucesso && (
           <div
@@ -251,15 +353,21 @@ function EditarEntrega() {
           </div>
         )}
 
+
         <div className="editar-entrega-form__acoes">
+
           {!editadaComSucesso && (
             <button
               type="submit"
               className="editar-entrega-form__salvar"
+              disabled={editando}
             >
-              Salvar alterações
+              {editando
+                ? 'Salvando...'
+                : 'Salvar alterações'}
             </button>
           )}
+
 
           {editadaComSucesso && (
             <button
@@ -271,16 +379,127 @@ function EditarEntrega() {
             </button>
           )}
 
+
           <Link
             to="/entregas"
             className="editar-entrega-form__retornar"
           >
             Retornar a Entregas
           </Link>
+
         </div>
+
       </form>
+
     </section>
   )
 }
+
+
+function EditarEntrega() {
+  const { codigo } = useParams()
+
+  const {
+    clientes,
+    carregandoClientes,
+    erroClientes,
+  } = useClientes()
+
+  const {
+    entregas,
+    carregando,
+    erro: erroEntregas,
+    editarEntrega,
+  } = useEntregas()
+
+
+  const entregaSelecionada = entregas.find(
+    (entrega) =>
+      entrega.codigo === Number(codigo)
+  )
+
+
+  if (
+    carregando ||
+    carregandoClientes
+  ) {
+    return (
+      <section className="editar-entrega-page">
+
+        <h1 className="editar-entrega-page__title">
+          Carregando...
+        </h1>
+
+      </section>
+    )
+  }
+
+
+  if (erroEntregas) {
+    return (
+      <section className="editar-entrega-page">
+
+        <h1 className="editar-entrega-page__title">
+          Erro ao carregar entrega
+        </h1>
+
+        <div
+          className="editar-entrega-alert"
+          role="alert"
+        >
+          {erroEntregas}
+        </div>
+
+        <div className="editar-entrega-form__acoes">
+
+          <Link
+            to="/entregas"
+            className="editar-entrega-form__retornar"
+          >
+            Retornar a Entregas
+          </Link>
+
+        </div>
+
+      </section>
+    )
+  }
+
+
+  if (!entregaSelecionada) {
+    return (
+      <section className="editar-entrega-page">
+
+        <h1 className="editar-entrega-page__title">
+          Entrega não encontrada
+        </h1>
+
+        <div className="editar-entrega-form__acoes">
+
+          <Link
+            to="/entregas"
+            className="editar-entrega-form__retornar"
+          >
+            Retornar a Entregas
+          </Link>
+
+        </div>
+
+      </section>
+    )
+  }
+
+
+  return (
+    <FormularioEditarEntrega
+      key={entregaSelecionada.codigo}
+      entregaSelecionada={entregaSelecionada}
+      clientes={clientes}
+      erroClientes={erroClientes}
+      editarEntrega={editarEntrega}
+    />
+  )
+}
+
 
 export default EditarEntrega
