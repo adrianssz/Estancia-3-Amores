@@ -1,48 +1,131 @@
-import { useState } from 'react'
+import {
+  useEffect,
+  useState,
+} from 'react'
 import { Link } from 'react-router-dom'
 
 import RelatorioResultado from '../components/RelatorioResultado'
-import { usePedidos } from '../contexts/PedidosContext'
+import { supabase } from '../services/supabase'
 
 import '../styles/Relatorios.css'
 
 function RelatorioPedidos() {
-  const { pedidos } = usePedidos()
+  const [pedidos, setPedidos] = useState([])
+  const [carregando, setCarregando] = useState(true)
+  const [erro, setErro] = useState('')
 
   const [clienteSelecionado, setClienteSelecionado] =
     useState('')
+
   const [statusSelecionado, setStatusSelecionado] =
     useState('')
+
   const [resultados, setResultados] = useState([])
   const [mensagem, setMensagem] = useState('')
+
   const [relatorioGerado, setRelatorioGerado] =
     useState(false)
 
-  const dadosDisponiveis = Array.isArray(pedidos)
+  useEffect(() => {
+    let ativo = true
 
-  const clientes = dadosDisponiveis
-    ? [
-        ...new Set(
-          pedidos
-            .map((pedido) => pedido.cliente)
-            .filter(Boolean)
-        ),
-      ].sort((clienteA, clienteB) =>
-        clienteA.localeCompare(clienteB, 'pt-BR')
-      )
-    : []
+    async function carregarPedidos() {
+      setCarregando(true)
+      setErro('')
 
-  const statusPedidos = dadosDisponiveis
-    ? [
-        ...new Set(
-          pedidos
-            .map((pedido) => pedido.status)
-            .filter(Boolean)
-        ),
-      ].sort((statusA, statusB) =>
-        statusA.localeCompare(statusB, 'pt-BR')
+      const { data, error } = await supabase
+        .from('pedidos')
+        .select(`
+          id,
+          cliente_id,
+          telefone,
+          status,
+          data,
+          clientes (
+            nome
+          )
+        `)
+        .order('id', {
+          ascending: true,
+        })
+
+      if (!ativo) {
+        return
+      }
+
+      if (error) {
+        console.error(
+          'Erro ao carregar pedidos para o relatório:',
+          error
+        )
+
+        setPedidos([])
+        setErro('Erro ao carregar pedidos.')
+        setCarregando(false)
+        return
+      }
+
+      const pedidosNormalizados = (data ?? []).map(
+        (pedido) => ({
+          id: pedido.id,
+          clienteId: pedido.cliente_id,
+          cliente:
+            pedido.clientes?.nome ??
+            'Cliente não encontrado',
+          telefone: pedido.telefone,
+          status: pedido.status,
+          data: pedido.data,
+        })
       )
-    : []
+
+      setPedidos(pedidosNormalizados)
+      setCarregando(false)
+    }
+
+    carregarPedidos()
+
+    return () => {
+      ativo = false
+    }
+  }, [])
+
+  const clientes = [
+    ...new Set(
+      pedidos
+        .map((pedido) => pedido.cliente)
+        .filter(
+          (cliente) =>
+            cliente &&
+            cliente !== 'Cliente não encontrado'
+        )
+    ),
+  ].sort((clienteA, clienteB) =>
+    clienteA.localeCompare(clienteB, 'pt-BR')
+  )
+
+  const statusPedidos = [
+    ...new Set(
+      pedidos
+        .map((pedido) => pedido.status)
+        .filter(Boolean)
+    ),
+  ].sort((statusA, statusB) =>
+    statusA.localeCompare(statusB, 'pt-BR')
+  )
+
+  function formatarData(data) {
+    if (!data) {
+      return ''
+    }
+
+    const partes = data.split('-')
+
+    if (partes.length !== 3) {
+      return data
+    }
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`
+  }
 
   const colunas = [
     {
@@ -64,6 +147,8 @@ function RelatorioPedidos() {
     {
       chave: 'data',
       titulo: 'Data',
+      render: (pedido) =>
+        formatarData(pedido.data),
     },
   ]
 
@@ -85,13 +170,6 @@ function RelatorioPedidos() {
 
   function handleSubmit(event) {
     event.preventDefault()
-
-    if (!dadosDisponiveis) {
-      setMensagem('Erro ao carregar pedidos.')
-      setResultados([])
-      setRelatorioGerado(false)
-      return
-    }
 
     const pedidosFiltrados = pedidos.filter(
       (pedido) => {
@@ -124,6 +202,44 @@ function RelatorioPedidos() {
     setRelatorioGerado(true)
   }
 
+  if (carregando) {
+    return (
+      <main className="relatorio-page">
+        <section className="relatorio-cabecalho">
+          <h1>Relatório Pedidos</h1>
+
+          <p>Carregando pedidos...</p>
+        </section>
+      </main>
+    )
+  }
+
+  if (erro) {
+    return (
+      <main className="relatorio-page">
+        <section className="relatorio-cabecalho">
+          <h1>Relatório Pedidos</h1>
+        </section>
+
+        <section className="relatorio-conteudo">
+          <div
+            className="relatorio-alerta"
+            role="alert"
+          >
+            {erro}
+          </div>
+
+          <Link
+            to="/relatorios"
+            className="relatorio-retornar"
+          >
+            Retornar a Relatórios
+          </Link>
+        </section>
+      </main>
+    )
+  }
+
   if (relatorioGerado) {
     return (
       <main className="relatorio-page">
@@ -152,15 +268,6 @@ function RelatorioPedidos() {
       </section>
 
       <section className="relatorio-conteudo">
-        {!dadosDisponiveis && (
-          <div
-            className="relatorio-alerta"
-            role="alert"
-          >
-            Erro ao carregar pedidos.
-          </div>
-        )}
-
         <form
           className="relatorio-form"
           onSubmit={handleSubmit}
@@ -174,7 +281,6 @@ function RelatorioPedidos() {
               id="relatorio-pedido-cliente"
               value={clienteSelecionado}
               onChange={handleClienteChange}
-              disabled={!dadosDisponiveis}
             >
               <option value="">
                 Todos os clientes
@@ -200,7 +306,6 @@ function RelatorioPedidos() {
               id="relatorio-pedido-status"
               value={statusSelecionado}
               onChange={handleStatusChange}
-              disabled={!dadosDisponiveis}
             >
               <option value="">
                 Todos os status
@@ -230,7 +335,6 @@ function RelatorioPedidos() {
           <button
             type="submit"
             className="relatorio-gerar"
-            disabled={!dadosDisponiveis}
           >
             Gerar Relatório
           </button>
