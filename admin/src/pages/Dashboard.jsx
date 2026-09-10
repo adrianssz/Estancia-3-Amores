@@ -68,40 +68,71 @@ function obterCorTipoPlantio(tipo, indice) {
 
 
 function Dashboard() {
-  const { clientes } = useClientes()
-  const { entregas } = useEntregas()
-  const { pedidos } = usePedidos()
-  const { plantios } = usePlantios()
+  const {
+    clientes,
+    carregandoClientes,
+    erroClientes,
+  } = useClientes()
 
-  const clientesDisponiveis = Array.isArray(clientes)
-  const entregasDisponiveis = Array.isArray(entregas)
-  const pedidosDisponiveis = Array.isArray(pedidos)
-  const plantiosDisponiveis = Array.isArray(plantios)
+  const {
+    entregas,
+    carregando: carregandoEntregas,
+    erro: erroEntregas,
+  } = useEntregas()
 
-  const totalClientes = clientesDisponiveis
+  const {
+    pedidos,
+    carregando: carregandoPedidos,
+    erro: erroPedidos,
+  } = usePedidos()
+
+  const {
+    plantios,
+    carregando: carregandoPlantios,
+    erro: erroPlantios,
+  } = usePlantios()
+
+
+  const carregandoDados =
+    carregandoClientes ||
+    carregandoEntregas ||
+    carregandoPedidos ||
+    carregandoPlantios
+
+  const possuiErro =
+    Boolean(erroClientes) ||
+    Boolean(erroEntregas) ||
+    Boolean(erroPedidos) ||
+    Boolean(erroPlantios)
+
+  const dadosProntos =
+    !carregandoDados &&
+    !possuiErro
+
+
+  const totalClientes = dadosProntos
     ? clientes.length
-    : 0
+    : null
 
-  const entregasRealizadas = entregasDisponiveis
+  const entregasRealizadas = dadosProntos
     ? entregas.filter(
         (entrega) =>
           entrega.status === 'Entregue'
       ).length
-    : 0
+    : null
 
   /*
-   * Temporariamente, todos os registros de plantio
-   * são considerados ativos.
-   *
-   * Na integração com o banco, esta regra será
-   * substituída pelo status real do plantio.
+   * O modelo atual de Plantios não possui campo
+   * de status. Por isso, todos os plantios
+   * cadastrados são considerados ativos.
    */
-  const plantiosAtivos = plantiosDisponiveis
+  const plantiosAtivos = dadosProntos
     ? plantios.length
-    : 0
+    : null
+
 
   const quantidadePedidosPorStatus =
-    pedidosDisponiveis
+    dadosProntos
       ? pedidos.reduce(
           (resultado, pedido) => {
             const status =
@@ -127,7 +158,8 @@ function Dashboard() {
     1
   )
 
-  const plantiosPorTipo = plantiosDisponiveis
+
+  const plantiosPorTipo = dadosProntos
     ? plantios.reduce(
         (resultado, plantio) => {
           const tipo =
@@ -194,7 +226,8 @@ function Dashboard() {
           background: '#eeeeee',
         }
 
-  const ultimosPedidos = pedidosDisponiveis
+
+  const ultimosPedidos = dadosProntos
     ? [...pedidos]
         .sort((pedidoA, pedidoB) => {
           const dataA =
@@ -219,12 +252,6 @@ function Dashboard() {
         .slice(0, 5)
     : []
 
-  const dadosDisponiveis =
-    clientesDisponiveis &&
-    entregasDisponiveis &&
-    pedidosDisponiveis &&
-    plantiosDisponiveis
-
 
   return (
     <main className="dashboard-page">
@@ -247,7 +274,17 @@ function Dashboard() {
       </section>
 
 
-      {!dadosDisponiveis && (
+      {carregandoDados && (
+        <div
+          className="dashboard-alerta"
+          role="status"
+        >
+          Carregando dados...
+        </div>
+      )}
+
+
+      {!carregandoDados && possuiErro && (
         <div
           className="dashboard-alerta"
           role="alert"
@@ -269,7 +306,7 @@ function Dashboard() {
           </span>
 
           <strong className="dashboard-card__valor">
-            {totalClientes}
+            {totalClientes ?? '—'}
           </strong>
 
         </article>
@@ -282,7 +319,7 @@ function Dashboard() {
           </span>
 
           <strong className="dashboard-card__valor">
-            {entregasRealizadas}
+            {entregasRealizadas ?? '—'}
           </strong>
 
         </article>
@@ -295,7 +332,7 @@ function Dashboard() {
           </span>
 
           <strong className="dashboard-card__valor">
-            {plantiosAtivos}
+            {plantiosAtivos ?? '—'}
           </strong>
 
         </article>
@@ -311,10 +348,22 @@ function Dashboard() {
             Status Pedido
           </h2>
 
-          {statusPedidos.length === 0 ? (
+          {carregandoDados ? (
+
+            <div className="dashboard-vazio">
+              Carregando dados...
+            </div>
+
+          ) : possuiErro ? (
 
             <div className="dashboard-vazio">
               Dados indisponíveis
+            </div>
+
+          ) : statusPedidos.length === 0 ? (
+
+            <div className="dashboard-vazio">
+              Nenhum pedido encontrado.
             </div>
 
           ) : (
@@ -373,10 +422,22 @@ function Dashboard() {
             Plantios por Tipo
           </h2>
 
-          {totalPlantios === 0 ? (
+          {carregandoDados ? (
+
+            <div className="dashboard-vazio">
+              Carregando dados...
+            </div>
+
+          ) : possuiErro ? (
 
             <div className="dashboard-vazio">
               Dados indisponíveis
+            </div>
+
+          ) : totalPlantios === 0 ? (
+
+            <div className="dashboard-vazio">
+              Nenhum plantio encontrado.
             </div>
 
           ) : (
@@ -473,7 +534,19 @@ function Dashboard() {
         </div>
 
 
-        {ultimosPedidos.length === 0 ? (
+        {carregandoDados ? (
+
+          <div className="dashboard-vazio">
+            Carregando dados...
+          </div>
+
+        ) : possuiErro ? (
+
+          <div className="dashboard-vazio">
+            Dados indisponíveis
+          </div>
+
+        ) : ultimosPedidos.length === 0 ? (
 
           <div className="dashboard-vazio">
             Nenhum pedido encontrado.
