@@ -1,16 +1,25 @@
-import { useState } from 'react'
+import {
+  useEffect,
+  useState,
+} from 'react'
 
 import Header from '../components/Header'
 import BottomMenu from '../components/BottomMenu'
 import CategoryFilter from '../components/CategoryFilter'
 import ProductCardFeira from '../components/ProductCardFeira'
 
-import produtos from '../data/produtos'
+import { supabase } from '../services/supabase'
 
 import '../styles/Feira.css'
 
-
 function Feira() {
+  const [produtos, setProdutos] = useState([])
+
+  const [carregandoProdutos, setCarregandoProdutos] =
+    useState(true)
+
+  const [erroProdutos, setErroProdutos] =
+    useState('')
 
   const [filtros, setFiltros] = useState({
     graos: false,
@@ -18,34 +27,85 @@ function Feira() {
     verduras: false,
     frutas: false,
     colhidas: false,
-    emCrescimento: false
+    emCrescimento: false,
   })
 
+  useEffect(() => {
+    let ativo = true
 
-  function alternarFiltro(nomeFiltro) {
+    async function carregarProdutos() {
+      setCarregandoProdutos(true)
+      setErroProdutos('')
 
-    setFiltros((estadoAtual) => ({
-      ...estadoAtual,
-      [nomeFiltro]: !estadoAtual[nomeFiltro]
-    }))
+      const { data, error } = await supabase
+        .from('vw_produtos_mais_vendidos')
+        .select(`
+          id,
+          nome,
+          unidade,
+          preco,
+          categoria,
+          status,
+          estoque,
+          imagem
+        `)
+        .order('nome', {
+          ascending: true,
+        })
 
-  }
+      if (!ativo) {
+        return
+      }
 
+      if (error) {
+        console.error(
+          'Erro ao carregar produtos da Feira:',
+          error
+        )
 
-  const produtosValidos =
-    produtos.filter((produto) => {
+        setProdutos([])
+        setErroProdutos(
+          'Não foi possível carregar os produtos.'
+        )
+        setCarregandoProdutos(false)
+        return
+      }
 
-      return (
-        produto.nome &&
-        produto.preco !== null &&
-        produto.preco !== undefined
+      const produtosNormalizados = (data ?? []).map(
+        (produto) => ({
+          ...produto,
+          preco: Number(produto.preco),
+          estoque: Number(produto.estoque),
+          imagem: produto.imagem || '',
+        })
       )
 
-    })
+      setProdutos(produtosNormalizados)
+      setCarregandoProdutos(false)
+    }
 
+    carregarProdutos()
+
+    return () => {
+      ativo = false
+    }
+  }, [])
+
+  function alternarFiltro(nomeFiltro) {
+    setFiltros((estadoAtual) => ({
+      ...estadoAtual,
+      [nomeFiltro]: !estadoAtual[nomeFiltro],
+    }))
+  }
+
+  const produtosValidos = produtos.filter(
+    (produto) =>
+      produto.nome &&
+      Number.isFinite(produto.preco) &&
+      Number.isFinite(produto.estoque)
+  )
 
   const categoriasSelecionadas = []
-
 
   if (filtros.graos) {
     categoriasSelecionadas.push('Grãos')
@@ -63,9 +123,7 @@ function Feira() {
     categoriasSelecionadas.push('Frutas')
   }
 
-
   const statusSelecionados = []
-
 
   if (filtros.colhidas) {
     statusSelecionados.push('pronta-entrega')
@@ -75,16 +133,13 @@ function Feira() {
     statusSelecionados.push('em-crescimento')
   }
 
-
   const produtosFiltrados =
     produtosValidos.filter((produto) => {
-
       const categoriaValida =
         categoriasSelecionadas.length === 0 ||
         categoriasSelecionadas.includes(
           produto.categoria
         )
-
 
       const statusValido =
         statusSelecionados.length === 0 ||
@@ -92,136 +147,109 @@ function Feira() {
           produto.status
         )
 
-
-      return (
-        categoriaValida &&
-        statusValido
-      )
-
+      return categoriaValida && statusValido
     })
-
 
   const prontaEntrega =
     produtosFiltrados.filter(
-      produto =>
+      (produto) =>
         produto.status === 'pronta-entrega'
     )
 
-
   const emCrescimento =
     produtosFiltrados.filter(
-      produto =>
+      (produto) =>
         produto.status === 'em-crescimento'
     )
-
 
   const nenhumProduto =
     produtosFiltrados.length === 0
 
-
   return (
-
     <>
-
       <Header />
 
-
       <main className="feira-page">
-
         <h1 className="feira-title">
           Produtos
         </h1>
-
 
         <CategoryFilter
           filtros={filtros}
           alternarFiltro={alternarFiltro}
         />
 
+        {carregandoProdutos && (
+          <p className="sem-produtos">
+            Carregando produtos...
+          </p>
+        )}
 
-        {
-          nenhumProduto
+        {erroProdutos && (
+          <p
+            className="sem-produtos"
+            role="alert"
+          >
+            {erroProdutos}
+          </p>
+        )}
 
-            ?
-
+        {!carregandoProdutos &&
+          !erroProdutos &&
+          nenhumProduto && (
             <p className="sem-produtos">
               Não existem produtos disponíveis nesta categoria
             </p>
+          )}
 
-            :
-
+        {!carregandoProdutos &&
+          !erroProdutos &&
+          !nenhumProduto && (
             <>
-
-              {
-                prontaEntrega.length > 0 &&
-
+              {prontaEntrega.length > 0 && (
                 <section className="feira-section">
-
                   <h2>
                     Pronta Entrega
                   </h2>
 
-
                   <div className="feira-grid">
-
-                    {
-                      prontaEntrega.map((produto) => (
-
+                    {prontaEntrega.map(
+                      (produto) => (
                         <ProductCardFeira
                           key={produto.id}
                           produto={produto}
                         />
-
-                      ))
-                    }
-
+                      )
+                    )}
                   </div>
-
                 </section>
-              }
+              )}
 
-
-              {
-                emCrescimento.length > 0 &&
-
+              {emCrescimento.length > 0 && (
                 <section className="feira-section">
-
                   <h2>
                     Em Crescimento
                   </h2>
 
-
                   <div className="feira-grid">
-
-                    {
-                      emCrescimento.map((produto) => (
-
+                    {emCrescimento.map(
+                      (produto) => (
                         <ProductCardFeira
                           key={produto.id}
                           produto={produto}
                         />
-
-                      ))
-                    }
-
+                      )
+                    )}
                   </div>
-
                 </section>
-              }
-
+              )}
             </>
-        }
-
+          )}
       </main>
 
-
       <BottomMenu />
-
     </>
-
   )
-
 }
-
 
 export default Feira
