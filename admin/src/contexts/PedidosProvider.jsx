@@ -8,6 +8,23 @@ import { useAuth } from './AuthContext'
 import PedidosContext from './PedidosContext'
 
 
+const CAMPOS_PEDIDO = `
+  id,
+  cliente_id,
+  telefone,
+  status,
+  data,
+  clientes (
+    nome
+  ),
+  pedido_itens (
+    produto_id,
+    quantidade,
+    preco_unitario
+  )
+`
+
+
 function formatarDataParaInterface(data) {
   if (!data) {
     return ''
@@ -75,6 +92,21 @@ function normalizarPedido(pedido) {
 }
 
 
+async function buscarPedidoCompleto(id) {
+  const { data, error } = await supabase
+    .from('pedidos')
+    .select(CAMPOS_PEDIDO)
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return normalizarPedido(data)
+}
+
+
 function PedidosProvider({ children }) {
   const {
     autenticado,
@@ -112,21 +144,7 @@ function PedidosProvider({ children }) {
         error,
       } = await supabase
         .from('pedidos')
-        .select(`
-          id,
-          cliente_id,
-          telefone,
-          status,
-          data,
-          clientes (
-            nome
-          ),
-          pedido_itens (
-            produto_id,
-            quantidade,
-            preco_unitario
-          )
-        `)
+        .select(CAMPOS_PEDIDO)
         .order('id', {
           ascending: true,
         })
@@ -152,7 +170,6 @@ function PedidosProvider({ children }) {
       setPedidos(
         (data ?? []).map(normalizarPedido)
       )
-
       setCarregando(false)
     }
 
@@ -215,30 +232,35 @@ function PedidosProvider({ children }) {
       return {
         sucesso: false,
         mensagem:
-          'O pedido foi processado, mas houve erro ao atualizar a listagem.',
+          'O pedido foi processado, mas houve erro ao atualizar a listagem. Recarregue a página.',
       }
     }
 
-    const pedidoCriado = normalizarPedido({
-      ...pedidoRetornado,
-      cliente: novoPedido.cliente,
-      pedido_itens: novoPedido.itens.map(
-        (item) => ({
-          produto_id: item.produtoId,
-          quantidade: item.quantidade,
-          preco_unitario: null,
-        })
-      ),
-    })
+    try {
+      const pedidoCriado = await buscarPedidoCompleto(
+        pedidoRetornado.id
+      )
 
-    setPedidos((pedidosAtuais) => [
-      ...pedidosAtuais,
-      pedidoCriado,
-    ])
+      setPedidos((pedidosAtuais) => [
+        ...pedidosAtuais,
+        pedidoCriado,
+      ])
 
-    return {
-      sucesso: true,
-      pedido: pedidoCriado,
+      return {
+        sucesso: true,
+        pedido: pedidoCriado,
+      }
+    } catch (erroConsulta) {
+      console.error(
+        'Pedido criado, mas não foi possível consultar seus itens:',
+        erroConsulta
+      )
+
+      return {
+        sucesso: false,
+        mensagem:
+          'O pedido foi salvo, mas a listagem não foi atualizada. Recarregue a página antes de tentar novamente.',
+      }
     }
   }
 
@@ -290,37 +312,46 @@ function PedidosProvider({ children }) {
       : data
 
     if (!pedidoRetornado?.id) {
+      console.error(
+        'Retorno inesperado ao editar pedido:',
+        data
+      )
+
       return {
         sucesso: false,
         mensagem:
-          'O pedido foi processado, mas houve erro ao atualizar a listagem.',
+          'O pedido foi processado, mas houve erro ao atualizar a listagem. Recarregue a página.',
       }
     }
 
-    const pedidoEditado = normalizarPedido({
-      ...pedidoRetornado,
-      cliente: dadosAtualizados.cliente,
-      pedido_itens:
-        dadosAtualizados.itens.map(
-          (item) => ({
-            produto_id: item.produtoId,
-            quantidade: item.quantidade,
-            preco_unitario: null,
-          })
-        ),
-    })
-
-    setPedidos((pedidosAtuais) =>
-      pedidosAtuais.map((pedido) =>
-        pedido.id === id
-          ? pedidoEditado
-          : pedido
+    try {
+      const pedidoEditado = await buscarPedidoCompleto(
+        pedidoRetornado.id
       )
-    )
 
-    return {
-      sucesso: true,
-      pedido: pedidoEditado,
+      setPedidos((pedidosAtuais) =>
+        pedidosAtuais.map((pedido) =>
+          pedido.id === id
+            ? pedidoEditado
+            : pedido
+        )
+      )
+
+      return {
+        sucesso: true,
+        pedido: pedidoEditado,
+      }
+    } catch (erroConsulta) {
+      console.error(
+        'Pedido editado, mas não foi possível consultar seus itens:',
+        erroConsulta
+      )
+
+      return {
+        sucesso: false,
+        mensagem:
+          'O pedido foi salvo, mas a listagem não foi atualizada. Recarregue a página antes de tentar novamente.',
+      }
     }
   }
 
