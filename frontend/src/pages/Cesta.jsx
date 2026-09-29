@@ -1,4 +1,7 @@
-import { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useState,
+} from 'react'
 
 import Header from '../components/Header'
 import BottomMenu from '../components/BottomMenu'
@@ -8,32 +11,31 @@ import '../styles/Cesta.css'
 
 
 function Cesta() {
-
   const [cesta, setCesta] = useState([])
 
   const telefoneWhatsApp = '5544998125510'
 
 
   useEffect(() => {
+    try {
+      const cestaSalva =
+        JSON.parse(
+          localStorage.getItem('cesta')
+        ) || []
 
-    const cestaSalva =
-      JSON.parse(
-        localStorage.getItem('cesta')
-      ) || []
-
-    setCesta(cestaSalva)
-
+      setCesta(
+        Array.isArray(cestaSalva)
+          ? cestaSalva
+          : []
+      )
+    } catch {
+      localStorage.removeItem('cesta')
+      setCesta([])
+    }
   }, [])
 
 
-  function removerProduto(id) {
-
-    const novaCesta =
-      cesta.filter(
-        produto =>
-          produto.id !== id
-      )
-
+  function atualizarCesta(novaCesta) {
     setCesta(novaCesta)
 
     localStorage.setItem(
@@ -44,40 +46,121 @@ function Cesta() {
     window.dispatchEvent(
       new Event('cestaAtualizada')
     )
-
   }
 
 
-  const total = cesta.reduce(
+  function removerProduto(id) {
+    const novaCesta =
+      cesta.filter(
+        (produto) =>
+          produto.id !== id
+      )
 
-    (soma, produto) => {
+    atualizarCesta(novaCesta)
+  }
 
-      return soma +
-        (
-          produto.preco *
-          produto.quantidadeCesta
+
+  function aumentarQuantidade(id) {
+    const novaCesta =
+      cesta.map((produto) => {
+        if (produto.id !== id) {
+          return produto
+        }
+
+        const estoque =
+          Number(produto.estoque)
+
+        const quantidadeAtual =
+          Number(
+            produto.quantidadeCesta
+          ) || 1
+
+        if (
+          Number.isFinite(estoque) &&
+          quantidadeAtual >= estoque
+        ) {
+          alert(
+            'Quantidade máxima disponível em estoque atingida.'
+          )
+
+          return produto
+        }
+
+        return {
+          ...produto,
+          quantidadeCesta:
+            quantidadeAtual + 1,
+        }
+      })
+
+    atualizarCesta(novaCesta)
+  }
+
+
+  function diminuirQuantidade(id) {
+    const novaCesta =
+      cesta.map((produto) => {
+        if (produto.id !== id) {
+          return produto
+        }
+
+        const quantidadeAtual =
+          Number(
+            produto.quantidadeCesta
+          ) || 1
+
+        if (quantidadeAtual <= 1) {
+          return produto
+        }
+
+        return {
+          ...produto,
+          quantidadeCesta:
+            quantidadeAtual - 1,
+        }
+      })
+
+    atualizarCesta(novaCesta)
+  }
+
+
+  const total =
+    cesta.reduce(
+      (soma, produto) => {
+        const preco =
+          Number(produto.preco) || 0
+
+        const quantidade =
+          Number(
+            produto.quantidadeCesta
+          ) || 0
+
+        return (
+          soma +
+          preco * quantidade
         )
-
-    },
-
-    0
-
-  )
+      },
+      0
+    )
 
 
   function realizarPedido() {
-
     if (cesta.length === 0) {
       return
     }
 
-
     const itensPedido =
       cesta.map((produto) => {
+        const preco =
+          Number(produto.preco) || 0
+
+        const quantidade =
+          Number(
+            produto.quantidadeCesta
+          ) || 0
 
         const subtotal =
-          produto.preco *
-          produto.quantidadeCesta
+          preco * quantidade
 
         const subtotalFormatado =
           subtotal
@@ -85,11 +168,10 @@ function Cesta() {
             .replace('.', ',')
 
         return (
-          `• ${produto.quantidadeCesta}x ${produto.nome}` +
+          `• ${quantidade}x ${produto.nome}` +
           ` (${produto.unidade})` +
           ` - R$ ${subtotalFormatado}`
         )
-
       })
 
 
@@ -105,7 +187,7 @@ function Cesta() {
       'Itens do pedido:',
       ...itensPedido,
       '',
-      `Total: R$ ${totalFormatado}`
+      `Total: R$ ${totalFormatado}`,
     ].join('\n')
 
 
@@ -114,21 +196,16 @@ function Cesta() {
 
 
     try {
-
       window.open(
         whatsappUrl,
         '_blank',
         'noopener,noreferrer'
       )
-
     } catch {
-
       alert(
         'Não foi possível abrir o WhatsApp. Tente novamente em instantes.'
       )
-
     }
-
   }
 
 
@@ -137,42 +214,37 @@ function Cesta() {
       <Header />
 
       <main className="cesta-page">
-
         <h1 className="cesta-title">
           Cesta
         </h1>
 
         <section className="cesta-container">
-
-          {
-            cesta.length > 0
-
-              ?
-
-              cesta.map((produto) => (
-
-                <CartItem
-                  key={produto.id}
-                  produto={produto}
-                  removerProduto={removerProduto}
-                />
-
-              ))
-
-              :
-
-              <div className="cesta-vazia">
-
-                <p>
-                  Sua cesta está vazia.
-                </p>
-
-              </div>
-          }
+          {cesta.length > 0 ? (
+            cesta.map((produto) => (
+              <CartItem
+                key={produto.id}
+                produto={produto}
+                removerProduto={
+                  removerProduto
+                }
+                aumentarQuantidade={
+                  aumentarQuantidade
+                }
+                diminuirQuantidade={
+                  diminuirQuantidade
+                }
+              />
+            ))
+          ) : (
+            <div className="cesta-vazia">
+              <p>
+                Sua cesta está vazia.
+              </p>
+            </div>
+          )}
 
 
           <div className="cesta-total-area">
-
             <span>
               Total
             </span>
@@ -182,7 +254,6 @@ function Cesta() {
                 .toFixed(2)
                 .replace('.', ',')}
             </strong>
-
           </div>
 
 
@@ -190,13 +261,13 @@ function Cesta() {
             type="button"
             className="realizar-pedido-button"
             onClick={realizarPedido}
-            disabled={cesta.length === 0}
+            disabled={
+              cesta.length === 0
+            }
           >
             REALIZAR PEDIDO
           </button>
-
         </section>
-
       </main>
 
       <BottomMenu />
