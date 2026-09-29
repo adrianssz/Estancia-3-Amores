@@ -7,54 +7,62 @@ import { useEntregas } from '../contexts/EntregasContext'
 import '../styles/Relatorios.css'
 
 function RelatorioEntregas() {
-  const { entregas } = useEntregas()
+  const {
+    entregas,
+    carregando,
+    erro,
+  } = useEntregas()
 
   const [clienteSelecionado, setClienteSelecionado] =
     useState('')
+
   const [statusSelecionado, setStatusSelecionado] =
     useState('')
+
   const [dataSelecionada, setDataSelecionada] =
     useState('')
+
   const [resultados, setResultados] = useState([])
   const [mensagem, setMensagem] = useState('')
+
   const [relatorioGerado, setRelatorioGerado] =
     useState(false)
 
-  const dadosDisponiveis = Array.isArray(entregas)
+  const clientes = [
+    ...new Set(
+      entregas
+        .map((entrega) => entrega.cliente)
+        .filter(Boolean)
+    ),
+  ].sort((clienteA, clienteB) =>
+    clienteA.localeCompare(clienteB, 'pt-BR')
+  )
 
-  const clientes = dadosDisponiveis
-    ? [
-        ...new Set(
-          entregas
-            .map((entrega) => entrega.cliente)
-            .filter(Boolean)
-        ),
-      ].sort((clienteA, clienteB) =>
-        clienteA.localeCompare(clienteB, 'pt-BR')
-      )
-    : []
+  const statusEntregas = [
+    ...new Set(
+      entregas
+        .map((entrega) => entrega.status)
+        .filter(Boolean)
+    ),
+  ].sort((statusA, statusB) =>
+    statusA.localeCompare(statusB, 'pt-BR')
+  )
 
-  const statusEntregas = dadosDisponiveis
-    ? [
-        ...new Set(
-          entregas
-            .map((entrega) => entrega.status)
-            .filter(Boolean)
-        ),
-      ].sort((statusA, statusB) =>
-        statusA.localeCompare(statusB, 'pt-BR')
-      )
-    : []
+  const datas = [
+    ...new Set(
+      entregas
+        .map((entrega) => entrega.data)
+        .filter(Boolean)
+    ),
+  ].sort((dataA, dataB) => {
+    const [diaA, mesA, anoA] = dataA.split('/')
+    const [diaB, mesB, anoB] = dataB.split('/')
 
-  const datas = dadosDisponiveis
-    ? [
-        ...new Set(
-          entregas
-            .map((entrega) => entrega.data)
-            .filter(Boolean)
-        ),
-      ]
-    : []
+    const valorA = `${anoA}${mesA}${diaA}`
+    const valorB = `${anoB}${mesB}${diaB}`
+
+    return valorB.localeCompare(valorA)
+  })
 
   const colunas = [
     {
@@ -103,15 +111,6 @@ function RelatorioEntregas() {
   function handleSubmit(event) {
     event.preventDefault()
 
-    if (!dadosDisponiveis) {
-      setMensagem(
-        'Erro ao carregar dados das entregas.'
-      )
-      setResultados([])
-      setRelatorioGerado(false)
-      return
-    }
-
     const entregasFiltradas = entregas.filter(
       (entrega) => {
         const correspondeCliente =
@@ -148,6 +147,46 @@ function RelatorioEntregas() {
     setRelatorioGerado(true)
   }
 
+  if (carregando) {
+    return (
+      <main className="relatorio-page">
+        <section className="relatorio-cabecalho">
+          <h1>Relatório Entregas</h1>
+
+          <p>
+            Carregando dados das entregas...
+          </p>
+        </section>
+      </main>
+    )
+  }
+
+  if (erro) {
+    return (
+      <main className="relatorio-page">
+        <section className="relatorio-cabecalho">
+          <h1>Relatório Entregas</h1>
+        </section>
+
+        <section className="relatorio-conteudo">
+          <div
+            className="relatorio-alerta"
+            role="alert"
+          >
+            {erro}
+          </div>
+
+          <Link
+            to="/relatorios"
+            className="relatorio-retornar"
+          >
+            Retornar a Relatórios
+          </Link>
+        </section>
+      </main>
+    )
+  }
+
   if (relatorioGerado) {
     return (
       <main className="relatorio-page">
@@ -176,15 +215,6 @@ function RelatorioEntregas() {
       </section>
 
       <section className="relatorio-conteudo">
-        {!dadosDisponiveis && (
-          <div
-            className="relatorio-alerta"
-            role="alert"
-          >
-            Erro ao carregar dados das entregas.
-          </div>
-        )}
-
         <form
           className="relatorio-form"
           onSubmit={handleSubmit}
@@ -198,7 +228,7 @@ function RelatorioEntregas() {
               id="relatorio-entrega-cliente"
               value={clienteSelecionado}
               onChange={handleClienteChange}
-              disabled={!dadosDisponiveis}
+              disabled={entregas.length === 0}
             >
               <option value="">
                 Todos os clientes
@@ -224,7 +254,7 @@ function RelatorioEntregas() {
               id="relatorio-entrega-status"
               value={statusSelecionado}
               onChange={handleStatusChange}
-              disabled={!dadosDisponiveis}
+              disabled={entregas.length === 0}
             >
               <option value="">
                 Todos os status
@@ -250,7 +280,7 @@ function RelatorioEntregas() {
               id="relatorio-entrega-data"
               value={dataSelecionada}
               onChange={handleDataChange}
-              disabled={!dadosDisponiveis}
+              disabled={entregas.length === 0}
             >
               <option value="">
                 Todas as datas
@@ -280,11 +310,20 @@ function RelatorioEntregas() {
           <button
             type="submit"
             className="relatorio-gerar"
-            disabled={!dadosDisponiveis}
+            disabled={entregas.length === 0}
           >
-            + Gerar Relatório
+            Gerar Relatório
           </button>
         </form>
+
+        {entregas.length === 0 && (
+          <div
+            className="relatorio-alerta"
+            role="status"
+          >
+            Nenhuma entrega cadastrada.
+          </div>
+        )}
 
         <Link
           to="/relatorios"
