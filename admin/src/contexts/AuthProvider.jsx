@@ -8,35 +8,93 @@ import AuthContext from './AuthContext'
 
 const USUARIO_ADMIN = 'operador00'
 
+function classificarErroAutenticacao(error) {
+  const codigo = String(
+    error?.code ?? ''
+  ).toLowerCase()
+
+  const mensagem = String(
+    error?.message ?? ''
+  ).toLowerCase()
+
+  const status = Number(
+    error?.status ?? 0
+  )
+
+  if (
+    codigo === 'invalid_credentials'
+    || mensagem.includes(
+      'invalid login credentials'
+    )
+  ) {
+    return 'credenciais_invalidas'
+  }
+
+  if (
+    status >= 500
+    || mensagem.includes('service unavailable')
+    || mensagem.includes('bad gateway')
+    || mensagem.includes('gateway timeout')
+  ) {
+    return 'servico_indisponivel'
+  }
+
+  if (
+    mensagem.includes('failed to fetch')
+    || mensagem.includes('fetch failed')
+    || mensagem.includes('network')
+    || mensagem.includes('load failed')
+  ) {
+    return 'rede'
+  }
+
+  return 'autenticacao'
+}
+
 function AuthProvider({ children }) {
-  const [autenticado, setAutenticado] = useState(false)
+  const [autenticado, setAutenticado] =
+    useState(false)
 
-  const [usuarioAutenticado, setUsuarioAutenticado] =
-    useState(null)
+  const [
+    usuarioAutenticado,
+    setUsuarioAutenticado,
+  ] = useState(null)
 
-  const [carregando, setCarregando] = useState(true)
+  const [carregando, setCarregando] =
+    useState(true)
 
   useEffect(() => {
     let ativo = true
 
     async function carregarSessao() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
 
-      if (!ativo) {
-        return
+        if (!ativo) {
+          return
+        }
+
+        setAutenticado(Boolean(session))
+
+        setUsuarioAutenticado(
+          session
+            ? USUARIO_ADMIN
+            : null
+        )
+      } catch {
+        if (!ativo) {
+          return
+        }
+
+        setAutenticado(false)
+        setUsuarioAutenticado(null)
+      } finally {
+        if (ativo) {
+          setCarregando(false)
+        }
       }
-
-      setAutenticado(Boolean(session))
-
-      setUsuarioAutenticado(
-        session
-          ? USUARIO_ADMIN
-          : null
-      )
-
-      setCarregando(false)
     }
 
     carregarSessao()
@@ -68,35 +126,74 @@ function AuthProvider({ children }) {
   }, [])
 
   async function entrar(usuario, senha) {
-    const usuarioNormalizado = usuario.trim()
+    const usuarioNormalizado =
+      usuario.trim()
 
-    if (usuarioNormalizado !== USUARIO_ADMIN) {
-      return false
+    if (
+      usuarioNormalizado !==
+      USUARIO_ADMIN
+    ) {
+      return {
+        sucesso: false,
+        motivo: 'credenciais_invalidas',
+      }
     }
 
     const emailAdministrador =
       import.meta.env.VITE_SUPABASE_ADMIN_EMAIL
 
     if (!emailAdministrador) {
-      return false
+      return {
+        sucesso: false,
+        motivo: 'configuracao',
+      }
     }
 
-    const {
-      data,
-      error,
-    } = await supabase.auth.signInWithPassword({
-      email: emailAdministrador,
-      password: senha,
-    })
+    try {
+      const {
+        data,
+        error,
+      } = await supabase.auth.signInWithPassword({
+        email: emailAdministrador,
+        password: senha,
+      })
 
-    if (error || !data.session) {
-      return false
+      if (error) {
+        return {
+          sucesso: false,
+          motivo:
+            classificarErroAutenticacao(
+              error
+            ),
+        }
+      }
+
+      if (!data.session) {
+        return {
+          sucesso: false,
+          motivo: 'autenticacao',
+        }
+      }
+
+      setAutenticado(true)
+
+      setUsuarioAutenticado(
+        usuarioNormalizado
+      )
+
+      return {
+        sucesso: true,
+        motivo: null,
+      }
+    } catch (error) {
+      return {
+        sucesso: false,
+        motivo:
+          classificarErroAutenticacao(
+            error
+          ),
+      }
     }
-
-    setAutenticado(true)
-    setUsuarioAutenticado(usuarioNormalizado)
-
-    return true
   }
 
   async function sair() {

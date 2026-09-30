@@ -7,6 +7,37 @@ import {
 import { useAuth } from '../contexts/AuthContext'
 import '../styles/Login.css'
 
+function obterMensagemErro(motivo) {
+  switch (motivo) {
+    case 'credenciais_invalidas':
+      return 'Usuário ou senha incorretos.'
+
+    case 'rede':
+      return (
+        'Não foi possível conectar ao servidor. '
+        + 'Verifique sua conexão e tente novamente.'
+      )
+
+    case 'servico_indisponivel':
+      return (
+        'Serviço de autenticação indisponível '
+        + 'no momento. Tente novamente mais tarde.'
+      )
+
+    case 'configuracao':
+      return (
+        'Configuração de autenticação '
+        + 'indisponível.'
+      )
+
+    default:
+      return (
+        'Não foi possível realizar o login. '
+        + 'Tente novamente.'
+      )
+  }
+}
+
 function Login() {
   const navigate = useNavigate()
 
@@ -15,9 +46,14 @@ function Login() {
     entrar,
   } = useAuth()
 
-  const [usuario, setUsuario] = useState('')
-  const [senha, setSenha] = useState('')
-  const [erro, setErro] = useState('')
+  const [usuario, setUsuario] =
+    useState('')
+
+  const [senha, setSenha] =
+    useState('')
+
+  const [erro, setErro] =
+    useState('')
 
   function handleUsuarioChange(event) {
     setUsuario(event.target.value)
@@ -32,20 +68,27 @@ function Login() {
   async function handleSubmit(event) {
     event.preventDefault()
 
-    const usuarioNormalizado = usuario.trim()
+    const usuarioNormalizado =
+      usuario.trim()
 
     if (!usuarioNormalizado) {
-      setErro('O campo Usuário é obrigatório')
+      setErro(
+        'O campo Usuário é obrigatório'
+      )
       return
     }
 
-    const loginRealizado = await entrar(
+    const resultado = await entrar(
       usuarioNormalizado,
       senha
-     )
+    )
 
-    if (!loginRealizado) {
-      setErro('Senha incorreta! Tente novamente.')
+    if (!resultado.sucesso) {
+      setErro(
+        obterMensagemErro(
+          resultado.motivo
+        )
+      )
       return
     }
 
