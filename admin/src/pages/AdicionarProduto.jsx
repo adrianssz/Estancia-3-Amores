@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useProdutos } from '../contexts/ProdutosContext'
+import { validarImagemProduto } from '../services/imagensProdutos'
 import '../styles/AdicionarProduto.css'
 
 function AdicionarProduto() {
@@ -13,7 +14,9 @@ function AdicionarProduto() {
   const [categoria, setCategoria] = useState('Legumes')
   const [status, setStatus] = useState('pronta-entrega')
   const [estoque, setEstoque] = useState('')
-  const [imagem, setImagem] = useState('')
+  const [arquivoImagem, setArquivoImagem] = useState(null)
+
+  const inputImagemRef = useRef(null)
 
   const [adicionadoComSucesso, setAdicionadoComSucesso] =
     useState(false)
@@ -21,35 +24,61 @@ function AdicionarProduto() {
   const [salvando, setSalvando] = useState(false)
   const [erroCadastro, setErroCadastro] = useState('')
 
+  function handleSelecionarImagem(event) {
+    const arquivo = event.target.files?.[0] ?? null
+
+    setErroCadastro('')
+
+    try {
+      validarImagemProduto(arquivo)
+      setArquivoImagem(arquivo)
+    } catch (error) {
+      setArquivoImagem(null)
+      event.target.value = ''
+      setErroCadastro(error.message)
+    }
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
+
+    if (salvando || adicionadoComSucesso) {
+      return
+    }
 
     const precoNumerico = Number(preco)
     const estoqueNumerico = Number(estoque)
 
     if (
+      !nome.trim() ||
+      !unidade.trim() ||
+      !Number.isFinite(precoNumerico) ||
       precoNumerico < 0 ||
       estoqueNumerico < 0 ||
       !Number.isInteger(estoqueNumerico)
     ) {
+      setErroCadastro(
+        'Preencha os dados do produto com valores válidos.'
+      )
       return
-    }
-
-    const novoProduto = {
-      nome: nome.trim(),
-      unidade: unidade.trim(),
-      preco: precoNumerico,
-      categoria,
-      status,
-      estoque: estoqueNumerico,
-      imagem: imagem.trim(),
     }
 
     setSalvando(true)
     setErroCadastro('')
 
     try {
-      await adicionarProduto(novoProduto)
+      validarImagemProduto(arquivoImagem)
+
+      await adicionarProduto({
+        nome: nome.trim(),
+        unidade: unidade.trim(),
+        preco: precoNumerico,
+        categoria,
+        status,
+        estoque: estoqueNumerico,
+        imagem: '',
+        arquivoImagem,
+      })
 
       setAdicionadoComSucesso(true)
     } catch (error) {
@@ -59,7 +88,9 @@ function AdicionarProduto() {
       )
 
       setErroCadastro(
-        'Erro ao salvar produto. Tente novamente.'
+        error instanceof Error
+          ? error.message
+          : 'Erro ao salvar produto. Tente novamente.'
       )
     } finally {
       setSalvando(false)
@@ -73,7 +104,12 @@ function AdicionarProduto() {
     setCategoria('Legumes')
     setStatus('pronta-entrega')
     setEstoque('')
-    setImagem('')
+    setArquivoImagem(null)
+
+    if (inputImagemRef.current) {
+      inputImagemRef.current.value = ''
+    }
+
     setErroCadastro('')
     setAdicionadoComSucesso(false)
   }
@@ -220,20 +256,29 @@ function AdicionarProduto() {
 
         <div className="adicionar-produto-form__grupo">
           <label htmlFor="imagem">
-            Imagem
+            Foto do produto
           </label>
 
           <input
+            ref={inputImagemRef}
             id="imagem"
-            type="text"
-            value={imagem}
-            onChange={(event) =>
-              setImagem(event.target.value)
-            }
-            placeholder="Informe a referência da imagem"
+            type="file"
+            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+            onChange={handleSelecionarImagem}
             disabled={adicionadoComSucesso || salvando}
-            required
+            aria-describedby="imagem-ajuda"
           />
+
+          <p id="imagem-ajuda">
+            JPG, JPEG ou PNG, até 5 MB.
+            A foto é opcional.
+          </p>
+
+          {arquivoImagem && (
+            <p>
+              Selecionada: {arquivoImagem.name}
+            </p>
+          )}
         </div>
 
         {erroCadastro && (

@@ -5,6 +5,11 @@ import {
 } from 'react'
 
 import { supabase } from '../services/supabase'
+import {
+  enviarImagemProduto,
+  extrairCaminhoImagemProduto,
+  removerImagemProduto,
+} from '../services/imagensProdutos'
 import ProdutosContext from './ProdutosContext'
 
 async function buscarProdutos() {
@@ -18,6 +23,36 @@ async function buscarProdutos() {
   }
 
   return data ?? []
+}
+
+async function limparImagemSemUso(url) {
+  if (!extrairCaminhoImagemProduto(url)) {
+    return
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('produtos')
+      .select('id')
+      .eq('imagem', url)
+      .limit(1)
+
+    if (error) {
+      throw error
+    }
+
+    if (data?.length) {
+      return
+    }
+
+    await removerImagemProduto(url)
+  } catch (error) {
+    // Uma falha na limpeza não desfaz o produto já salvo.
+    console.warn(
+      'Não foi possível limpar a imagem sem uso:',
+      error
+    )
+  }
 }
 
 function ProdutosProvider({ children }) {
@@ -84,6 +119,14 @@ function ProdutosProvider({ children }) {
   }, [])
 
   async function adicionarProduto(novoProduto) {
+    let imagemEnviada = ''
+
+    if (novoProduto.arquivoImagem) {
+      imagemEnviada = await enviarImagemProduto(
+        novoProduto.arquivoImagem
+      )
+    }
+
     const dadosProduto = {
       nome: novoProduto.nome,
       unidade: novoProduto.unidade,
@@ -91,28 +134,59 @@ function ProdutosProvider({ children }) {
       categoria: novoProduto.categoria,
       status: novoProduto.status,
       estoque: novoProduto.estoque,
-      imagem: novoProduto.imagem,
+      imagem:
+        imagemEnviada || novoProduto.imagem || '',
     }
 
-    const { data, error } = await supabase
-      .from('produtos')
-      .insert(dadosProduto)
-      .select('*')
-      .single()
+    let produtoCriado
 
-    if (error) {
+    try {
+      const { data, error } = await supabase
+        .from('produtos')
+        .insert(dadosProduto)
+        .select('*')
+        .single()
+
+      if (error) {
+        throw error
+      }
+
+      produtoCriado = data
+    } catch (error) {
+      await limparImagemSemUso(imagemEnviada)
       throw error
     }
 
     setProdutos((produtosAtuais) => [
       ...produtosAtuais,
-      data,
+      produtoCriado,
     ])
 
-    return data
+    return produtoCriado
   }
 
   async function editarProduto(id, dadosAtualizados) {
+    const {
+      data: produtoAnterior,
+      error: erroBusca,
+    } = await supabase
+      .from('produtos')
+      .select('imagem')
+      .eq('id', id)
+      .single()
+
+    if (erroBusca) {
+      throw erroBusca
+    }
+
+    let imagemEnviada = ''
+
+    if (dadosAtualizados.arquivoImagem) {
+      imagemEnviada = await enviarImagemProduto(
+        dadosAtualizados.arquivoImagem
+      )
+    }
+
     const dadosProduto = {
       nome: dadosAtualizados.nome,
       unidade: dadosAtualizados.unidade,
@@ -120,36 +194,60 @@ function ProdutosProvider({ children }) {
       categoria: dadosAtualizados.categoria,
       status: dadosAtualizados.status,
       estoque: dadosAtualizados.estoque,
-      imagem: dadosAtualizados.imagem,
+      imagem: imagemEnviada || (
+        dadosAtualizados.imagem ??
+        produtoAnterior.imagem ??
+        ''
+      ),
     }
 
-    const { data, error } = await supabase
-      .from('produtos')
-      .update(dadosProduto)
-      .eq('id', id)
-      .select('*')
-      .single()
+    let produtoEditado
 
-    if (error) {
+    try {
+      const { data, error } = await supabase
+        .from('produtos')
+        .update(dadosProduto)
+        .eq('id', id)
+        .select('*')
+        .single()
+
+      if (error) {
+        throw error
+      }
+
+      produtoEditado = data
+    } catch (error) {
+      await limparImagemSemUso(imagemEnviada)
       throw error
     }
 
     setProdutos((produtosAtuais) =>
       produtosAtuais.map((produto) =>
         produto.id === id
-          ? data
+          ? produtoEditado
           : produto
       )
     )
 
-    return data
+    if (
+      produtoAnterior.imagem !==
+      produtoEditado.imagem
+    ) {
+      await limparImagemSemUso(
+        produtoAnterior.imagem
+      )
+    }
+
+    return produtoEditado
   }
 
   async function excluirProduto(id) {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('produtos')
       .delete()
       .eq('id', id)
+      .select('id, imagem')
+      .single()
 
     if (error) {
       throw error
@@ -160,6 +258,9 @@ function ProdutosProvider({ children }) {
         (produto) => produto.id !== id
       )
     )
+
+    // Só tenta remover a foto após confirmar a exclusão.
+    await limparImagemSemUso(data.imagem)
   }
 
   return (

@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { useProdutos } from '../contexts/ProdutosContext'
+import { validarImagemProduto } from '../services/imagensProdutos'
 import '../styles/EditarProduto.css'
 
 function FormularioEditarProduto({
@@ -14,7 +15,10 @@ function FormularioEditarProduto({
   const [categoria, setCategoria] = useState(produto.categoria)
   const [status, setStatus] = useState(produto.status)
   const [estoque, setEstoque] = useState(produto.estoque)
-  const [imagem, setImagem] = useState(produto.imagem)
+  const [imagem, setImagem] = useState(produto.imagem ?? '')
+  const [arquivoImagem, setArquivoImagem] = useState(null)
+
+  const inputImagemRef = useRef(null)
 
   const [editadoComSucesso, setEditadoComSucesso] =
     useState(false)
@@ -22,17 +26,46 @@ function FormularioEditarProduto({
   const [salvando, setSalvando] = useState(false)
   const [erroEdicao, setErroEdicao] = useState('')
 
+  const possuiUrlImagem =
+    imagem.startsWith('https://') ||
+    imagem.startsWith('http://')
+
+  function handleSelecionarImagem(event) {
+    const arquivo = event.target.files?.[0] ?? null
+
+    setErroEdicao('')
+
+    try {
+      validarImagemProduto(arquivo)
+      setArquivoImagem(arquivo)
+    } catch (error) {
+      setArquivoImagem(null)
+      event.target.value = ''
+      setErroEdicao(error.message)
+    }
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
+
+    if (salvando || editadoComSucesso) {
+      return
+    }
 
     const precoNumerico = Number(preco)
     const estoqueNumerico = Number(estoque)
 
     if (
+      !nome.trim() ||
+      !unidade.trim() ||
+      !Number.isFinite(precoNumerico) ||
       precoNumerico < 0 ||
       estoqueNumerico < 0 ||
       !Number.isInteger(estoqueNumerico)
     ) {
+      setErroEdicao(
+        'Preencha os dados do produto com valores válidos.'
+      )
       return
     }
 
@@ -40,7 +73,9 @@ function FormularioEditarProduto({
     setErroEdicao('')
 
     try {
-      await editarProduto(
+      validarImagemProduto(arquivoImagem)
+
+      const produtoAtualizado = await editarProduto(
         produto.id,
         {
           nome: nome.trim(),
@@ -49,9 +84,16 @@ function FormularioEditarProduto({
           categoria,
           status,
           estoque: estoqueNumerico,
-          imagem: imagem.trim(),
+          arquivoImagem,
         }
       )
+
+      setImagem(produtoAtualizado.imagem ?? '')
+      setArquivoImagem(null)
+
+      if (inputImagemRef.current) {
+        inputImagemRef.current.value = ''
+      }
 
       setEditadoComSucesso(true)
     } catch (error) {
@@ -61,7 +103,9 @@ function FormularioEditarProduto({
       )
 
       setErroEdicao(
-        'Erro ao salvar as alterações. Tente novamente.'
+        error instanceof Error
+          ? error.message
+          : 'Erro ao salvar as alterações. Tente novamente.'
       )
     } finally {
       setSalvando(false)
@@ -214,19 +258,46 @@ function FormularioEditarProduto({
 
         <div className="editar-produto-form__grupo">
           <label htmlFor="imagem">
-            Imagem
+            Foto do produto
           </label>
 
+          {possuiUrlImagem ? (
+            <p>
+              <a
+                href={imagem}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Ver foto atual
+              </a>
+            </p>
+          ) : (
+            <p>
+              Este produto ainda não possui uma URL de foto.
+            </p>
+          )}
+
           <input
+            ref={inputImagemRef}
             id="imagem"
-            type="text"
-            value={imagem}
-            onChange={(event) =>
-              setImagem(event.target.value)
-            }
+            type="file"
+            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+            onChange={handleSelecionarImagem}
             disabled={editadoComSucesso || salvando}
-            required
+            aria-describedby="imagem-ajuda"
           />
+
+          <p id="imagem-ajuda">
+            JPG, JPEG ou PNG, até 5 MB.
+            Sem selecionar outra foto, a imagem atual
+            será mantida.
+          </p>
+
+          {arquivoImagem && (
+            <p>
+              Nova foto selecionada: {arquivoImagem.name}
+            </p>
+          )}
         </div>
 
         {erroEdicao && (
@@ -354,6 +425,7 @@ function EditarProduto() {
 
   return (
     <FormularioEditarProduto
+      key={produtoSelecionado.id}
       produto={produtoSelecionado}
       editarProduto={editarProduto}
     />
