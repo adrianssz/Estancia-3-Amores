@@ -11,13 +11,13 @@ function App() {
     <AuthProvider>
       <PlantiosProvider>
         <ClientesProvider>
-          <PedidosProvider>
-            <EntregasProvider>
-              <ProdutosProvider>
+          <ProdutosProvider>
+            <PedidosProvider>
+              <EntregasProvider>
                 <AppRoutes />
-              </ProdutosProvider>
-            </EntregasProvider>
-          </PedidosProvider>
+              </EntregasProvider>
+            </PedidosProvider>
+          </ProdutosProvider>
         </ClientesProvider>
       </PlantiosProvider>
     </AuthProvider>
