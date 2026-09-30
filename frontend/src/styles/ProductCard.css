@@ -12,7 +12,7 @@
 
 .product-card-image-area {
   width: 100%;
-  height: 150px;
+  height: 230px;
 
   background-color: #eeeeee;
 
@@ -27,6 +27,7 @@
   display: block;
 
   object-fit: cover;
+  object-position: center;
 }
 
 
@@ -72,7 +73,7 @@
 @media (max-width: 600px) {
 
   .product-card-image-area {
-    height: 110px;
+    height: 150px;
   }
 
 
