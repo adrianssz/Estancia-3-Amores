@@ -1,9 +1,5 @@
 import { useState } from 'react'
-
-import {
-  Link,
-  useParams,
-} from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import { useClientes } from '../contexts/ClientesContext'
 import { usePedidos } from '../contexts/PedidosContext'
@@ -11,14 +7,12 @@ import { useProdutos } from '../contexts/ProdutosContext'
 
 import '../styles/EditarPedido.css'
 
-
 function criarItemVazio() {
   return {
     produtoId: '',
     quantidade: '1',
   }
 }
-
 
 function FormularioEditarPedido({
   pedidoSelecionado,
@@ -47,42 +41,44 @@ function FormularioEditarPedido({
       Array.isArray(pedidoSelecionado.itens) &&
       pedidoSelecionado.itens.length > 0
     ) {
-      return pedidoSelecionado.itens.map(
-        (item) => ({
-          produtoId: String(item.produtoId),
-          quantidade: String(item.quantidade),
-        })
-      )
+      return pedidoSelecionado.itens.map((item) => ({
+        produtoId: String(item.produtoId),
+        quantidade: String(item.quantidade),
+      }))
     }
 
-    return [
-      criarItemVazio(),
-    ]
+    return [criarItemVazio()]
   })
 
-  const [
-    editadoComSucesso,
-    setEditadoComSucesso,
-  ] = useState(false)
+  const [editadoComSucesso, setEditadoComSucesso] =
+    useState(false)
 
   const [erroData, setErroData] = useState(false)
   const [erro, setErro] = useState('')
   const [salvando, setSalvando] = useState(false)
 
+  const carregandoOpcoes =
+    carregandoClientes || carregandoProdutos
 
   const clienteSelecionado = clientes.find(
-    (cliente) =>
-      cliente.id === Number(clienteId)
+    (cliente) => cliente.id === Number(clienteId)
   )
 
-  const telefone =
-    clienteSelecionado?.telefone ?? ''
+  const telefone = clienteSelecionado?.telefone ?? ''
 
-  const produtosSelecionadosIds = new Set(
-    itens
-      .map((item) => Number(item.produtoId))
-      .filter((id) => Number.isInteger(id) && id > 0)
-  )
+  // A referência acompanha os itens retornados após cada edição.
+  const quantidadesRegistradas = new Map()
+
+  for (const item of pedidoSelecionado.itens ?? []) {
+    const produtoId = Number(item.produtoId)
+    const quantidade = Number(item.quantidade)
+
+    quantidadesRegistradas.set(
+      produtoId,
+      (quantidadesRegistradas.get(produtoId) ?? 0) +
+        quantidade
+    )
+  }
 
   const produtosDisponiveis = produtos.filter(
     (produto) =>
@@ -90,9 +86,34 @@ function FormularioEditarPedido({
         produto.status === 'pronta-entrega' &&
         Number(produto.estoque) > 0
       ) ||
-      produtosSelecionadosIds.has(produto.id)
+      quantidadesRegistradas.has(produto.id)
   )
 
+  function obterLimiteQuantidade(produtoId) {
+    const id = Number(produtoId)
+
+    const produto = produtos.find(
+      (produtoAtual) => produtoAtual.id === id
+    )
+
+    if (!produto) {
+      return undefined
+    }
+
+    const quantidadeRegistrada =
+      quantidadesRegistradas.get(id) ?? 0
+
+    const estoqueDisponivel =
+      produto.status === 'pronta-entrega'
+        ? Number(produto.estoque)
+        : 0
+
+    // Permite conservar o histórico; aumentos exigem disponibilidade.
+    return Math.max(
+      quantidadeRegistrada,
+      estoqueDisponivel
+    )
+  }
 
   function formatarData(valor) {
     const numeros = valor
@@ -110,24 +131,13 @@ function FormularioEditarPedido({
     return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4)}`
   }
 
-
   function dataValida(valor) {
-    const formatoCorreto =
-      /^\d{2}\/\d{2}\/\d{4}$/.test(valor)
-
-    if (!formatoCorreto) {
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(valor)) {
       return false
     }
 
-    const [dia, mes, ano] = valor
-      .split('/')
-      .map(Number)
-
-    const dataInformada = new Date(
-      ano,
-      mes - 1,
-      dia
-    )
+    const [dia, mes, ano] = valor.split('/').map(Number)
+    const dataInformada = new Date(ano, mes - 1, dia)
 
     const dataExiste =
       dataInformada.getFullYear() === ano &&
@@ -146,46 +156,31 @@ function FormularioEditarPedido({
     return dataInformada <= hoje
   }
 
-
   function handleClienteChange(event) {
     setClienteId(event.target.value)
     setErro('')
     setEditadoComSucesso(false)
   }
 
-
   function handleDataChange(event) {
-    setData(
-      formatarData(event.target.value)
-    )
-
+    setData(formatarData(event.target.value))
     setErroData(false)
     setErro('')
     setEditadoComSucesso(false)
   }
 
-
-  function handleItemChange(
-    indice,
-    campo,
-    valor
-  ) {
+  function handleItemChange(indice, campo, valor) {
     setItens((itensAtuais) =>
-      itensAtuais.map(
-        (item, indiceAtual) =>
-          indiceAtual === indice
-            ? {
-                ...item,
-                [campo]: valor,
-              }
-            : item
+      itensAtuais.map((item, indiceAtual) =>
+        indiceAtual === indice
+          ? { ...item, [campo]: valor }
+          : item
       )
     )
 
     setErro('')
     setEditadoComSucesso(false)
   }
-
 
   function handleAdicionarItem() {
     setItens((itensAtuais) => [
@@ -197,7 +192,6 @@ function FormularioEditarPedido({
     setEditadoComSucesso(false)
   }
 
-
   function handleRemoverItem(indice) {
     if (itens.length === 1) {
       return
@@ -205,8 +199,7 @@ function FormularioEditarPedido({
 
     setItens((itensAtuais) =>
       itensAtuais.filter(
-        (_, indiceAtual) =>
-          indiceAtual !== indice
+        (_, indiceAtual) => indiceAtual !== indice
       )
     )
 
@@ -214,18 +207,26 @@ function FormularioEditarPedido({
     setEditadoComSucesso(false)
   }
 
-
   async function handleSubmit(event) {
     event.preventDefault()
+
+    if (salvando || carregandoOpcoes) {
+      return
+    }
 
     setErro('')
     setErroData(false)
     setEditadoComSucesso(false)
 
-    if (!clienteSelecionado) {
+    if (erroClientes || erroProdutos) {
       setErro(
-        'Selecione um cliente válido.'
+        'Não foi possível carregar as opções do pedido. Atualize a página.'
       )
+      return
+    }
+
+    if (!clienteSelecionado) {
+      setErro('Selecione um cliente válido.')
       return
     }
 
@@ -234,14 +235,13 @@ function FormularioEditarPedido({
       return
     }
 
-    const itensNormalizados = itens.map(
-      (item) => ({
-        produtoId: Number(item.produtoId),
-        quantidade: Number(item.quantidade),
-      })
-    )
+    const itensNormalizados = itens.map((item) => ({
+      produtoId: Number(item.produtoId),
+      quantidade: Number(item.quantidade),
+    }))
 
     const possuiItemInvalido =
+      itensNormalizados.length === 0 ||
       itensNormalizados.some(
         (item) =>
           !Number.isInteger(item.produtoId) ||
@@ -257,91 +257,89 @@ function FormularioEditarPedido({
       return
     }
 
-    const idsProdutos =
-      itensNormalizados.map(
-        (item) => item.produtoId
-      )
+    const idsProdutos = itensNormalizados.map(
+      (item) => item.produtoId
+    )
 
-    const possuiProdutoDuplicado =
-      new Set(idsProdutos).size !==
-      idsProdutos.length
-
-    if (possuiProdutoDuplicado) {
+    if (new Set(idsProdutos).size !== idsProdutos.length) {
       setErro(
         'O mesmo produto não pode ser adicionado mais de uma vez ao pedido.'
       )
       return
     }
 
-    const quantidadeAcimaDoEstoque =
-      itensNormalizados.some((item) => {
-        const produto = produtos.find(
-          (produtoAtual) =>
-            produtoAtual.id === item.produtoId
-        )
+    const possuiProdutoInexistente =
+      itensNormalizados.some(
+        (item) =>
+          !produtos.some(
+            (produto) => produto.id === item.produtoId
+          )
+      )
 
-        if (!produto) {
-          return true
-        }
-
-        return (
-          item.quantidade >
-          Number(produto.estoque)
-        )
-      })
-
-    if (quantidadeAcimaDoEstoque) {
+    if (possuiProdutoInexistente) {
       setErro(
-        'A quantidade informada não pode ser maior que o estoque disponível.'
+        'Um dos produtos do pedido não foi encontrado. Atualize a página.'
+      )
+      return
+    }
+
+    const quantidadeAcimaDoLimite =
+      itensNormalizados.some(
+        (item) =>
+          item.quantidade >
+          obterLimiteQuantidade(item.produtoId)
+      )
+
+    if (quantidadeAcimaDoLimite) {
+      setErro(
+        'Para aumentar a quantidade ou incluir um produto, ele deve estar em pronta entrega e a quantidade total deve caber no estoque atual. Itens já registrados podem ser mantidos ou reduzidos.'
       )
       return
     }
 
     setSalvando(true)
 
-    const resultado = await editarPedido(
-      pedidoSelecionado.id,
-      {
-        clienteId: clienteSelecionado.id,
-        cliente: clienteSelecionado.nome,
-        telefone: clienteSelecionado.telefone,
-        status,
-        data,
-        itens: itensNormalizados,
+    try {
+      const resultado = await editarPedido(
+        pedidoSelecionado.id,
+        {
+          clienteId: clienteSelecionado.id,
+          cliente: clienteSelecionado.nome,
+          telefone: clienteSelecionado.telefone,
+          status,
+          data,
+          itens: itensNormalizados,
+        }
+      )
+
+      if (!resultado.sucesso) {
+        setErro(resultado.mensagem)
+        return
       }
-    )
 
-    setSalvando(false)
+      setEditadoComSucesso(true)
+    } catch (error) {
+      console.error('Erro ao editar pedido:', error)
 
-    if (!resultado.sucesso) {
-      setErro(resultado.mensagem)
-      return
+      setErro(
+        'Não foi possível editar o pedido. Tente novamente.'
+      )
+    } finally {
+      setSalvando(false)
     }
-
-    setEditadoComSucesso(true)
   }
-
-
-  const carregandoOpcoes =
-    carregandoClientes ||
-    carregandoProdutos
-
 
   return (
     <section className="editar-pedido-page">
-
       <h1 className="editar-pedido-page__title">
         Editar
       </h1>
-
 
       <form
         className="editar-pedido-form"
         onSubmit={handleSubmit}
       >
-
         <div className="editar-pedido-form__grupo">
-
           <label htmlFor="cliente">
             Cliente
           </label>
@@ -350,10 +348,7 @@ function FormularioEditarPedido({
             id="cliente"
             value={clienteId}
             onChange={handleClienteChange}
-            disabled={
-              salvando ||
-              carregandoClientes
-            }
+            disabled={salvando || carregandoClientes}
             required
           >
             <option value="">
@@ -363,21 +358,14 @@ function FormularioEditarPedido({
             </option>
 
             {clientes.map((cliente) => (
-              <option
-                key={cliente.id}
-                value={cliente.id}
-              >
+              <option key={cliente.id} value={cliente.id}>
                 {cliente.nome}
               </option>
             ))}
-
           </select>
-
         </div>
 
-
         <div className="editar-pedido-form__grupo">
-
           <label htmlFor="telefone">
             Telefone
           </label>
@@ -389,12 +377,9 @@ function FormularioEditarPedido({
             readOnly
             disabled={salvando}
           />
-
         </div>
 
-
         <div className="editar-pedido-form__grupo">
-
           <label htmlFor="status">
             Status
           </label>
@@ -422,12 +407,9 @@ function FormularioEditarPedido({
               Entregue
             </option>
           </select>
-
         </div>
 
-
         <div className="editar-pedido-form__grupo">
-
           <label htmlFor="data">
             Data
           </label>
@@ -448,26 +430,18 @@ function FormularioEditarPedido({
               Data inválida! Por favor, corrija.
             </p>
           )}
-
         </div>
 
-
         {itens.map((item, indice) => {
-          const produtoSelecionado =
-            produtos.find(
-              (produto) =>
-                produto.id ===
-                Number(item.produtoId)
-            )
+          const quantidadeRegistrada =
+            quantidadesRegistradas.get(
+              Number(item.produtoId)
+            ) ?? 0
 
           return (
             <div key={indice}>
-
               <div className="editar-pedido-form__grupo">
-
-                <label
-                  htmlFor={`produto-${indice}`}
-                >
+                <label htmlFor={`produto-${indice}`}>
                   Produto {indice + 1}
                 </label>
 
@@ -481,10 +455,7 @@ function FormularioEditarPedido({
                       event.target.value
                     )
                   }
-                  disabled={
-                    salvando ||
-                    carregandoProdutos
-                  }
+                  disabled={salvando || carregandoProdutos}
                   required
                 >
                   <option value="">
@@ -493,29 +464,21 @@ function FormularioEditarPedido({
                       : 'Selecione um produto'}
                   </option>
 
-                  {produtosDisponiveis.map(
-                    (produto) => (
-                      <option
-                        key={produto.id}
-                        value={produto.id}
-                      >
-                        {produto.nome}
-                        {' - '}
-                        Estoque: {produto.estoque}
-                      </option>
-                    )
-                  )}
-
+                  {produtosDisponiveis.map((produto) => (
+                    <option
+                      key={produto.id}
+                      value={produto.id}
+                    >
+                      {produto.nome}
+                      {' - '}
+                      Estoque: {produto.estoque}
+                    </option>
+                  ))}
                 </select>
-
               </div>
 
-
               <div className="editar-pedido-form__grupo">
-
-                <label
-                  htmlFor={`quantidade-${indice}`}
-                >
+                <label htmlFor={`quantidade-${indice}`}>
                   Quantidade
                 </label>
 
@@ -524,11 +487,7 @@ function FormularioEditarPedido({
                   type="number"
                   min="1"
                   step="1"
-                  max={
-                    produtoSelecionado
-                      ? produtoSelecionado.estoque
-                      : undefined
-                  }
+                  max={obterLimiteQuantidade(item.produtoId)}
                   value={item.quantidade}
                   onChange={(event) =>
                     handleItemChange(
@@ -541,35 +500,34 @@ function FormularioEditarPedido({
                   required
                 />
 
+                {quantidadeRegistrada > 0 && (
+                  <p>
+                    Quantidade já registrada:
+                    {' '}
+                    {quantidadeRegistrada}.
+                    {' '}
+                    Pode ser mantida ou reduzida.
+                  </p>
+                )}
               </div>
 
-
               {itens.length > 1 && (
-
                 <div className="editar-pedido-form__acoes">
-
                   <button
                     type="button"
                     className="editar-pedido-form__retornar"
-                    onClick={() =>
-                      handleRemoverItem(indice)
-                    }
+                    onClick={() => handleRemoverItem(indice)}
                     disabled={salvando}
                   >
                     Remover produto
                   </button>
-
                 </div>
-
               )}
-
             </div>
           )
         })}
 
-
         <div className="editar-pedido-form__acoes">
-
           <button
             type="button"
             className="editar-pedido-form__retornar"
@@ -577,41 +535,33 @@ function FormularioEditarPedido({
             disabled={
               salvando ||
               carregandoOpcoes ||
+              Boolean(erroClientes || erroProdutos) ||
               produtosDisponiveis.length === 0
             }
           >
             + Adicionar outro produto
           </button>
-
         </div>
 
-
         {(erroClientes || erroProdutos) && (
-
           <div
             className="editar-pedido-form__erro"
             role="alert"
           >
             {erroClientes || erroProdutos}
           </div>
-
         )}
 
-
         {erro && (
-
           <div
             className="editar-pedido-form__erro"
             role="alert"
           >
             {erro}
           </div>
-
         )}
 
-
         {editadoComSucesso && (
-
           <div
             className="editar-pedido-alert"
             role="alert"
@@ -623,18 +573,16 @@ function FormularioEditarPedido({
             para retornar, ou altere os campos
             para editar novamente.
           </div>
-
         )}
 
-
         <div className="editar-pedido-form__acoes">
-
           <button
             type="submit"
             className="editar-pedido-form__salvar"
             disabled={
               salvando ||
-              carregandoOpcoes
+              carregandoOpcoes ||
+              Boolean(erroClientes || erroProdutos)
             }
           >
             {salvando
@@ -642,22 +590,17 @@ function FormularioEditarPedido({
               : 'Salvar alterações'}
           </button>
 
-
           <Link
             to="/pedidos"
             className="editar-pedido-form__retornar"
           >
             Retornar a Pedidos
           </Link>
-
         </div>
-
       </form>
-
     </section>
   )
 }
-
 
 function EditarPedido() {
   const { id } = useParams()
@@ -682,10 +625,8 @@ function EditarPedido() {
   } = useProdutos()
 
   const pedidoSelecionado = pedidos.find(
-    (pedido) =>
-      pedido.id === Number(id)
+    (pedido) => pedido.id === Number(id)
   )
-
 
   if (
     carregando ||
@@ -694,20 +635,16 @@ function EditarPedido() {
   ) {
     return (
       <section className="editar-pedido-page">
-
         <h1 className="editar-pedido-page__title">
           Carregando...
         </h1>
-
       </section>
     )
   }
 
-
   if (erroPedidos) {
     return (
       <section className="editar-pedido-page">
-
         <h1 className="editar-pedido-page__title">
           Erro ao carregar pedido
         </h1>
@@ -720,44 +657,35 @@ function EditarPedido() {
         </div>
 
         <div className="editar-pedido-form__acoes">
-
           <Link
             to="/pedidos"
             className="editar-pedido-form__retornar"
           >
             Retornar a Pedidos
           </Link>
-
         </div>
-
       </section>
     )
   }
 
-
   if (!pedidoSelecionado) {
     return (
       <section className="editar-pedido-page">
-
         <h1 className="editar-pedido-page__title">
           Pedido não encontrado
         </h1>
 
         <div className="editar-pedido-form__acoes">
-
           <Link
             to="/pedidos"
             className="editar-pedido-form__retornar"
           >
             Retornar a Pedidos
           </Link>
-
         </div>
-
       </section>
     )
   }
-
 
   return (
     <FormularioEditarPedido
@@ -773,6 +701,5 @@ function EditarPedido() {
     />
   )
 }
-
 
 export default EditarPedido
