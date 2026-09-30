@@ -5,8 +5,8 @@ import {
 
 import { supabase } from '../services/supabase'
 import { useAuth } from './AuthContext'
+import { useProdutos } from './ProdutosContext'
 import PedidosContext from './PedidosContext'
-
 
 const CAMPOS_PEDIDO = `
   id,
@@ -24,7 +24,6 @@ const CAMPOS_PEDIDO = `
   )
 `
 
-
 function formatarDataParaInterface(data) {
   if (!data) {
     return ''
@@ -40,7 +39,6 @@ function formatarDataParaInterface(data) {
 
   return `${dia}/${mes}/${ano}`
 }
-
 
 function formatarDataParaBanco(data) {
   if (!data) {
@@ -58,7 +56,6 @@ function formatarDataParaBanco(data) {
   return `${ano}-${mes}-${dia}`
 }
 
-
 function normalizarItens(itens) {
   if (!Array.isArray(itens)) {
     return []
@@ -71,7 +68,6 @@ function normalizarItens(itens) {
   }))
 }
 
-
 function normalizarPedido(pedido) {
   return {
     id: pedido.id,
@@ -82,15 +78,19 @@ function normalizarPedido(pedido) {
       'Cliente não encontrado',
     telefone: pedido.telefone,
     status: pedido.status,
-    data: formatarDataParaInterface(
-      pedido.data
-    ),
-    itens: normalizarItens(
-      pedido.pedido_itens
-    ),
+    data: formatarDataParaInterface(pedido.data),
+    itens: normalizarItens(pedido.pedido_itens),
   }
 }
 
+function mensagemDoErro(error, mensagemPadrao) {
+  // P0001 identifica as mensagens de validação das RPCs.
+  if (error?.code === 'P0001' && error.message) {
+    return error.message
+  }
+
+  return mensagemPadrao
+}
 
 async function buscarPedidoCompleto(id) {
   const { data, error } = await supabase
@@ -106,17 +106,17 @@ async function buscarPedidoCompleto(id) {
   return normalizarPedido(data)
 }
 
-
 function PedidosProvider({ children }) {
   const {
     autenticado,
     carregando: carregandoAutenticacao,
   } = useAuth()
 
+  const { carregarProdutos } = useProdutos()
+
   const [pedidos, setPedidos] = useState([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
-
 
   useEffect(() => {
     let ativo = true
@@ -139,37 +139,24 @@ function PedidosProvider({ children }) {
       setCarregando(true)
       setErro('')
 
-      const {
-        data,
-        error,
-      } = await supabase
+      const { data, error } = await supabase
         .from('pedidos')
         .select(CAMPOS_PEDIDO)
-        .order('id', {
-          ascending: true,
-        })
+        .order('id', { ascending: true })
 
       if (!ativo) {
         return
       }
 
       if (error) {
-        console.error(
-          'Erro ao carregar pedidos:',
-          error
-        )
-
+        console.error('Erro ao carregar pedidos:', error)
         setPedidos([])
-        setErro(
-          'Não foi possível carregar os pedidos.'
-        )
+        setErro('Não foi possível carregar os pedidos.')
         setCarregando(false)
         return
       }
 
-      setPedidos(
-        (data ?? []).map(normalizarPedido)
-      )
+      setPedidos((data ?? []).map(normalizarPedido))
       setCarregando(false)
     }
 
@@ -183,209 +170,156 @@ function PedidosProvider({ children }) {
     carregandoAutenticacao,
   ])
 
+  async function salvarPedido(dadosPedido, id = null) {
+    const editando = id !== null
+
+    const parametros = {
+      p_cliente_id: dadosPedido.clienteId,
+      p_telefone: dadosPedido.telefone,
+      p_status: dadosPedido.status,
+      p_data: formatarDataParaBanco(dadosPedido.data),
+      p_itens: dadosPedido.itens.map((item) => ({
+        produto_id: item.produtoId,
+        quantidade: item.quantidade,
+      })),
+    }
+
+    if (editando) {
+      parametros.p_pedido_id = id
+    }
+
+    const { data, error } = await supabase.rpc(
+      editando
+        ? 'editar_pedido_com_itens'
+        : 'criar_pedido_com_itens',
+      parametros
+    )
+
+    if (error) {
+      console.error('Erro ao salvar pedido:', error)
+
+      // Outra operação pode ter alterado o estoque disponível.
+      await carregarProdutos()
+
+      return {
+        sucesso: false,
+        mensagem: mensagemDoErro(
+          error,
+          editando
+            ? 'Não foi possível editar o pedido.'
+            : 'Não foi possível adicionar o pedido.'
+        ),
+      }
+    }
+
+    // A RPC já confirmou o pedido e a movimentação de estoque.
+    await carregarProdutos()
+
+    const pedidoRetornado = Array.isArray(data)
+      ? data[0]
+      : data
+
+    if (!pedidoRetornado?.id) {
+      console.error(
+        'Retorno inesperado ao salvar pedido:',
+        data
+      )
+
+      return {
+        sucesso: false,
+        mensagem:
+          'O pedido foi processado, mas houve erro ao atualizar a listagem. Recarregue a página antes de tentar novamente.',
+      }
+    }
+
+    try {
+      const pedidoSalvo = await buscarPedidoCompleto(
+        pedidoRetornado.id
+      )
+
+      setPedidos((pedidosAtuais) => {
+        const existe = pedidosAtuais.some(
+          (pedido) => pedido.id === pedidoSalvo.id
+        )
+
+        if (existe) {
+          return pedidosAtuais.map((pedido) =>
+            pedido.id === pedidoSalvo.id
+              ? pedidoSalvo
+              : pedido
+          )
+        }
+
+        return [...pedidosAtuais, pedidoSalvo]
+      })
+
+      return {
+        sucesso: true,
+        pedido: pedidoSalvo,
+      }
+    } catch (erroConsulta) {
+      console.error(
+        'Pedido salvo, mas não foi possível consultar seus itens:',
+        erroConsulta
+      )
+
+      return {
+        sucesso: false,
+        mensagem:
+          'O pedido foi salvo, mas a listagem não foi atualizada. Recarregue a página antes de tentar novamente.',
+      }
+    }
+  }
 
   async function adicionarPedido(novoPedido) {
-    const {
-      data,
-      error,
-    } = await supabase.rpc(
-      'criar_pedido_com_itens',
-      {
-        p_cliente_id: novoPedido.clienteId,
-        p_telefone: novoPedido.telefone,
-        p_status: novoPedido.status,
-        p_data: formatarDataParaBanco(
-          novoPedido.data
-        ),
-        p_itens: novoPedido.itens.map(
-          (item) => ({
-            produto_id: item.produtoId,
-            quantidade: item.quantidade,
-          })
-        ),
-      }
-    )
-
-    if (error) {
-      console.error(
-        'Erro ao adicionar pedido:',
-        error
-      )
-
-      return {
-        sucesso: false,
-        mensagem:
-          'Não foi possível adicionar o pedido.',
-      }
-    }
-
-    const pedidoRetornado = Array.isArray(data)
-      ? data[0]
-      : data
-
-    if (!pedidoRetornado?.id) {
-      console.error(
-        'Retorno inesperado ao adicionar pedido:',
-        data
-      )
-
-      return {
-        sucesso: false,
-        mensagem:
-          'O pedido foi processado, mas houve erro ao atualizar a listagem. Recarregue a página.',
-      }
-    }
-
-    try {
-      const pedidoCriado = await buscarPedidoCompleto(
-        pedidoRetornado.id
-      )
-
-      setPedidos((pedidosAtuais) => [
-        ...pedidosAtuais,
-        pedidoCriado,
-      ])
-
-      return {
-        sucesso: true,
-        pedido: pedidoCriado,
-      }
-    } catch (erroConsulta) {
-      console.error(
-        'Pedido criado, mas não foi possível consultar seus itens:',
-        erroConsulta
-      )
-
-      return {
-        sucesso: false,
-        mensagem:
-          'O pedido foi salvo, mas a listagem não foi atualizada. Recarregue a página antes de tentar novamente.',
-      }
-    }
+    return salvarPedido(novoPedido)
   }
 
-
-  async function editarPedido(
-    id,
-    dadosAtualizados
-  ) {
-    const {
-      data,
-      error,
-    } = await supabase.rpc(
-      'editar_pedido_com_itens',
-      {
-        p_pedido_id: id,
-        p_cliente_id:
-          dadosAtualizados.clienteId,
-        p_telefone:
-          dadosAtualizados.telefone,
-        p_status:
-          dadosAtualizados.status,
-        p_data: formatarDataParaBanco(
-          dadosAtualizados.data
-        ),
-        p_itens: dadosAtualizados.itens.map(
-          (item) => ({
-            produto_id: item.produtoId,
-            quantidade: item.quantidade,
-          })
-        ),
-      }
-    )
-
-    if (error) {
-      console.error(
-        'Erro ao editar pedido:',
-        error
-      )
-
-      return {
-        sucesso: false,
-        mensagem:
-          'Não foi possível editar o pedido.',
-      }
-    }
-
-    const pedidoRetornado = Array.isArray(data)
-      ? data[0]
-      : data
-
-    if (!pedidoRetornado?.id) {
-      console.error(
-        'Retorno inesperado ao editar pedido:',
-        data
-      )
-
-      return {
-        sucesso: false,
-        mensagem:
-          'O pedido foi processado, mas houve erro ao atualizar a listagem. Recarregue a página.',
-      }
-    }
-
-    try {
-      const pedidoEditado = await buscarPedidoCompleto(
-        pedidoRetornado.id
-      )
-
-      setPedidos((pedidosAtuais) =>
-        pedidosAtuais.map((pedido) =>
-          pedido.id === id
-            ? pedidoEditado
-            : pedido
-        )
-      )
-
-      return {
-        sucesso: true,
-        pedido: pedidoEditado,
-      }
-    } catch (erroConsulta) {
-      console.error(
-        'Pedido editado, mas não foi possível consultar seus itens:',
-        erroConsulta
-      )
-
-      return {
-        sucesso: false,
-        mensagem:
-          'O pedido foi salvo, mas a listagem não foi atualizada. Recarregue a página antes de tentar novamente.',
-      }
-    }
+  async function editarPedido(id, dadosAtualizados) {
+    return salvarPedido(dadosAtualizados, id)
   }
-
 
   async function excluirPedido(id) {
-    const { error } = await supabase
-      .from('pedidos')
-      .delete()
-      .eq('id', id)
+    const { data, error } = await supabase.rpc(
+      'excluir_pedido_com_estoque',
+      { p_pedido_id: id }
+    )
 
     if (error) {
+      console.error('Erro ao excluir pedido:', error)
+
+      return {
+        sucesso: false,
+        mensagem: mensagemDoErro(
+          error,
+          'Não foi possível excluir o pedido.'
+        ),
+      }
+    }
+
+    if (String(data) !== String(id)) {
       console.error(
-        'Erro ao excluir pedido:',
-        error
+        'Retorno inesperado ao excluir pedido:',
+        data
       )
+
+      await carregarProdutos()
 
       return {
         sucesso: false,
         mensagem:
-          'Não foi possível excluir o pedido.',
+          'A exclusão foi processada, mas não foi possível confirmar a atualização. Recarregue a página.',
       }
     }
 
     setPedidos((pedidosAtuais) =>
-      pedidosAtuais.filter(
-        (pedido) => pedido.id !== id
-      )
+      pedidosAtuais.filter((pedido) => pedido.id !== id)
     )
 
-    return {
-      sucesso: true,
-    }
-  }
+    await carregarProdutos()
 
+    return { sucesso: true }
+  }
 
   return (
     <PedidosContext.Provider
@@ -402,6 +336,5 @@ function PedidosProvider({ children }) {
     </PedidosContext.Provider>
   )
 }
-
 
 export default PedidosProvider

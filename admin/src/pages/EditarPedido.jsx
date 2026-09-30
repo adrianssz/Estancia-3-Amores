@@ -37,10 +37,7 @@ function FormularioEditarPedido({
   )
 
   const [itens, setItens] = useState(() => {
-    if (
-      Array.isArray(pedidoSelecionado.itens) &&
-      pedidoSelecionado.itens.length > 0
-    ) {
+    if (pedidoSelecionado.itens?.length) {
       return pedidoSelecionado.itens.map((item) => ({
         produtoId: String(item.produtoId),
         quantidade: String(item.quantidade),
@@ -52,7 +49,6 @@ function FormularioEditarPedido({
 
   const [editadoComSucesso, setEditadoComSucesso] =
     useState(false)
-
   const [erroData, setErroData] = useState(false)
   const [erro, setErro] = useState('')
   const [salvando, setSalvando] = useState(false)
@@ -60,23 +56,24 @@ function FormularioEditarPedido({
   const carregandoOpcoes =
     carregandoClientes || carregandoProdutos
 
+  // Considera o status salvo, não o selecionado no formulário.
+  const pedidoEntregue =
+    pedidoSelecionado.status === 'Entregue'
+
   const clienteSelecionado = clientes.find(
     (cliente) => cliente.id === Number(clienteId)
   )
 
   const telefone = clienteSelecionado?.telefone ?? ''
-
-  // A referência acompanha os itens retornados após cada edição.
   const quantidadesRegistradas = new Map()
 
   for (const item of pedidoSelecionado.itens ?? []) {
     const produtoId = Number(item.produtoId)
-    const quantidade = Number(item.quantidade)
 
     quantidadesRegistradas.set(
       produtoId,
       (quantidadesRegistradas.get(produtoId) ?? 0) +
-        quantidade
+        Number(item.quantidade)
     )
   }
 
@@ -91,7 +88,6 @@ function FormularioEditarPedido({
 
   function obterLimiteQuantidade(produtoId) {
     const id = Number(produtoId)
-
     const produto = produtos.find(
       (produtoAtual) => produtoAtual.id === id
     )
@@ -103,22 +99,21 @@ function FormularioEditarPedido({
     const quantidadeRegistrada =
       quantidadesRegistradas.get(id) ?? 0
 
+    if (pedidoEntregue) {
+      return quantidadeRegistrada
+    }
+
     const estoqueDisponivel =
       produto.status === 'pronta-entrega'
         ? Number(produto.estoque)
         : 0
 
-    // Permite conservar o histórico; aumentos exigem disponibilidade.
-    return Math.max(
-      quantidadeRegistrada,
-      estoqueDisponivel
-    )
+    // As unidades deste pedido já foram descontadas do estoque.
+    return quantidadeRegistrada + estoqueDisponivel
   }
 
   function formatarData(valor) {
-    const numeros = valor
-      .replace(/\D/g, '')
-      .slice(0, 8)
+    const numeros = valor.replace(/\D/g, '').slice(0, 8)
 
     if (numeros.length <= 2) {
       return numeros
@@ -139,37 +134,42 @@ function FormularioEditarPedido({
     const [dia, mes, ano] = valor.split('/').map(Number)
     const dataInformada = new Date(ano, mes - 1, dia)
 
-    const dataExiste =
-      dataInformada.getFullYear() === ano &&
-      dataInformada.getMonth() === mes - 1 &&
-      dataInformada.getDate() === dia
-
-    if (!dataExiste) {
+    if (
+      dataInformada.getFullYear() !== ano ||
+      dataInformada.getMonth() !== mes - 1 ||
+      dataInformada.getDate() !== dia
+    ) {
       return false
     }
 
     const hoje = new Date()
-
     hoje.setHours(0, 0, 0, 0)
     dataInformada.setHours(0, 0, 0, 0)
 
     return dataInformada <= hoje
   }
 
-  function handleClienteChange(event) {
-    setClienteId(event.target.value)
+  function limparMensagens() {
     setErro('')
     setEditadoComSucesso(false)
+  }
+
+  function handleClienteChange(event) {
+    setClienteId(event.target.value)
+    limparMensagens()
   }
 
   function handleDataChange(event) {
     setData(formatarData(event.target.value))
     setErroData(false)
-    setErro('')
-    setEditadoComSucesso(false)
+    limparMensagens()
   }
 
   function handleItemChange(indice, campo, valor) {
+    if (pedidoEntregue || salvando) {
+      return
+    }
+
     setItens((itensAtuais) =>
       itensAtuais.map((item, indiceAtual) =>
         indiceAtual === indice
@@ -178,22 +178,24 @@ function FormularioEditarPedido({
       )
     )
 
-    setErro('')
-    setEditadoComSucesso(false)
+    limparMensagens()
   }
 
   function handleAdicionarItem() {
+    if (pedidoEntregue || salvando) {
+      return
+    }
+
     setItens((itensAtuais) => [
       ...itensAtuais,
       criarItemVazio(),
     ])
 
-    setErro('')
-    setEditadoComSucesso(false)
+    limparMensagens()
   }
 
   function handleRemoverItem(indice) {
-    if (itens.length === 1) {
+    if (pedidoEntregue || salvando || itens.length === 1) {
       return
     }
 
@@ -203,8 +205,7 @@ function FormularioEditarPedido({
       )
     )
 
-    setErro('')
-    setEditadoComSucesso(false)
+    limparMensagens()
   }
 
   async function handleSubmit(event) {
@@ -214,9 +215,8 @@ function FormularioEditarPedido({
       return
     }
 
-    setErro('')
+    limparMensagens()
     setErroData(false)
-    setEditadoComSucesso(false)
 
     if (erroClientes || erroProdutos) {
       setErro(
@@ -240,7 +240,7 @@ function FormularioEditarPedido({
       quantidade: Number(item.quantidade),
     }))
 
-    const possuiItemInvalido =
+    if (
       itensNormalizados.length === 0 ||
       itensNormalizados.some(
         (item) =>
@@ -249,8 +249,7 @@ function FormularioEditarPedido({
           !Number.isInteger(item.quantidade) ||
           item.quantidade <= 0
       )
-
-    if (possuiItemInvalido) {
+    ) {
       setErro(
         'Selecione um produto e informe uma quantidade válida para cada item.'
       )
@@ -268,31 +267,29 @@ function FormularioEditarPedido({
       return
     }
 
-    const possuiProdutoInexistente =
+    if (
       itensNormalizados.some(
         (item) =>
           !produtos.some(
             (produto) => produto.id === item.produtoId
           )
       )
-
-    if (possuiProdutoInexistente) {
+    ) {
       setErro(
-        'Um dos produtos do pedido não foi encontrado. Atualize a página.'
+        'Um dos produtos não foi encontrado. Atualize a página.'
       )
       return
     }
 
-    const quantidadeAcimaDoLimite =
+    if (
       itensNormalizados.some(
         (item) =>
           item.quantidade >
           obterLimiteQuantidade(item.produtoId)
       )
-
-    if (quantidadeAcimaDoLimite) {
+    ) {
       setErro(
-        'Para aumentar a quantidade ou incluir um produto, ele deve estar em pronta entrega e a quantidade total deve caber no estoque atual. Itens já registrados podem ser mantidos ou reduzidos.'
+        'A quantidade não pode ultrapassar as unidades já reservadas neste pedido somadas ao estoque disponível. Aumentos exigem produto em pronta entrega.'
       )
       return
     }
@@ -320,7 +317,6 @@ function FormularioEditarPedido({
       setEditadoComSucesso(true)
     } catch (error) {
       console.error('Erro ao editar pedido:', error)
-
       setErro(
         'Não foi possível editar o pedido. Tente novamente.'
       )
@@ -340,9 +336,7 @@ function FormularioEditarPedido({
         onSubmit={handleSubmit}
       >
         <div className="editar-pedido-form__grupo">
-          <label htmlFor="cliente">
-            Cliente
-          </label>
+          <label htmlFor="cliente">Cliente</label>
 
           <select
             id="cliente"
@@ -366,9 +360,7 @@ function FormularioEditarPedido({
         </div>
 
         <div className="editar-pedido-form__grupo">
-          <label htmlFor="telefone">
-            Telefone
-          </label>
+          <label htmlFor="telefone">Telefone</label>
 
           <input
             id="telefone"
@@ -380,39 +372,26 @@ function FormularioEditarPedido({
         </div>
 
         <div className="editar-pedido-form__grupo">
-          <label htmlFor="status">
-            Status
-          </label>
+          <label htmlFor="status">Status</label>
 
           <select
             id="status"
             value={status}
             onChange={(event) => {
               setStatus(event.target.value)
-              setErro('')
-              setEditadoComSucesso(false)
+              limparMensagens()
             }}
-            disabled={salvando}
+            disabled={salvando || pedidoEntregue}
             required
           >
-            <option value="Pendente">
-              Pendente
-            </option>
-
-            <option value="Em Rota">
-              Em Rota
-            </option>
-
-            <option value="Entregue">
-              Entregue
-            </option>
+            <option value="Pendente">Pendente</option>
+            <option value="Em Rota">Em Rota</option>
+            <option value="Entregue">Entregue</option>
           </select>
         </div>
 
         <div className="editar-pedido-form__grupo">
-          <label htmlFor="data">
-            Data
-          </label>
+          <label htmlFor="data">Data</label>
 
           <input
             id="data"
@@ -455,7 +434,11 @@ function FormularioEditarPedido({
                       event.target.value
                     )
                   }
-                  disabled={salvando || carregandoProdutos}
+                  disabled={
+                    salvando ||
+                    carregandoProdutos ||
+                    pedidoEntregue
+                  }
                   required
                 >
                   <option value="">
@@ -471,7 +454,7 @@ function FormularioEditarPedido({
                     >
                       {produto.nome}
                       {' - '}
-                      Estoque: {produto.estoque}
+                      Estoque disponível: {produto.estoque}
                     </option>
                   ))}
                 </select>
@@ -496,28 +479,39 @@ function FormularioEditarPedido({
                       event.target.value
                     )
                   }
-                  disabled={salvando}
+                  disabled={
+                    salvando ||
+                    carregandoProdutos ||
+                    pedidoEntregue
+                  }
                   required
                 />
 
                 {quantidadeRegistrada > 0 && (
                   <p>
-                    Quantidade já registrada:
-                    {' '}
+                    {pedidoEntregue
+                      ? 'Quantidade entregue: '
+                      : 'Quantidade já reservada: '}
                     {quantidadeRegistrada}.
-                    {' '}
-                    Pode ser mantida ou reduzida.
+                    {!pedidoEntregue && (
+                      <>
+                        {' '}
+                        Limite com o estoque disponível:
+                        {' '}
+                        {obterLimiteQuantidade(item.produtoId)}.
+                      </>
+                    )}
                   </p>
                 )}
               </div>
 
-              {itens.length > 1 && (
+              {itens.length > 1 && !pedidoEntregue && (
                 <div className="editar-pedido-form__acoes">
                   <button
                     type="button"
                     className="editar-pedido-form__retornar"
                     onClick={() => handleRemoverItem(indice)}
-                    disabled={salvando}
+                    disabled={salvando || carregandoOpcoes}
                   >
                     Remover produto
                   </button>
@@ -527,21 +521,23 @@ function FormularioEditarPedido({
           )
         })}
 
-        <div className="editar-pedido-form__acoes">
-          <button
-            type="button"
-            className="editar-pedido-form__retornar"
-            onClick={handleAdicionarItem}
-            disabled={
-              salvando ||
-              carregandoOpcoes ||
-              Boolean(erroClientes || erroProdutos) ||
-              produtosDisponiveis.length === 0
-            }
-          >
-            + Adicionar outro produto
-          </button>
-        </div>
+        {!pedidoEntregue && (
+          <div className="editar-pedido-form__acoes">
+            <button
+              type="button"
+              className="editar-pedido-form__retornar"
+              onClick={handleAdicionarItem}
+              disabled={
+                salvando ||
+                carregandoOpcoes ||
+                Boolean(erroClientes || erroProdutos) ||
+                produtosDisponiveis.length === 0
+              }
+            >
+              + Adicionar outro produto
+            </button>
+          </div>
+        )}
 
         {(erroClientes || erroProdutos) && (
           <div
@@ -562,16 +558,13 @@ function FormularioEditarPedido({
         )}
 
         {editadoComSucesso && (
-          <div
-            className="editar-pedido-alert"
-            role="alert"
-          >
+          <div className="editar-pedido-alert" role="alert">
             Pedido editado! Clique em
             {' '}
             &apos;Retornar a Pedidos&apos;
             {' '}
             para retornar, ou altere os campos
-            para editar novamente.
+            disponíveis para editar novamente.
           </div>
         )}
 
@@ -628,11 +621,8 @@ function EditarPedido() {
     (pedido) => pedido.id === Number(id)
   )
 
-  if (
-    carregando ||
-    carregandoClientes ||
-    carregandoProdutos
-  ) {
+  // Atualizar produtos não desmonta o formulário em edição.
+  if (carregando) {
     return (
       <section className="editar-pedido-page">
         <h1 className="editar-pedido-page__title">
@@ -642,38 +632,20 @@ function EditarPedido() {
     )
   }
 
-  if (erroPedidos) {
+  if (erroPedidos || !pedidoSelecionado) {
     return (
       <section className="editar-pedido-page">
         <h1 className="editar-pedido-page__title">
-          Erro ao carregar pedido
+          {erroPedidos
+            ? 'Erro ao carregar pedido'
+            : 'Pedido não encontrado'}
         </h1>
 
-        <div
-          className="editar-pedido-alert"
-          role="alert"
-        >
-          {erroPedidos}
-        </div>
-
-        <div className="editar-pedido-form__acoes">
-          <Link
-            to="/pedidos"
-            className="editar-pedido-form__retornar"
-          >
-            Retornar a Pedidos
-          </Link>
-        </div>
-      </section>
-    )
-  }
-
-  if (!pedidoSelecionado) {
-    return (
-      <section className="editar-pedido-page">
-        <h1 className="editar-pedido-page__title">
-          Pedido não encontrado
-        </h1>
+        {erroPedidos && (
+          <div className="editar-pedido-alert" role="alert">
+            {erroPedidos}
+          </div>
+        )}
 
         <div className="editar-pedido-form__acoes">
           <Link
