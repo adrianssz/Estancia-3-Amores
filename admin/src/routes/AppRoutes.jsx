@@ -10,6 +10,7 @@ import AdminLayout from '../layouts/AdminLayout'
 
 import Login from '../pages/Login'
 import Dashboard from '../pages/Dashboard'
+import NotFound from '../pages/NotFound'
 
 import Plantios from '../pages/Plantios'
 import AdicionarPlantio from '../pages/AdicionarPlantio'
@@ -186,6 +187,11 @@ function AppRoutes() {
             <Route
               path="/relatorios/entregas"
               element={<RelatorioEntregas />}
+            />
+
+            <Route
+              path="*"
+              element={<NotFound />}
             />
           </Route>
         </Route>
