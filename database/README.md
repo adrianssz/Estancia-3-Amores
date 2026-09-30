@@ -252,12 +252,28 @@ Testes funcionais realizados durante a implementação:
 - Upload JPG e PNG, substituição e limpeza de imagens.
 - Lint e build do admin.
 
+Validações adicionais realizadas em 30/09/2026:
+
+- Interface desatualizada: duas abas prepararam pedidos de 4 unidades
+  para um produto com estoque 5. Após salvar o primeiro, o segundo
+  foi recusado. Permaneceu apenas um pedido e estoque 1.
+- Exclusão desse pedido: o estoque retornou para 5.
+- Rollback: um pedido com 2 unidades de cada produto foi recusado
+  após o estoque do segundo produto ser reduzido em outra aba.
+  Nenhum pedido foi criado e os estoques permaneceram A = 5 e B = 1.
+- Permissões efetivas de pedidos e pedido_itens: authenticated
+  possui SELECT, sem INSERT, UPDATE ou DELETE diretos.
+  anon não possui nenhuma dessas quatro permissões.
+- Permissões efetivas das funções: authenticated pode executar
+  as três RPCs públicas, mas não a função interna.
+  anon não pode executar nenhuma das quatro funções.
+
+O teste com duas abas validou uma interface desatualizada.
+Execuções simultâneas das transações ainda precisam ser testadas.
+
 Validações finais pendentes:
 
-- Estoque insuficiente com interface desatualizada.
-- Disputa de estoque entre pedidos simultâneos.
-- Rollback completo quando uma operação falha.
-- Permissões efetivas das tabelas e funções após a migration 009.
+- Disputa de estoque entre pedidos com transações simultâneas.
 - Recuperação de backup do banco e dos arquivos.
 - Integração final das aplicações no ambiente de deploy.
 
