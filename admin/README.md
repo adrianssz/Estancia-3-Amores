@@ -1,16 +1,36 @@
-# React + Vite
+# Admin - Estância 3 Amores
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Painel administrativo do sistema Estância 3 Amores.
 
-Currently, two official plugins are available:
+O Admin foi desenvolvido com React e Vite e utiliza Supabase para autenticação e acesso aos dados armazenados em PostgreSQL.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Funcionalidades principais
 
-## React Compiler
+O painel possui:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Login administrativo
+- Proteção de rotas
+- Persistência de sessão
+- Dashboard
+- Plantios
+- Produtos
+- Clientes
+- Pedidos
+- Entregas
+- Relatórios
+- Página de rota não encontrada
 
-## Expanding the ESLint configuration
+## Pré-requisitos
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Para executar o Admin é necessário possuir:
+
+- Node.js
+- npm
+- acesso às configurações do projeto Supabase
+
+## Instalação
+
+Dentro da pasta `admin/`, execute:
+
+```bash
+npm install
