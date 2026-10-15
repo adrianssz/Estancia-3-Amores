@@ -178,3 +178,43 @@ A integração na branch `develop` deverá ocorrer de forma coordenada, preferen
 Implementação local concluída, com lint, build e validações visuais aprovados.
 
 A integração no Git e os testes complementares permanecem pendentes.
+
+## 9. Validacoes finais - 15/10/2026
+
+### Testes reais das unidades de medida
+
+Os testes foram realizados pelo painel administrativo conectado ao Supabase.
+
+- Produto temporario: TESTE PC2 UNIDADES (codigo 18).
+- Cadastro com unidade G: aprovado.
+- Persistencia apos atualizar a pagina: aprovada.
+- Edicao da unidade G para MÇ: aprovada.
+- Persistencia da edicao apos atualizar a pagina: aprovada.
+- Exclusao do produto temporario: aprovada.
+- Confirmacao da exclusao apos cinco atualizacoes: aprovada.
+
+Os produtos originais foram preservados.
+
+### Conferencia do banco
+
+As consultas executadas pelo PC1 confirmaram:
+
+- Nenhuma unidade cadastrada fora das cinco opcoes padronizadas.
+- Unidades existentes: KG, SC e UN.
+- Estrutura de pedido_itens compativel com o calculo monetario.
+- Valores historicos dos pedidos 18, 19, 20 e 21 conferidos.
+- Total confirmado: R$ 5.074,90.
+
+### Revisao do frontend
+
+A Feira, a Cesta e a mensagem do WhatsApp utilizam a unidade do produto.
+
+O componente ProductCardFeira.jsx foi ajustado para apresentar a unidade correta no estoque e na confirmacao de adicao a cesta.
+
+Lint e build do frontend aprovados.
+
+### Situacao atualizada
+
+Implementacao funcional concluida e publicada na branch do PC2.
+
+Permanecem pendentes a integracao com a develop apos o PC3 e os testes complementares com filtros e relatorios de varias paginas.
