@@ -56,9 +56,24 @@ function FormularioEditarPedido({
   const carregandoOpcoes =
     carregandoClientes || carregandoProdutos
 
-  // Considera o status salvo, não o selecionado no formulário.
+  const statusPersistido =
+    pedidoSelecionado.status ?? 'Pendente'
+
+  const pedidoEmRota =
+    statusPersistido === 'Em Rota'
+
   const pedidoEntregue =
-    pedidoSelecionado.status === 'Entregue'
+    statusPersistido === 'Entregue'
+
+  const itensBloqueados =
+    pedidoEmRota || pedidoEntregue
+
+  const opcoesStatus =
+    statusPersistido === 'Pendente'
+      ? ['Pendente', 'Em Rota']
+      : statusPersistido === 'Em Rota'
+        ? ['Em Rota', 'Entregue']
+        : ['Entregue']
 
   const clienteSelecionado = clientes.find(
     (cliente) => cliente.id === Number(clienteId)
@@ -99,7 +114,7 @@ function FormularioEditarPedido({
     const quantidadeRegistrada =
       quantidadesRegistradas.get(id) ?? 0
 
-    if (pedidoEntregue) {
+    if (itensBloqueados) {
       return quantidadeRegistrada
     }
 
@@ -166,7 +181,7 @@ function FormularioEditarPedido({
   }
 
   function handleItemChange(indice, campo, valor) {
-    if (pedidoEntregue || salvando) {
+    if (itensBloqueados || salvando) {
       return
     }
 
@@ -182,7 +197,7 @@ function FormularioEditarPedido({
   }
 
   function handleAdicionarItem() {
-    if (pedidoEntregue || salvando) {
+    if (itensBloqueados || salvando) {
       return
     }
 
@@ -195,7 +210,11 @@ function FormularioEditarPedido({
   }
 
   function handleRemoverItem(indice) {
-    if (pedidoEntregue || salvando || itens.length === 1) {
+    if (
+      itensBloqueados ||
+      salvando ||
+      itens.length === 1
+    ) {
       return
     }
 
@@ -384,9 +403,11 @@ function FormularioEditarPedido({
             disabled={salvando || pedidoEntregue}
             required
           >
-            <option value="Pendente">Pendente</option>
-            <option value="Em Rota">Em Rota</option>
-            <option value="Entregue">Entregue</option>
+            {opcoesStatus.map((opcao) => (
+              <option key={opcao} value={opcao}>
+                {opcao}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -410,6 +431,14 @@ function FormularioEditarPedido({
             </p>
           )}
         </div>
+
+        {itensBloqueados && (
+          <p>
+            {pedidoEntregue
+              ? 'Os produtos e as quantidades não podem ser alterados porque este pedido já foi entregue.'
+              : 'Os produtos e as quantidades não podem ser alterados porque este pedido está em rota.'}
+          </p>
+        )}
 
         {itens.map((item, indice) => {
           const quantidadeRegistrada =
@@ -437,7 +466,7 @@ function FormularioEditarPedido({
                   disabled={
                     salvando ||
                     carregandoProdutos ||
-                    pedidoEntregue
+                    itensBloqueados
                   }
                   required
                 >
@@ -482,7 +511,7 @@ function FormularioEditarPedido({
                   disabled={
                     salvando ||
                     carregandoProdutos ||
-                    pedidoEntregue
+                    itensBloqueados
                   }
                   required
                 />
@@ -491,9 +520,11 @@ function FormularioEditarPedido({
                   <p>
                     {pedidoEntregue
                       ? 'Quantidade entregue: '
-                      : 'Quantidade já reservada: '}
+                      : pedidoEmRota
+                        ? 'Quantidade em rota: '
+                        : 'Quantidade já reservada: '}
                     {quantidadeRegistrada}.
-                    {!pedidoEntregue && (
+                    {!itensBloqueados && (
                       <>
                         {' '}
                         Limite com o estoque disponível:
@@ -505,7 +536,7 @@ function FormularioEditarPedido({
                 )}
               </div>
 
-              {itens.length > 1 && !pedidoEntregue && (
+              {itens.length > 1 && !itensBloqueados && (
                 <div className="editar-pedido-form__acoes">
                   <button
                     type="button"
@@ -521,7 +552,7 @@ function FormularioEditarPedido({
           )
         })}
 
-        {!pedidoEntregue && (
+        {!itensBloqueados && (
           <div className="editar-pedido-form__acoes">
             <button
               type="button"
