@@ -8,7 +8,7 @@ Eduardo - PC3
 
 Corrigir o bloqueio de alteração dos itens e das quantidades dos pedidos quando o pedido estiver com status `Em Rota` ou `Entregue`.
 
-A correção foi feita na interface do Admin e preparada também no banco de dados por meio de uma nova migration.
+A correção foi aplicada na interface do Admin e no banco de dados por meio da migration `010_bloqueio_itens_pedidos.sql`.
 
 ---
 
@@ -25,7 +25,7 @@ Por isso, pedidos com status `Em Rota` ainda permitiam:
 
 Também era possível retornar um pedido de `Em Rota` para `Pendente`, permitindo contornar o bloqueio e voltar a editar os itens.
 
-No banco, a função responsável pela edição dos pedidos também verificava o bloqueio somente para pedidos `Entregue`.
+No banco, a função responsável pela edição dos pedidos também verificava o bloqueio apenas para pedidos `Entregue`.
 
 ---
 
@@ -154,9 +154,9 @@ Para um pedido `Entregue`, o status permanece bloqueado.
 
 ---
 
-## Migration criada
+## Migration criada e aplicada
 
-Foi criada:
+Foi criada e aplicada no Supabase:
 
 ```text
 database/010_bloqueio_itens_pedidos.sql
@@ -168,7 +168,15 @@ Pré-requisito:
 009_estoque_automatico_pedidos.sql
 ```
 
-A migration não cria novas tabelas, campos ou relacionamentos.
+A migration foi aplicada no Supabase pelo PC1 e retornou:
+
+```text
+Success. No rows returned
+```
+
+A migration `011` não foi aplicada durante esse processo.
+
+A `010` não cria novas tabelas, campos ou relacionamentos.
 
 Ela altera a função interna utilizada pelas RPCs dos pedidos para adicionar as novas regras de bloqueio.
 
@@ -176,86 +184,218 @@ Ela altera a função interna utilizada pelas RPCs dos pedidos para adicionar as
 
 ## Regras aplicadas no banco
 
-A migration foi preparada para:
+A migration:
 
-- validar o status realmente persistido do pedido;
-- bloquear alteração dos itens de pedidos `Em Rota`;
-- manter o bloqueio de pedidos `Entregue`;
-- impedir `Em Rota -> Pendente`;
-- impedir retorno de `Entregue`;
-- manter o bloqueio de concorrência com `FOR UPDATE`;
-- preservar a movimentação transacional do estoque;
-- preservar preços históricos dos itens;
-- comparar os itens por produto e quantidade;
-- não considerar simples mudança de ordem como alteração.
+- valida o status realmente persistido do pedido;
+- bloqueia alteração dos itens de pedidos `Em Rota`;
+- mantém o bloqueio de pedidos `Entregue`;
+- impede `Em Rota -> Pendente`;
+- impede retorno de `Entregue`;
+- mantém o bloqueio de concorrência com `FOR UPDATE`;
+- preserva a movimentação transacional do estoque;
+- preserva os preços registrados dos itens;
+- compara os itens por produto e quantidade;
+- não considera simples mudança de ordem como alteração.
 
 A função utiliza o pedido persistido no banco dentro da transação, evitando confiar apenas no estado carregado pela interface.
 
 ---
 
-## Concorrência e aba desatualizada
+## Teste de aba desatualizada
 
-A função consulta o pedido utilizando:
+Resultado: aprovado.
+
+Foi utilizado um pedido aberto simultaneamente em duas abas.
+
+Em uma das abas, o pedido foi alterado de:
 
 ```text
-FOR UPDATE
+Pendente -> Em Rota
 ```
 
-O objetivo é garantir que o status utilizado para validar a alteração seja o status atualmente salvo no banco.
+Na outra aba, sem atualizar a página, foi realizada uma tentativa de salvar o pedido como `Pendente`.
 
-Exemplo esperado:
+O banco recusou a operação com:
 
-1. uma aba abre um pedido enquanto ele ainda está `Pendente`;
-2. outra operação muda o pedido para `Em Rota`;
-3. a primeira aba tenta alterar os itens;
-4. o banco consulta novamente o status persistido;
-5. a alteração dos itens deve ser recusada.
+```text
+Pedido em rota não pode retornar para Pendente.
+```
 
-Esse cenário ainda precisa ser validado após a aplicação da migration `010` no Supabase.
+Depois foi realizada outra tentativa com o status `Em Rota`, mas alterando a quantidade.
+
+O banco recusou com:
+
+```text
+Pedido em rota não permite alterar produtos ou quantidades.
+```
+
+Após atualizar a página, a quantidade original continuou salva.
+
+Isso confirmou que uma aba desatualizada não consegue contornar a proteção.
 
 ---
 
-## Comparação dos itens
+## Teste de alteração de quantidade
 
-Os itens são comparados por produto e quantidade.
+Resultado: aprovado.
 
-Uma simples mudança na ordem dos mesmos produtos não deve ser considerada alteração.
+Um pedido `Em Rota` teve uma tentativa de alteração da quantidade de `1` para `2`.
 
-Exemplo:
+A RPC recusou a operação.
 
-```text
-Produto A - 2
-Produto B - 1
-```
-
-é equivalente a:
-
-```text
-Produto B - 1
-Produto A - 2
-```
-
-desde que produtos e quantidades permaneçam iguais.
+Após atualizar os dados, a quantidade permaneceu `1`.
 
 ---
 
-## Estoque
+## Teste de remoção de produto
 
-A lógica existente de estoque foi preservada.
+Resultado: aprovado.
 
-Enquanto o pedido está `Pendente`, alterações válidas dos itens movimentam somente a diferença necessária no estoque.
+Foi criado um pedido com dois produtos.
 
-Depois que o pedido estiver `Em Rota` ou `Entregue`, os itens ficam bloqueados e não devem causar novas movimentações.
+Depois que o pedido passou para `Em Rota`, uma aba desatualizada tentou remover um dos produtos.
 
-Uma simples alteração de status também não deve descontar estoque novamente.
+A operação foi recusada.
+
+Após atualizar a página, os dois produtos continuaram no pedido.
 
 ---
 
-## Preços históricos
+## Teste de inclusão de produto
 
-A lógica existente de preservação do `preco_unitario` foi mantida.
+Resultado: aprovado.
 
-Os produtos que permanecem em um pedido continuam utilizando o preço histórico registrado para aquele item.
+Depois que um pedido passou para `Em Rota`, uma aba desatualizada tentou adicionar um novo produto.
+
+A operação foi recusada com a mensagem de bloqueio dos produtos e quantidades.
+
+Nenhum item novo foi adicionado ao pedido.
+
+---
+
+## Teste de troca de produto
+
+Resultado: aprovado.
+
+Depois que um pedido passou para `Em Rota`, uma aba desatualizada tentou trocar o produto existente por outro.
+
+A operação foi recusada.
+
+Após atualizar a página, o produto original continuou no pedido.
+
+---
+
+## Teste de pedido Entregue
+
+Resultado: aprovado.
+
+Foi realizada uma tentativa de alterar a quantidade de um pedido que já estava `Entregue`.
+
+O banco recusou a operação.
+
+Também foi realizada uma tentativa de retornar um pedido `Entregue` para `Em Rota`.
+
+A RPC recusou com:
+
+```text
+Pedido entregue não permite retornar de status.
+```
+
+Os dados originais permaneceram intactos.
+
+---
+
+## Teste de reordenação dos itens
+
+Resultado: aprovado.
+
+Foi criado um pedido com:
+
+```text
+Mamão - 1
+Cenoura - 1
+```
+
+Depois que o pedido passou para `Em Rota`, uma aba desatualizada enviou os mesmos itens apenas em ordem inversa:
+
+```text
+Cenoura - 1
+Mamão - 1
+```
+
+A operação foi aceita.
+
+Isso confirmou que a comparação considera produto e quantidade, sem interpretar apenas a mudança de ordem como alteração dos itens.
+
+---
+
+## Testes de estoque
+
+Resultado: aprovado.
+
+Antes de criar um pedido de teste, o estoque do Mamão estava em:
+
+```text
+12
+```
+
+Após criar validamente um pedido com uma unidade de Mamão, o estoque passou para:
+
+```text
+11
+```
+
+Depois foram realizadas tentativas proibidas de alteração dos itens.
+
+O estoque permaneceu:
+
+```text
+11
+```
+
+Também foi realizada uma simples mudança de status do pedido.
+
+O estoque permaneceu inalterado.
+
+Isso confirmou que:
+
+- uma operação válida desconta o estoque corretamente;
+- uma operação recusada não altera o estoque;
+- uma simples mudança de status não desconta estoque novamente.
+
+---
+
+## Teste de preservação do preço registrado
+
+Resultado: aprovado.
+
+Foi consultado no Supabase o item do Pedido 26 antes de uma alteração permitida.
+
+Resultado inicial:
+
+```text
+Pedido: 26
+Produto: Mamão
+Quantidade: 1
+Preço unitário registrado: 1400.00
+Preço atual: 1400.00
+```
+
+Depois foi realizada apenas uma alteração permitida na data do pedido, sem alterar o produto ou a quantidade.
+
+A mesma consulta foi realizada novamente.
+
+Resultado:
+
+```text
+Pedido: 26
+Produto: Mamão
+Quantidade: 1
+Preço unitário registrado: 1400.00
+Preço atual: 1400.00
+```
+
+O preço registrado do item permaneceu inalterado durante a operação permitida.
 
 ---
 
@@ -341,45 +481,27 @@ Esse aviso não está relacionado à correção dos pedidos.
 
 ---
 
-## Testes de banco pendentes
+## Resultado dos testes obrigatórios
 
-A migration `010_bloqueio_itens_pedidos.sql` ainda não foi aplicada no Supabase.
+Todos os testes obrigatórios previstos para esta correção foram concluídos.
 
-Por isso, ainda precisam ser executados:
-
-- RPC tentando alterar quantidade de pedido `Em Rota`;
-- RPC tentando trocar produto de pedido `Em Rota`;
-- RPC tentando adicionar ou remover produto de pedido `Em Rota`;
-- tentativa de alterar itens de pedido `Entregue`;
-- tentativa de retornar `Em Rota` para `Pendente`;
-- tentativa de retornar `Entregue` para status anterior;
-- teste de aba desatualizada;
-- confirmação de que uma operação recusada não altera o pedido;
-- confirmação de que uma operação recusada não altera os itens;
-- confirmação de que uma operação recusada não altera o estoque;
-- confirmação de que reordenar os mesmos itens não causa bloqueio indevido;
-- confirmação de que mudança válida de status não desconta estoque novamente;
-- confirmação da preservação dos preços históricos.
-
-A correção do banco somente poderá ser considerada completamente validada depois desses testes.
-
----
-
-## Procedimento para aplicação da migration
-
-Deve ser aplicada somente:
-
-```text
-database/010_bloqueio_itens_pedidos.sql
-```
-
-Não é necessário apagar dados.
-
-Não é necessário executar novamente todas as migrations anteriores.
-
-A `010` depende da lógica existente na migration `009`.
-
-Após a aplicação, devem ser executados os testes de banco descritos neste documento.
+- Pedido `Pendente` permite alterações válidas: aprovado.
+- `Em Rota` bloqueia alteração de quantidade: aprovado.
+- `Em Rota` bloqueia inclusão de produto: aprovado.
+- `Em Rota` bloqueia remoção de produto: aprovado.
+- `Em Rota` bloqueia troca de produto: aprovado.
+- `Entregue` mantém os bloqueios: aprovado.
+- Outros campos permitidos continuam funcionando: aprovado.
+- Transições de status respeitam as regras definidas: aprovado.
+- Aba desatualizada não contorna a regra: aprovado.
+- RPC recusa operações proibidas: aprovado.
+- Reordenação dos mesmos itens não gera bloqueio: aprovado.
+- Operação recusada não altera itens: aprovado.
+- Operação recusada não altera estoque: aprovado.
+- Mudança simples de status não desconta estoque novamente: aprovado.
+- Preço registrado foi preservado em operação válida: aprovado.
+- Lint do Admin: aprovado.
+- Build do Admin: aprovado.
 
 ---
 
@@ -397,15 +519,17 @@ Alteração do banco:
 4984816 fix: protege itens de pedidos em rota no banco
 ```
 
+Registro inicial da documentação:
+
+```text
+96d87c4 docs: registra ajuste de bloqueio dos pedidos
+```
+
 Branch utilizada:
 
 ```text
 feature/pc3-bloqueio-itens-pedidos
 ```
-
-A branch já foi publicada no GitHub.
-
-A integração na `develop` deve ocorrer somente após a validação final da migration no Supabase.
 
 ---
 
@@ -421,13 +545,13 @@ Os critérios de aceitação relacionados à edição de pedidos devem considera
 - `Em Rota` não pode retornar para `Pendente`;
 - `Entregue` não pode retornar para status anterior;
 - os demais campos permitidos continuam editáveis;
-- o banco também deve impedir operações proibidas.
+- o banco também impede operações proibidas.
 
 ---
 
 ## Impacto nos casos de teste
 
-Os testes de pedidos devem incluir cenários positivos e negativos para:
+Os testes de pedidos devem contemplar:
 
 - edição de pedido `Pendente`;
 - bloqueio de pedido `Em Rota`;
@@ -436,8 +560,10 @@ Os testes de pedidos devem incluir cenários positivos e negativos para:
 - transições inválidas de status;
 - tentativa por aba desatualizada;
 - tentativa direta pela RPC;
+- inclusão, remoção, troca e alteração de quantidade;
+- reordenação dos mesmos itens;
 - preservação do estoque;
-- preservação do preço histórico.
+- preservação do preço registrado.
 
 ---
 
@@ -452,13 +578,13 @@ Esta correção não cria:
 
 Por isso, o DER e o Diagrama de Classes não precisam de alteração estrutural por causa deste ajuste do PC3.
 
-Os diagramas preparados pelo PC2 devem apenas ser revisados junto com a documentação final para verificar a coerência com o estado definitivo do projeto.
+Os diagramas preparados pelo PC2 continuam coerentes estruturalmente com esta correção.
 
 ---
 
 ## Impacto na documentação geral
 
-O PC1 deverá atualizar a documentação geral após a integração da correção.
+O PC1 deverá atualizar a documentação geral com as novas regras.
 
 Os principais pontos a revisar são:
 
@@ -473,7 +599,7 @@ Os principais pontos a revisar são:
 
 ## Relação com o trabalho do PC2
 
-O PC2 está trabalhando separadamente em:
+O PC2 trabalha separadamente em:
 
 - padronização da unidade de medida dos produtos;
 - apresentação das unidades;
@@ -481,16 +607,12 @@ O PC2 está trabalhando separadamente em:
 
 Nenhum arquivo reservado ao PC2 foi alterado pelo PC3.
 
-A migration reservada ao PC3 é:
+A migration utilizada pelo PC3 foi:
 
 ```text
 010_bloqueio_itens_pedidos.sql
 ```
 
-Caso o PC2 precise criar uma migration para a unidade de medida, o próximo número reservado é:
+A migration `011` não foi aplicada durante os testes do PC3.
 
-```text
-011
-```
-
-As alterações do PC2 e PC3 devem permanecer independentes.
+O PC2 deverá atualizar sua feature com a `develop` após a integração desta correção, antes de integrar o trabalho dele.
