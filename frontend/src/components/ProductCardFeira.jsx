@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 
 import '../styles/ProductCardFeira.css'
@@ -18,6 +19,9 @@ function ProductCardFeira({ produto }) {
   const mostrarImagem =
     Boolean(produto.imagem) &&
     !erroImagem
+
+  const unidade =
+    produto.unidade || 'UN'
 
   function aumentarQuantidade() {
     if (quantidade >= produto.estoque) {
@@ -132,7 +136,7 @@ function ProductCardFeira({ produto }) {
     )
 
     alert(
-      `${quantidade} unidade(s) adicionada(s) à cesta!`
+      `${quantidade} ${unidade} adicionado(s) à cesta!`
     )
 
     setQuantidade(1)
@@ -169,11 +173,11 @@ function ProductCardFeira({ produto }) {
         </h3>
 
         <p>
-          {produto.unidade}
+          {unidade}
         </p>
 
         <strong>
-          R$ {produto.preco
+          R$ {Number(produto.preco)
             .toFixed(2)
             .replace('.', ',')}
         </strong>
@@ -215,9 +219,7 @@ function ProductCardFeira({ produto }) {
           </div>
 
           <p className="estoque-info">
-            {produto.estoque}
-            {' '}
-            unidade(s) disponíveis
+            {produto.estoque} {unidade} disponíveis
           </p>
 
           <button
