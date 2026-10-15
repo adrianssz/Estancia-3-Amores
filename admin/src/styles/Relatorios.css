@@ -770,3 +770,58 @@
   }
 
 }
+
+/* Resumo e somatórias dos relatórios */
+.relatorio-totais {
+  margin-top: 24px;
+  padding: 18px 20px;
+  border: 1px solid #cad8cc;
+  border-radius: 9px;
+  background-color: #f7faf7;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.relatorio-totais h2 {
+  margin: 0 0 14px;
+  color: #243528;
+  font-size: 18px;
+}
+
+.relatorio-totais__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid #dfe7df;
+  color: #354139;
+  font-size: 14px;
+}
+
+.relatorio-totais__item strong {
+  text-align: right;
+}
+
+@media print {
+  .relatorio-totais {
+    margin-top: 16px;
+    background: #fff;
+    border: 1px solid #777;
+    box-shadow: none;
+  }
+
+  .relatorio-totais h2,
+  .relatorio-totais__item {
+    color: #000;
+  }
+
+  .relatorio-tabela thead {
+    display: table-header-group;
+  }
+
+  .relatorio-tabela tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

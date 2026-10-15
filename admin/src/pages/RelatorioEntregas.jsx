@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -195,6 +196,13 @@ function RelatorioEntregas() {
           resultados={resultados}
           colunas={colunas}
           chaveRegistro="codigo"
+          totais={[
+            {
+              chave: 'total-entregas',
+              rotulo: 'Total de entregas',
+              valor: resultados.length,
+            },
+          ]}
           onRetornar={() =>
             setRelatorioGerado(false)
           }

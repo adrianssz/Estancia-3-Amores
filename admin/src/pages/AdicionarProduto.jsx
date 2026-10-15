@@ -1,7 +1,12 @@
+
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useProdutos } from '../contexts/ProdutosContext'
+import {
+  UNIDADES_PRODUTO,
+  unidadeProdutoValida,
+} from '../constants/unidadesProduto'
 import { validarImagemProduto } from '../services/imagensProdutos'
 import '../styles/AdicionarProduto.css'
 
@@ -51,9 +56,11 @@ function AdicionarProduto() {
 
     if (
       !nome.trim() ||
-      !unidade.trim() ||
+      !unidadeProdutoValida(unidade) ||
+      preco === '' ||
       !Number.isFinite(precoNumerico) ||
       precoNumerico < 0 ||
+      estoque === '' ||
       estoqueNumerico < 0 ||
       !Number.isInteger(estoqueNumerico)
     ) {
@@ -71,7 +78,7 @@ function AdicionarProduto() {
 
       await adicionarProduto({
         nome: nome.trim(),
-        unidade: unidade.trim(),
+        unidade,
         preco: precoNumerico,
         categoria,
         status,
@@ -143,20 +150,31 @@ function AdicionarProduto() {
 
         <div className="adicionar-produto-form__grupo">
           <label htmlFor="unidade">
-            Unidade
+            Unidade de medida
           </label>
 
-          <input
+          <select
             id="unidade"
-            type="text"
             value={unidade}
             onChange={(event) =>
               setUnidade(event.target.value)
             }
-            placeholder="Ex.: Unidade, 1 KG, 500 g"
             disabled={adicionadoComSucesso || salvando}
             required
-          />
+          >
+            <option value="">
+              Selecione uma unidade
+            </option>
+
+            {UNIDADES_PRODUTO.map((opcao) => (
+              <option
+                key={opcao.valor}
+                value={opcao.valor}
+              >
+                {opcao.rotulo}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="adicionar-produto-form__grupo">

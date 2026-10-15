@@ -1,7 +1,12 @@
+
 import { useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { useProdutos } from '../contexts/ProdutosContext'
+import {
+  UNIDADES_PRODUTO,
+  unidadeProdutoValida,
+} from '../constants/unidadesProduto'
 import { validarImagemProduto } from '../services/imagensProdutos'
 import '../styles/EditarProduto.css'
 
@@ -10,7 +15,7 @@ function FormularioEditarProduto({
   editarProduto,
 }) {
   const [nome, setNome] = useState(produto.nome)
-  const [unidade, setUnidade] = useState(produto.unidade)
+  const [unidade, setUnidade] = useState(produto.unidade ?? '')
   const [preco, setPreco] = useState(produto.preco)
   const [categoria, setCategoria] = useState(produto.categoria)
   const [status, setStatus] = useState(produto.status)
@@ -25,6 +30,10 @@ function FormularioEditarProduto({
 
   const [salvando, setSalvando] = useState(false)
   const [erroEdicao, setErroEdicao] = useState('')
+
+  const unidadeLegada =
+    unidade !== '' &&
+    !unidadeProdutoValida(unidade)
 
   const possuiUrlImagem =
     imagem.startsWith('https://') ||
@@ -57,9 +66,11 @@ function FormularioEditarProduto({
 
     if (
       !nome.trim() ||
-      !unidade.trim() ||
+      !unidadeProdutoValida(unidade) ||
+      preco === '' ||
       !Number.isFinite(precoNumerico) ||
       precoNumerico < 0 ||
+      estoque === '' ||
       estoqueNumerico < 0 ||
       !Number.isInteger(estoqueNumerico)
     ) {
@@ -79,7 +90,7 @@ function FormularioEditarProduto({
         produto.id,
         {
           nome: nome.trim(),
-          unidade: unidade.trim(),
+          unidade,
           preco: precoNumerico,
           categoria,
           status,
@@ -146,20 +157,44 @@ function FormularioEditarProduto({
 
         <div className="editar-produto-form__grupo">
           <label htmlFor="unidade">
-            Unidade
+            Unidade de medida
           </label>
 
-          <input
+          <select
             id="unidade"
-            type="text"
             value={unidade}
             onChange={(event) =>
               setUnidade(event.target.value)
             }
-            placeholder="Ex.: Unidade, 1 KG, 500 g"
             disabled={editadoComSucesso || salvando}
             required
-          />
+          >
+            <option value="">
+              Selecione uma unidade
+            </option>
+
+            {unidadeLegada && (
+              <option value={unidade} disabled>
+                Valor antigo: {unidade} — selecione uma unidade válida
+              </option>
+            )}
+
+            {UNIDADES_PRODUTO.map((opcao) => (
+              <option
+                key={opcao.valor}
+                value={opcao.valor}
+              >
+                {opcao.rotulo}
+              </option>
+            ))}
+          </select>
+
+          {unidadeLegada && (
+            <p role="alert">
+              Este produto possui uma unidade antiga.
+              Selecione uma das opções disponíveis antes de salvar.
+            </p>
+          )}
         </div>
 
         <div className="editar-produto-form__grupo">
@@ -195,21 +230,10 @@ function FormularioEditarProduto({
             disabled={editadoComSucesso || salvando}
             required
           >
-            <option value="Legumes">
-              Legumes
-            </option>
-
-            <option value="Verduras">
-              Verduras
-            </option>
-
-            <option value="Frutas">
-              Frutas
-            </option>
-
-            <option value="Grãos">
-              Grãos
-            </option>
+            <option value="Legumes">Legumes</option>
+            <option value="Verduras">Verduras</option>
+            <option value="Frutas">Frutas</option>
+            <option value="Grãos">Grãos</option>
           </select>
         </div>
 
@@ -230,7 +254,6 @@ function FormularioEditarProduto({
             <option value="pronta-entrega">
               Pronta Entrega
             </option>
-
             <option value="em-crescimento">
               Em Crescimento
             </option>

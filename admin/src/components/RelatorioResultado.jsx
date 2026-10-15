@@ -1,9 +1,11 @@
+
 function RelatorioResultado({
   titulo,
   resultados,
   colunas,
   chaveRegistro,
   onRetornar,
+  totais = [],
 }) {
   const dataGeracao = new Intl.DateTimeFormat(
     'pt-BR',
@@ -60,6 +62,25 @@ function RelatorioResultado({
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="relatorio-totais">
+          <h2>Resumo do relatório</h2>
+
+          <div className="relatorio-totais__item">
+            <span>Registros apresentados</span>
+            <strong>{resultados.length}</strong>
+          </div>
+
+          {totais.map((total) => (
+            <div
+              key={total.chave}
+              className="relatorio-totais__item"
+            >
+              <span>{total.rotulo}</span>
+              <strong>{total.valor}</strong>
+            </div>
+          ))}
         </div>
       </div>
 

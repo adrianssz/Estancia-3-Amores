@@ -1,3 +1,4 @@
+
 import {
   useEffect,
   useState,
@@ -39,15 +40,51 @@ function RelatorioClientes() {
     let ativo = true
 
     async function carregarContagemPedidos() {
-      const { data, error } = await supabase
-        .from('pedidos')
-        .select('cliente_id')
+      const contagem = {}
+      const tamanhoPagina = 1000
+      let inicio = 0
+      let terminou = false
 
-      if (!ativo) {
-        return
-      }
+      try {
+        while (!terminou) {
+          const { data, error } = await supabase
+            .from('pedidos')
+            .select('id, cliente_id')
+            .order('id', { ascending: true })
+            .range(inicio, inicio + tamanhoPagina - 1)
 
-      if (error) {
+          if (error) {
+            throw error
+          }
+
+          if (!ativo) {
+            return
+          }
+
+          const pagina = data ?? []
+
+          pagina.forEach((pedido) => {
+            const clienteId = pedido.cliente_id
+
+            if (clienteId !== null) {
+              contagem[clienteId] =
+                (contagem[clienteId] ?? 0) + 1
+            }
+          })
+
+          terminou = pagina.length < tamanhoPagina
+          inicio += tamanhoPagina
+        }
+
+        if (ativo) {
+          setPedidosPorCliente(contagem)
+          setCarregandoPedidos(false)
+        }
+      } catch (error) {
+        if (!ativo) {
+          return
+        }
+
         console.error(
           'Erro ao carregar pedidos para o relatório:',
           error
@@ -58,23 +95,7 @@ function RelatorioClientes() {
           'Não foi possível carregar os pedidos.'
         )
         setCarregandoPedidos(false)
-        return
       }
-
-      const contagem = (data ?? []).reduce(
-        (acumulador, pedido) => {
-          const clienteId = pedido.cliente_id
-
-          acumulador[clienteId] =
-            (acumulador[clienteId] ?? 0) + 1
-
-          return acumulador
-        },
-        {}
-      )
-
-      setPedidosPorCliente(contagem)
-      setCarregandoPedidos(false)
     }
 
     carregarContagemPedidos()
@@ -127,6 +148,12 @@ function RelatorioClientes() {
         contarPedidos(cliente),
     },
   ]
+
+  const totalPedidos = resultados.reduce(
+    (total, cliente) =>
+      total + contarPedidos(cliente),
+    0
+  )
 
   function limparResultadoAnterior() {
     setResultados([])
@@ -210,6 +237,15 @@ function RelatorioClientes() {
           resultados={resultados}
           colunas={colunas}
           chaveRegistro="codigo"
+          totais={[
+            {
+              chave: 'total-pedidos',
+              rotulo: 'Total de pedidos dos clientes',
+              valor: new Intl.NumberFormat('pt-BR').format(
+                totalPedidos
+              ),
+            },
+          ]}
           onRetornar={() =>
             setRelatorioGerado(false)
           }

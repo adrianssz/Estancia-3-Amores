@@ -1,3 +1,4 @@
+
 import {
   useEffect,
   useState,
@@ -8,6 +9,66 @@ import RelatorioResultado from '../components/RelatorioResultado'
 import { supabase } from '../services/supabase'
 
 import '../styles/Relatorios.css'
+
+const formatadorMoeda = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+})
+
+const formatadorNumero = new Intl.NumberFormat('pt-BR')
+
+const TAMANHO_PAGINA = 1000
+
+function converterCentavos(valor) {
+  const numero = Number(valor)
+
+  if (!Number.isFinite(numero)) {
+    throw new Error('Valor monetário inválido no relatório.')
+  }
+
+  return Math.round(numero * 100)
+}
+
+async function consultarTodasPaginas(tabela, colunas) {
+  const registros = []
+  let inicio = 0
+  let terminou = false
+
+  while (!terminou) {
+    const { data, error } = await supabase
+      .from(tabela)
+      .select(colunas)
+      .order('id', { ascending: true })
+      .range(inicio, inicio + TAMANHO_PAGINA - 1)
+
+    if (error) {
+      throw error
+    }
+
+    const pagina = data ?? []
+
+    registros.push(...pagina)
+
+    terminou = pagina.length < TAMANHO_PAGINA
+    inicio += TAMANHO_PAGINA
+  }
+
+  return registros
+}
+
+function formatarData(data) {
+  if (!data) {
+    return ''
+  }
+
+  const partes = data.split('-')
+
+  if (partes.length !== 3) {
+    return data
+  }
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`
+}
 
 function RelatorioPedidos() {
   const [pedidos, setPedidos] = useState([])
@@ -30,56 +91,105 @@ function RelatorioPedidos() {
     let ativo = true
 
     async function carregarPedidos() {
-      setCarregando(true)
-      setErro('')
+      try {
+        const [pedidosBanco, itensBanco] = await Promise.all([
+          consultarTodasPaginas(
+            'pedidos',
+            `
+              id,
+              cliente_id,
+              telefone,
+              status,
+              data,
+              clientes (
+                nome
+              )
+            `
+          ),
+          consultarTodasPaginas(
+            'pedido_itens',
+            'id, pedido_id, quantidade, preco_unitario'
+          ),
+        ])
 
-      const { data, error } = await supabase
-        .from('pedidos')
-        .select(`
-          id,
-          cliente_id,
-          telefone,
-          status,
-          data,
-          clientes (
-            nome
+        if (!ativo) {
+          return
+        }
+
+        const totaisPorPedido = {}
+
+        itensBanco.forEach((item) => {
+          const quantidade = Number(item.quantidade)
+          const precoCentavos = converterCentavos(
+            item.preco_unitario
           )
-        `)
-        .order('id', {
-          ascending: true,
+
+          if (
+            !Number.isInteger(quantidade) ||
+            quantidade <= 0
+          ) {
+            throw new Error(
+              'Quantidade inválida encontrada nos itens.'
+            )
+          }
+
+          const subtotalCentavos =
+            quantidade * precoCentavos
+
+          if (!Number.isSafeInteger(subtotalCentavos)) {
+            throw new Error(
+              'Valor de pedido acima do limite permitido.'
+            )
+          }
+
+          const totalAtual =
+            totaisPorPedido[item.pedido_id] ?? 0
+
+          const novoTotal =
+            totalAtual + subtotalCentavos
+
+          if (!Number.isSafeInteger(novoTotal)) {
+            throw new Error(
+              'Valor total acima do limite permitido.'
+            )
+          }
+
+          totaisPorPedido[item.pedido_id] = novoTotal
         })
 
-      if (!ativo) {
-        return
-      }
+        const pedidosNormalizados = pedidosBanco.map(
+          (pedido) => ({
+            id: pedido.id,
+            clienteId: pedido.cliente_id,
+            cliente:
+              pedido.clientes?.nome ??
+              'Cliente não encontrado',
+            telefone: pedido.telefone,
+            status: pedido.status,
+            data: pedido.data,
+            totalCentavos:
+              totaisPorPedido[pedido.id] ?? 0,
+          })
+        )
 
-      if (error) {
+        setPedidos(pedidosNormalizados)
+        setCarregando(false)
+      } catch (error) {
+        if (!ativo) {
+          return
+        }
+
         console.error(
           'Erro ao carregar pedidos para o relatório:',
           error
         )
 
         setPedidos([])
-        setErro('Erro ao carregar pedidos.')
+        setErro(
+          'Não foi possível carregar os pedidos e seus valores.'
+        )
         setCarregando(false)
-        return
       }
-
-      const pedidosNormalizados = (data ?? []).map(
-        (pedido) => ({
-          id: pedido.id,
-          clienteId: pedido.cliente_id,
-          cliente:
-            pedido.clientes?.nome ??
-            'Cliente não encontrado',
-          telefone: pedido.telefone,
-          status: pedido.status,
-          data: pedido.data,
-        })
-      )
-
-      setPedidos(pedidosNormalizados)
-      setCarregando(false)
     }
 
     carregarPedidos()
@@ -113,20 +223,6 @@ function RelatorioPedidos() {
     statusA.localeCompare(statusB, 'pt-BR')
   )
 
-  function formatarData(data) {
-    if (!data) {
-      return ''
-    }
-
-    const partes = data.split('-')
-
-    if (partes.length !== 3) {
-      return data
-    }
-
-    return `${partes[2]}/${partes[1]}/${partes[0]}`
-  }
-
   const colunas = [
     {
       chave: 'id',
@@ -150,7 +246,23 @@ function RelatorioPedidos() {
       render: (pedido) =>
         formatarData(pedido.data),
     },
+    {
+      chave: 'total',
+      titulo: 'Valor total',
+      render: (pedido) =>
+        formatadorMoeda.format(
+          pedido.totalCentavos / 100
+        ),
+    },
   ]
+
+  const quantidadePedidos = resultados.length
+
+  const totalGeralCentavos = resultados.reduce(
+    (total, pedido) =>
+      total + pedido.totalCentavos,
+    0
+  )
 
   function limparResultadoAnterior() {
     setResultados([])
@@ -248,6 +360,22 @@ function RelatorioPedidos() {
           resultados={resultados}
           colunas={colunas}
           chaveRegistro="id"
+          totais={[
+            {
+              chave: 'total-pedidos',
+              rotulo: 'Quantidade de pedidos',
+              valor: formatadorNumero.format(
+                quantidadePedidos
+              ),
+            },
+            {
+              chave: 'valor-total',
+              rotulo: 'Valor total dos pedidos',
+              valor: formatadorMoeda.format(
+                totalGeralCentavos / 100
+              ),
+            },
+          ]}
           onRetornar={() =>
             setRelatorioGerado(false)
           }
