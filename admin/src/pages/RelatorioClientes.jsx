@@ -11,6 +11,7 @@ import { supabase } from '../services/supabase'
 
 import '../styles/Relatorios.css'
 
+// Gera o relatório de clientes com a contagem de pedidos de cada um.
 function RelatorioClientes() {
   const {
     clientes,
@@ -39,6 +40,7 @@ function RelatorioClientes() {
   useEffect(() => {
     let ativo = true
 
+    // Consulta os pedidos em páginas e acumula a contagem por cliente.
     async function carregarContagemPedidos() {
       const contagem = {}
       const tamanhoPagina = 1000
@@ -115,6 +117,7 @@ function RelatorioClientes() {
     clienteA.localeCompare(clienteB, 'pt-BR')
   )
 
+  // Retorna a contagem de pedidos do cliente ou zero quando não há pedidos.
   function contarPedidos(cliente) {
     return pedidosPorCliente[cliente.id] ?? 0
   }
@@ -149,23 +152,27 @@ function RelatorioClientes() {
     },
   ]
 
+  // Soma os pedidos dos clientes incluídos no resultado filtrado.
   const totalPedidos = resultados.reduce(
     (total, cliente) =>
       total + contarPedidos(cliente),
     0
   )
 
+  // Limpa os resultados e as mensagens do relatório anterior.
   function limparResultadoAnterior() {
     setResultados([])
     setMensagem('')
     setRelatorioGerado(false)
   }
 
+  // Atualiza o filtro de cliente e limpa o resultado anterior.
   function handleClienteChange(event) {
     setClienteSelecionado(event.target.value)
     limparResultadoAnterior()
   }
 
+  // Filtra os clientes pelo nome selecionado ou inclui todos quando o filtro está vazio.
   function handleSubmit(event) {
     event.preventDefault()
 

@@ -19,6 +19,7 @@ const formatadorNumero = new Intl.NumberFormat('pt-BR')
 
 const TAMANHO_PAGINA = 1000
 
+// Valida o valor monetário e converte para centavos inteiros.
 function converterCentavos(valor) {
   const numero = Number(valor)
 
@@ -29,6 +30,7 @@ function converterCentavos(valor) {
   return Math.round(numero * 100)
 }
 
+// Consulta os registros em páginas ordenadas pelo ID até concluir a leitura.
 async function consultarTodasPaginas(tabela, colunas) {
   const registros = []
   let inicio = 0
@@ -56,6 +58,7 @@ async function consultarTodasPaginas(tabela, colunas) {
   return registros
 }
 
+// Converte a data do banco para dia/mês/ano.
 function formatarData(data) {
   if (!data) {
     return ''
@@ -70,6 +73,7 @@ function formatarData(data) {
   return `${partes[2]}/${partes[1]}/${partes[0]}`
 }
 
+// Gera o relatório de pedidos com filtros e totais monetários.
 function RelatorioPedidos() {
   const [pedidos, setPedidos] = useState([])
   const [carregando, setCarregando] = useState(true)
@@ -90,6 +94,7 @@ function RelatorioPedidos() {
   useEffect(() => {
     let ativo = true
 
+    // Consulta pedidos e itens em paralelo para montar os valores de cada pedido.
     async function carregarPedidos() {
       try {
         const [pedidosBanco, itensBanco] = await Promise.all([
@@ -116,6 +121,7 @@ function RelatorioPedidos() {
           return
         }
 
+        // Acumula os totais em centavos usando os preços históricos dos itens.
         const totaisPorPedido = {}
 
         itensBanco.forEach((item) => {
@@ -258,28 +264,33 @@ function RelatorioPedidos() {
 
   const quantidadePedidos = resultados.length
 
+  // Soma os valores dos pedidos incluídos no resultado filtrado.
   const totalGeralCentavos = resultados.reduce(
     (total, pedido) =>
       total + pedido.totalCentavos,
     0
   )
 
+  // Limpa os resultados e as mensagens do relatório anterior.
   function limparResultadoAnterior() {
     setResultados([])
     setMensagem('')
     setRelatorioGerado(false)
   }
 
+  // Atualiza o filtro de cliente e limpa o resultado anterior.
   function handleClienteChange(event) {
     setClienteSelecionado(event.target.value)
     limparResultadoAnterior()
   }
 
+  // Atualiza o filtro de status e limpa o resultado anterior.
   function handleStatusChange(event) {
     setStatusSelecionado(event.target.value)
     limparResultadoAnterior()
   }
 
+  // Combina os filtros de cliente e status para gerar o resultado.
   function handleSubmit(event) {
     event.preventDefault()
 
