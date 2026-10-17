@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useProdutos } from '../contexts/ProdutosContext'
 import '../styles/Produtos.css'
 
+// Exibe os produtos e permite pesquisar por nome ou código.
 function Produtos() {
   const {
     produtos,
@@ -35,12 +36,14 @@ function Produtos() {
     return nomeCorresponde || codigoCorresponde
   })
 
+  // Aplica o texto digitado ao confirmar a pesquisa.
   function handlePesquisar(event) {
     event.preventDefault()
 
     setTermoPesquisa(busca)
   }
 
+  // Atualiza a busca e remove o filtro quando o campo fica vazio.
   function handleBuscaChange(event) {
     const novoValor = event.target.value
 
@@ -51,6 +54,7 @@ function Produtos() {
     }
   }
 
+  // Formata o preço em reais para exibição.
   function formatarPreco(valor) {
     return Number(valor).toLocaleString(
       'pt-BR',
@@ -61,6 +65,7 @@ function Produtos() {
     )
   }
 
+  // Converte os códigos de status em nomes para exibição.
   function formatarStatus(status) {
     if (status === 'pronta-entrega') {
       return 'Pronta Entrega'

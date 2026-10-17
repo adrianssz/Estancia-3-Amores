@@ -102,6 +102,7 @@ function IconeExcluir() {
   )
 }
 
+// Exibe os clientes e permite pesquisar por nome ou código.
 function Clientes() {
   const {
     clientes,
@@ -133,12 +134,14 @@ function Clientes() {
     return nomeCorresponde || codigoCorresponde
   })
 
+  // Aplica o texto digitado ao confirmar a pesquisa.
   function handlePesquisar(event) {
     event.preventDefault()
 
     setTermoPesquisa(busca)
   }
 
+  // Atualiza a busca e remove o filtro quando o campo fica vazio.
   function handleBuscaChange(event) {
     const novoValor = event.target.value
 

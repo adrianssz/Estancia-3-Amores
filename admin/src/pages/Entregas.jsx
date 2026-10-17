@@ -127,6 +127,7 @@ function classeStatus(status) {
 }
 
 
+// Exibe as entregas e permite pesquisar por cliente ou código.
 function Entregas() {
   const {
     entregas,
@@ -173,6 +174,7 @@ function Entregas() {
   )
 
 
+  // Aplica o texto digitado ao confirmar a pesquisa.
   function handlePesquisar(event) {
     event.preventDefault()
 
@@ -180,6 +182,7 @@ function Entregas() {
   }
 
 
+  // Atualiza a busca e remove o filtro quando o campo fica vazio.
   function handleBuscaChange(event) {
     const novoValor = event.target.value
 

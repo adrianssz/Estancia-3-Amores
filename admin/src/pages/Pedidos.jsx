@@ -95,6 +95,7 @@ function classeStatus(status) {
 }
 
 
+// Exibe os pedidos e permite pesquisar por cliente ou código.
 function Pedidos() {
   const { pedidos } = usePedidos()
 
@@ -125,6 +126,7 @@ function Pedidos() {
   })
 
 
+  // Aplica o texto digitado ao confirmar a pesquisa.
   function handlePesquisar(event) {
     event.preventDefault()
 
@@ -132,6 +134,7 @@ function Pedidos() {
   }
 
 
+  // Atualiza a busca e remove o filtro quando o campo fica vazio.
   function handleBuscaChange(event) {
     const novoValor = event.target.value
 

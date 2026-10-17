@@ -77,9 +77,11 @@ function IconeExcluir() {
 }
 
 
+// Exibe os plantios e o gráfico de distribuição por tipo.
 function Plantios() {
   const { plantios } = usePlantios()
 
+  // Conta os registros para calcular a distribuição dos plantios.
   const totalPlantios = plantios.length
 
   const totalFrutas = plantios.filter(
@@ -112,6 +114,7 @@ function Plantios() {
   const limiteLegumes =
     percentualFrutas + percentualLegumes
 
+  // Monta as fatias do gráfico e usa fundo neutro quando não há plantios.
   const graficoBackground =
     totalPlantios > 0
       ? `conic-gradient(
