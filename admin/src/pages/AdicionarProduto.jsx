@@ -10,6 +10,7 @@ import {
 import { validarImagemProduto } from '../services/imagensProdutos'
 import '../styles/AdicionarProduto.css'
 
+// Controla o cadastro de produtos com unidade padronizada e imagem opcional.
 function AdicionarProduto() {
   const { adicionarProduto } = useProdutos()
 
@@ -29,6 +30,7 @@ function AdicionarProduto() {
   const [salvando, setSalvando] = useState(false)
   const [erroCadastro, setErroCadastro] = useState('')
 
+  // Valida a imagem selecionada antes de guardar o arquivo para envio.
   function handleSelecionarImagem(event) {
     const arquivo = event.target.files?.[0] ?? null
 
@@ -44,6 +46,7 @@ function AdicionarProduto() {
     }
   }
 
+  // Valida nome, unidade, preço, estoque e imagem antes de solicitar o cadastro.
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -104,6 +107,7 @@ function AdicionarProduto() {
     }
   }
 
+  // Limpa o formulário e a imagem selecionada para cadastrar outro produto.
   function handleNovoProduto() {
     setNome('')
     setUnidade('')

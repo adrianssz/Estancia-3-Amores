@@ -10,6 +10,7 @@ import {
 import { validarImagemProduto } from '../services/imagensProdutos'
 import '../styles/EditarProduto.css'
 
+// Preenche o formulário com os dados do produto selecionado.
 function FormularioEditarProduto({
   produto,
   editarProduto,
@@ -31,6 +32,7 @@ function FormularioEditarProduto({
   const [salvando, setSalvando] = useState(false)
   const [erroEdicao, setErroEdicao] = useState('')
 
+  // Identifica unidades antigas que não pertencem às opções padronizadas.
   const unidadeLegada =
     unidade !== '' &&
     !unidadeProdutoValida(unidade)
@@ -39,6 +41,7 @@ function FormularioEditarProduto({
     imagem.startsWith('https://') ||
     imagem.startsWith('http://')
 
+  // Valida a nova imagem antes de guardar o arquivo para envio.
   function handleSelecionarImagem(event) {
     const arquivo = event.target.files?.[0] ?? null
 
@@ -54,6 +57,7 @@ function FormularioEditarProduto({
     }
   }
 
+  // Valida os dados e solicita a atualização do produto e da imagem selecionada.
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -123,6 +127,7 @@ function FormularioEditarProduto({
     }
   }
 
+  // Libera o formulário para uma nova edição após o sucesso.
   function handleEditarNovamente() {
     setErroEdicao('')
     setEditadoComSucesso(false)
@@ -384,6 +389,7 @@ function FormularioEditarProduto({
   )
 }
 
+// Localiza o produto pela rota e trata carregamento, erro e registro inexistente.
 function EditarProduto() {
   const { id } = useParams()
 
