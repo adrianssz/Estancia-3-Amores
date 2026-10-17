@@ -3,6 +3,7 @@ import { useState } from 'react'
 
 import '../styles/ProductCardFeira.css'
 
+// Exibe o produto da Feira com disponibilidade e seleção de quantidade.
 function ProductCardFeira({ produto }) {
   const [quantidade, setQuantidade] =
     useState(1)
@@ -23,6 +24,7 @@ function ProductCardFeira({ produto }) {
   const unidade =
     produto.unidade || 'UN'
 
+  // Aumenta a quantidade até o limite do estoque informado.
   function aumentarQuantidade() {
     if (quantidade >= produto.estoque) {
       alert(
@@ -37,6 +39,7 @@ function ProductCardFeira({ produto }) {
     )
   }
 
+  // Diminui a quantidade mantendo o mínimo de uma unidade.
   function diminuirQuantidade() {
     if (quantidade <= 1) {
       return
@@ -47,6 +50,7 @@ function ProductCardFeira({ produto }) {
     )
   }
 
+  // Confere disponibilidade e estoque antes de incluir ou somar o produto na cesta.
   function adicionarNaCesta() {
     if (!prontaEntrega) {
       alert(
@@ -126,11 +130,13 @@ function ProductCardFeira({ produto }) {
       ]
     }
 
+    // Salva a cesta atualizada no navegador.
     localStorage.setItem(
       'cesta',
       JSON.stringify(novaCesta)
     )
 
+    // Avisa os componentes que acompanham alterações na cesta.
     window.dispatchEvent(
       new Event('cestaAtualizada')
     )

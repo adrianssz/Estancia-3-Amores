@@ -13,6 +13,7 @@ import { supabase } from '../services/supabase'
 
 import '../styles/Home.css'
 
+// Exibe a página inicial com produtos em destaque e localização.
 function Home() {
   const [produtosDestaque, setProdutosDestaque] =
     useState([])
@@ -26,6 +27,7 @@ function Home() {
   useEffect(() => {
     let ativo = true
 
+    // Consulta até quatro produtos da view de mais vendidos, em ordem de vendas.
     async function carregarDestaques() {
       setCarregandoDestaques(true)
       setErroDestaques('')
@@ -76,6 +78,7 @@ function Home() {
     }
   }, [])
 
+  // Formata o preço com duas casas decimais e trata valores inválidos.
   function formatarPreco(preco) {
     const valor = Number(preco)
 
