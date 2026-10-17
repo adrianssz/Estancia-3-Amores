@@ -5,6 +5,7 @@ import {
 
 import { useAuth } from '../contexts/AuthContext'
 
+// Aguarda a sessão e manda para o login quem não está autenticado.
 function ProtectedRoute() {
   const {
     autenticado,

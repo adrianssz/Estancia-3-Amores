@@ -6,6 +6,7 @@ import PlantiosProvider from './contexts/PlantiosProvider'
 import ProdutosProvider from './contexts/ProdutosProvider'
 import AppRoutes from './routes/AppRoutes'
 
+// Reúne a autenticação e os dados usados pelas telas do painel.
 function App() {
   return (
     <AuthProvider>

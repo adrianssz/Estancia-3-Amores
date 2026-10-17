@@ -5,6 +5,7 @@ import {
 
 const authContext = createContext(null)
 
+// Dá acesso aos dados e às ações de autenticação do AuthProvider.
 function useAuth() {
   const context = useContext(authContext)
 
