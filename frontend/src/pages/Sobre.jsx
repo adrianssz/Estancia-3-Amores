@@ -6,6 +6,7 @@ import VisitMap from '../components/VisitMap'
 import '../styles/Sobre.css'
 
 
+// Apresenta a Estância, a galeria e o acesso à localização.
 function Sobre() {
 
 

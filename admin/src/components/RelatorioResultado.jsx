@@ -1,3 +1,4 @@
+// Exibe a tabela e os totais recebidos da página que gera o relatório.
 
 function RelatorioResultado({
   titulo,
@@ -15,6 +16,7 @@ function RelatorioResultado({
     }
   ).format(new Date())
 
+  // Abre a impressão do navegador, que também permite salvar em PDF.
   function handleImprimir() {
     window.print()
   }

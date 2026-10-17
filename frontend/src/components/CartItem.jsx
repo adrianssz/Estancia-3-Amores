@@ -4,6 +4,7 @@ import { FaTrash } from 'react-icons/fa'
 import '../styles/CartItem.css'
 
 
+// Exibe um item da cesta com quantidade, subtotal e ações de alteração.
 function CartItem({
   produto,
   removerProduto,
@@ -24,6 +25,7 @@ function CartItem({
   const estoque =
     Number(produto.estoque)
 
+  // Calcula o valor do item conforme a quantidade selecionada.
   const subtotal =
     preco * quantidade
 
@@ -31,6 +33,7 @@ function CartItem({
     Boolean(produto.imagem) &&
     !erroImagem
 
+  // Desabilita o aumento quando a quantidade atinge o estoque informado.
   const limiteEstoqueAtingido =
     Number.isFinite(estoque) &&
     quantidade >= estoque

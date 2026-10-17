@@ -11,6 +11,7 @@ import {
 import '../styles/Contato.css'
 
 
+// Exibe os canais de contato e a localização da Estância.
 function Contato() {
 
   const telefoneWhatsApp = '5544998125510'
@@ -25,6 +26,7 @@ function Contato() {
     'https://maps.app.goo.gl/s7JwjgHhYp22uj2j8'
 
 
+  // Centraliza a tentativa de abrir os links externos em uma nova aba.
   function abrirLink(url, mensagemErro) {
 
     try {
