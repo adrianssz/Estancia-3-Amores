@@ -8,6 +8,7 @@ import { useAuth } from './AuthContext'
 import { useProdutos } from './ProdutosContext'
 import PedidosContext from './PedidosContext'
 
+// Define os dados buscados do pedido, incluindo cliente e itens.
 const CAMPOS_PEDIDO = `
   id,
   cliente_id,
@@ -24,6 +25,7 @@ const CAMPOS_PEDIDO = `
   )
 `
 
+// Converte a data do banco para dia/mês/ano.
 function formatarDataParaInterface(data) {
   if (!data) {
     return ''
@@ -40,6 +42,7 @@ function formatarDataParaInterface(data) {
   return `${dia}/${mes}/${ano}`
 }
 
+// Converte a data da tela para ano-mês-dia.
 function formatarDataParaBanco(data) {
   if (!data) {
     return ''
@@ -56,6 +59,7 @@ function formatarDataParaBanco(data) {
   return `${ano}-${mes}-${dia}`
 }
 
+// Adapta os campos dos itens do banco para os nomes usados nas telas.
 function normalizarItens(itens) {
   if (!Array.isArray(itens)) {
     return []
@@ -68,6 +72,7 @@ function normalizarItens(itens) {
   }))
 }
 
+// Organiza o pedido com nome do cliente, data formatada e itens.
 function normalizarPedido(pedido) {
   return {
     id: pedido.id,
@@ -83,6 +88,7 @@ function normalizarPedido(pedido) {
   }
 }
 
+// Usa a mensagem de validação do banco ou uma mensagem padrão.
 function mensagemDoErro(error, mensagemPadrao) {
   // P0001 identifica as mensagens de validação das RPCs.
   if (error?.code === 'P0001' && error.message) {
@@ -92,6 +98,7 @@ function mensagemDoErro(error, mensagemPadrao) {
   return mensagemPadrao
 }
 
+// Busca um pedido pelo código, junto com o cliente e os itens.
 async function buscarPedidoCompleto(id) {
   const { data, error } = await supabase
     .from('pedidos')
@@ -106,6 +113,7 @@ async function buscarPedidoCompleto(id) {
   return normalizarPedido(data)
 }
 
+// Compartilha os pedidos e as funções de cadastro, edição e exclusão.
 function PedidosProvider({ children }) {
   const {
     autenticado,
@@ -121,6 +129,7 @@ function PedidosProvider({ children }) {
   useEffect(() => {
     let ativo = true
 
+    // Aguarda a autenticação e busca os pedidos para preencher o painel.
     async function carregarPedidos() {
       if (carregandoAutenticacao) {
         return
@@ -162,6 +171,7 @@ function PedidosProvider({ children }) {
 
     carregarPedidos()
 
+    // Evita atualizar o estado depois que o componente for desmontado.
     return () => {
       ativo = false
     }
@@ -170,6 +180,7 @@ function PedidosProvider({ children }) {
     carregandoAutenticacao,
   ])
 
+  // Envia criação ou edição à RPC, que valida o pedido e movimenta o estoque.
   async function salvarPedido(dadosPedido, id = null) {
     const editando = id !== null
 
@@ -237,6 +248,7 @@ function PedidosProvider({ children }) {
         pedidoRetornado.id
       )
 
+      // Substitui o pedido editado na lista ou inclui o pedido recém-criado.
       setPedidos((pedidosAtuais) => {
         const existe = pedidosAtuais.some(
           (pedido) => pedido.id === pedidoSalvo.id
@@ -271,14 +283,17 @@ function PedidosProvider({ children }) {
     }
   }
 
+  // Encaminha um novo pedido para a função de salvamento.
   async function adicionarPedido(novoPedido) {
     return salvarPedido(novoPedido)
   }
 
+  // Encaminha os dados e o código do pedido que será editado.
   async function editarPedido(id, dadosAtualizados) {
     return salvarPedido(dadosAtualizados, id)
   }
 
+  // Solicita a exclusão à RPC, que decide a devolução de estoque pelo status.
   async function excluirPedido(id) {
     const { data, error } = await supabase.rpc(
       'excluir_pedido_com_estoque',
