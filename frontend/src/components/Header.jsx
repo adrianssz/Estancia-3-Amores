@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import '../styles/Header.css'
 
 
+// Exibe o cabeçalho com acesso à cesta e contador de quantidades.
 function Header() {
 
   const [
@@ -16,6 +17,7 @@ function Header() {
   ] = useState(0)
 
 
+  // Soma as quantidades dos produtos salvos na cesta do navegador.
   function atualizarContador() {
 
     const cesta =
@@ -45,6 +47,7 @@ function Header() {
   }
 
 
+  // Atualiza o contador ao carregar e acompanha mudanças na cesta.
   useEffect(() => {
 
     atualizarContador()

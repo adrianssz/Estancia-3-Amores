@@ -29,6 +29,7 @@ const opcoesRelatorio = [
   },
 ]
 
+// Exibe os atalhos para os quatro tipos de relatório do painel.
 function Relatorios() {
   return (
     <main className="relatorios-page">

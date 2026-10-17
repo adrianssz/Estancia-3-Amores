@@ -10,6 +10,7 @@ import Contato from '../pages/Contato'
 import Cesta from '../pages/Cesta'
 import NotFound from '../pages/NotFound'
 
+// Define as páginas do site e a tela para endereços inexistentes.
 function AppRoutes() {
   return (
     <Routes>

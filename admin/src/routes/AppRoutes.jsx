@@ -43,6 +43,7 @@ import RelatorioPedidos from '../pages/RelatorioPedidos'
 import RelatorioClientes from '../pages/RelatorioClientes'
 import RelatorioEntregas from '../pages/RelatorioEntregas'
 
+// Define o login e agrupa as telas do painel sob a proteção de autenticação.
 function AppRoutes() {
   return (
     <BrowserRouter>
