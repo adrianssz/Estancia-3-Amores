@@ -3,6 +3,7 @@ import { useState } from 'react'
 import '../styles/ProductCard.css'
 
 
+// Exibe nome, preço e imagem do produto, com alternativa quando não há foto.
 function ProductCard({
   imagem,
   nome,

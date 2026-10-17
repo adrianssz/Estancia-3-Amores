@@ -1,12 +1,14 @@
 import '../styles/VisitMap.css'
 
 
+// Exibe o convite para consultar a localização da Estância.
 function VisitMap() {
 
   const mapaUrl =
     'https://maps.app.goo.gl/s7JwjgHhYp22uj2j8'
 
 
+  // Tenta abrir a localização em uma nova aba.
   function abrirMapa(event) {
 
     event.preventDefault()

@@ -1,6 +1,7 @@
 import '../styles/Gallery.css'
 
 
+// Exibe a galeria de imagens ilustrativas da produção agrícola.
 function Gallery() {
 
   const fotos = [

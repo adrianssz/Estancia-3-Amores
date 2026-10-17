@@ -3,12 +3,14 @@ import { FaMapMarkerAlt } from 'react-icons/fa'
 import '../styles/Map.css'
 
 
+// Exibe o acesso à localização da Estância no Google Maps.
 function Map() {
 
   const mapaUrl =
     'https://maps.app.goo.gl/s7JwjgHhYp22uj2j8'
 
 
+  // Tenta abrir a localização em uma nova aba.
   function abrirMapa(event) {
 
     event.preventDefault()

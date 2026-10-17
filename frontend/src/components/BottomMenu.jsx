@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import '../styles/BottomMenu.css'
 
 
+// Exibe os atalhos de navegação no menu inferior do site.
 function BottomMenu() {
 
   return (
