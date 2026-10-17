@@ -5,6 +5,7 @@ import {
 
 const entregasContext = createContext(null)
 
+// Dá acesso às entregas e às funções do EntregasProvider.
 function useEntregas() {
   const context = useContext(entregasContext)
 

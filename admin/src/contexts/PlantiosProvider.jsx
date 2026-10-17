@@ -7,6 +7,7 @@ import { supabase } from '../services/supabase'
 import { useAuth } from './AuthContext'
 import PlantiosContext from './PlantiosContext'
 
+// Compartilha os plantios e as ações de cadastro, edição e exclusão.
 function PlantiosProvider({ children }) {
   const {
     autenticado,
@@ -20,6 +21,7 @@ function PlantiosProvider({ children }) {
   useEffect(() => {
     let ativo = true
 
+    // Aguarda a autenticação e busca os plantios no Supabase.
     async function carregarPlantios() {
       if (carregandoAutenticacao) {
         return
@@ -77,6 +79,7 @@ function PlantiosProvider({ children }) {
     carregandoAutenticacao,
   ])
 
+  // Salva o plantio no banco e adiciona à lista do painel.
   async function adicionarPlantio(novoPlantio) {
     const {
       data,
@@ -113,6 +116,7 @@ function PlantiosProvider({ children }) {
     }
   }
 
+  // Atualiza o plantio no banco e na lista do painel.
   async function editarPlantio(
     id,
     dadosAtualizados
@@ -156,6 +160,7 @@ function PlantiosProvider({ children }) {
     }
   }
 
+  // Exclui o plantio do banco e remove da lista após o sucesso.
   async function excluirPlantio(id) {
     const { error } = await supabase
       .from('plantios')

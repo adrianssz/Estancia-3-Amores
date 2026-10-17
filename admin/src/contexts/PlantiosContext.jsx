@@ -5,6 +5,7 @@ import {
 
 const plantiosContext = createContext(null)
 
+// Dá acesso aos plantios e às funções do PlantiosProvider.
 function usePlantios() {
   const context = useContext(plantiosContext)
 

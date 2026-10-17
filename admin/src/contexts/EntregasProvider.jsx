@@ -8,6 +8,7 @@ import { useAuth } from './AuthContext'
 import EntregasContext from './EntregasContext'
 
 
+// Converte a data do banco para dia/mês/ano.
 function formatarDataParaInterface(data) {
   if (!data) {
     return ''
@@ -25,6 +26,7 @@ function formatarDataParaInterface(data) {
 }
 
 
+// Converte a data da tela para ano-mês-dia.
 function formatarDataParaBanco(data) {
   if (!data) {
     return ''
@@ -42,6 +44,7 @@ function formatarDataParaBanco(data) {
 }
 
 
+// Organiza os dados da entrega com nome do cliente e data formatada.
 function normalizarEntrega(entrega) {
   return {
     id: entrega.id,
@@ -60,6 +63,7 @@ function normalizarEntrega(entrega) {
 }
 
 
+// Compartilha as entregas e as ações de cadastro, edição e exclusão.
 function EntregasProvider({ children }) {
   const {
     autenticado,
@@ -74,6 +78,7 @@ function EntregasProvider({ children }) {
   useEffect(() => {
     let ativo = true
 
+    // Aguarda a autenticação e busca as entregas com os nomes dos clientes.
     async function carregarEntregas() {
       if (carregandoAutenticacao) {
         return
@@ -147,6 +152,7 @@ function EntregasProvider({ children }) {
   ])
 
 
+  // Salva a entrega no banco e adiciona à lista do painel.
   async function adicionarEntrega(novaEntrega) {
     const {
       data,
@@ -203,6 +209,7 @@ function EntregasProvider({ children }) {
   }
 
 
+  // Atualiza a entrega no banco e na lista do painel.
   async function editarEntrega(
     codigo,
     dadosAtualizados
@@ -267,6 +274,7 @@ function EntregasProvider({ children }) {
   }
 
 
+  // Exclui a entrega do banco e remove da lista após o sucesso.
   async function excluirEntrega(codigo) {
     const { error } = await supabase
       .from('entregas')

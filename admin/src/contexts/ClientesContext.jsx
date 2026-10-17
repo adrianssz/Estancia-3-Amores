@@ -5,6 +5,7 @@ import {
 
 const clientesContext = createContext(null)
 
+// Dá acesso aos clientes e às funções do ClientesProvider.
 function useClientes() {
   const context = useContext(clientesContext)
 
