@@ -9,6 +9,7 @@ import { useClientes } from '../contexts/ClientesContext'
 import '../styles/ExcluirCliente.css'
 
 
+// Mantém os dados do cliente na tela durante e após a exclusão.
 function ConteudoExcluirCliente({
   cliente,
   codigo,
@@ -49,6 +50,7 @@ function ConteudoExcluirCliente({
   }
 
 
+  // Solicita a exclusão e informa quando existem registros vinculados.
   async function handleExcluir() {
     setExcluindo(true)
     setErroExclusao('')
@@ -204,6 +206,7 @@ function ConteudoExcluirCliente({
 }
 
 
+// Localiza o cliente pelo código da rota e trata o carregamento.
 function ExcluirCliente() {
   const { codigo } = useParams()
 

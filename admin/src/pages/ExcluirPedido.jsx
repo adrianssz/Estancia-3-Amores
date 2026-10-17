@@ -9,6 +9,7 @@ import { usePedidos } from '../contexts/PedidosContext'
 import '../styles/ExcluirPedido.css'
 
 
+// Exibe os dados do pedido e o resultado da exclusão.
 function FormularioExcluirPedido({
   pedidoSelecionado,
   excluirPedido,
@@ -50,6 +51,7 @@ function FormularioExcluirPedido({
   }
 
 
+  // Solicita a exclusão pelo contexto e apresenta o resultado na tela.
   async function handleExcluir() {
     setErro('')
     setExcluindo(true)
@@ -209,6 +211,7 @@ function FormularioExcluirPedido({
 }
 
 
+// Localiza o pedido pelo ID da rota e trata o carregamento.
 function ExcluirPedido() {
   const { id } = useParams()
 

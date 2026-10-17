@@ -9,6 +9,7 @@ import { useEntregas } from '../contexts/EntregasContext'
 import '../styles/ExcluirEntrega.css'
 
 
+// Exibe os dados da entrega e o resultado da exclusão.
 function FormularioExcluirEntrega({
   entregaSelecionada,
   excluirEntrega,
@@ -50,6 +51,7 @@ function FormularioExcluirEntrega({
   }
 
 
+  // Solicita a exclusão da entrega e verifica o resultado retornado.
   async function handleExcluir() {
     setErro('')
     setExcluindo(true)
@@ -186,6 +188,7 @@ function FormularioExcluirEntrega({
 }
 
 
+// Localiza a entrega pelo código da rota e trata o carregamento.
 function ExcluirEntrega() {
   const { codigo } = useParams()
 

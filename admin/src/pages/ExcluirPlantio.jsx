@@ -9,6 +9,7 @@ import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/ExcluirPlantio.css'
 
 
+// Exibe os dados do plantio e o resultado da exclusão.
 function FormularioExcluirPlantio({
   plantioSelecionado,
   id,
@@ -49,6 +50,7 @@ function FormularioExcluirPlantio({
   }
 
 
+  // Solicita a exclusão do plantio e verifica o resultado retornado.
   async function handleExcluir() {
     setErro('')
     setExcluindo(true)
@@ -204,6 +206,7 @@ function FormularioExcluirPlantio({
 }
 
 
+// Localiza o plantio pelo ID da rota e trata o carregamento.
 function ExcluirPlantio() {
   const { id } = useParams()
 

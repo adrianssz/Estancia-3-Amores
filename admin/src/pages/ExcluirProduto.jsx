@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useProdutos } from '../contexts/ProdutosContext'
 import '../styles/ExcluirProduto.css'
 
+// Mantém os dados do produto na tela durante e após a exclusão.
 function ConteudoExcluirProduto({
   produto,
   excluirProduto,
@@ -16,6 +17,7 @@ function ConteudoExcluirProduto({
   const [excluindo, setExcluindo] = useState(false)
   const [erroExclusao, setErroExclusao] = useState('')
 
+  // Formata o preço em reais para exibição.
   function formatarPreco(valor) {
     return Number(valor).toLocaleString(
       'pt-BR',
@@ -26,6 +28,7 @@ function ConteudoExcluirProduto({
     )
   }
 
+  // Converte os códigos de status em nomes para exibição.
   function formatarStatus(status) {
     if (status === 'pronta-entrega') {
       return 'Pronta Entrega'
@@ -38,6 +41,7 @@ function ConteudoExcluirProduto({
     return status
   }
 
+  // Solicita a exclusão e informa quando existem registros vinculados.
   async function handleExcluir() {
     setExcluindo(true)
     setErroExclusao('')
@@ -238,6 +242,7 @@ function ConteudoExcluirProduto({
   )
 }
 
+// Localiza o produto pelo ID da rota e trata o carregamento.
 function ExcluirProduto() {
   const { id } = useParams()
 
