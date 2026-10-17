@@ -5,6 +5,7 @@ import {
 
 const produtosContext = createContext(null)
 
+// Dá acesso à lista de produtos e às funções do ProdutosProvider.
 function useProdutos() {
   const context = useContext(produtosContext)
 

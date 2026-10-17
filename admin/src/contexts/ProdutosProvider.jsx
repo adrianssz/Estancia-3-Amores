@@ -12,6 +12,7 @@ import {
 } from '../services/imagensProdutos'
 import ProdutosContext from './ProdutosContext'
 
+// Busca os produtos no Supabase, ordenados pelo código.
 async function buscarProdutos() {
   const { data, error } = await supabase
     .from('produtos')
@@ -25,6 +26,7 @@ async function buscarProdutos() {
   return data ?? []
 }
 
+// Tenta remover a foto do Storage se nenhum produto utiliza essa URL.
 async function limparImagemSemUso(url) {
   if (!extrairCaminhoImagemProduto(url)) {
     return
@@ -55,12 +57,14 @@ async function limparImagemSemUso(url) {
   }
 }
 
+// Compartilha os produtos e as ações de cadastro, edição e exclusão.
 function ProdutosProvider({ children }) {
   const [produtos, setProdutos] = useState([])
   const [carregandoProdutos, setCarregandoProdutos] =
     useState(true)
   const [erroProdutos, setErroProdutos] = useState('')
 
+  // Recarrega os produtos, inclusive o estoque atualizado pelos pedidos.
   const carregarProdutos = useCallback(async () => {
     setCarregandoProdutos(true)
     setErroProdutos('')
@@ -84,6 +88,7 @@ function ProdutosProvider({ children }) {
     }
   }, [])
 
+  // Faz a busca inicial e ignora o resultado se o componente for desmontado.
   useEffect(() => {
     let ativo = true
 
@@ -118,6 +123,7 @@ function ProdutosProvider({ children }) {
     }
   }, [])
 
+  // Envia a foto, salva o produto no banco e inclui na lista do painel.
   async function adicionarProduto(novoProduto) {
     let imagemEnviada = ''
 
@@ -165,6 +171,7 @@ function ProdutosProvider({ children }) {
     return produtoCriado
   }
 
+  // Atualiza o produto e tenta limpar a foto antiga quando ela é substituída.
   async function editarProduto(id, dadosAtualizados) {
     const {
       data: produtoAnterior,
@@ -241,6 +248,7 @@ function ProdutosProvider({ children }) {
     return produtoEditado
   }
 
+  // Exclui o produto do banco, atualiza a lista e tenta limpar a foto sem uso.
   async function excluirProduto(id) {
     const { data, error } = await supabase
       .from('produtos')
