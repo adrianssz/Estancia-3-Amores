@@ -10,6 +10,7 @@ import { useEntregas } from '../contexts/EntregasContext'
 import '../styles/EditarEntrega.css'
 
 
+// Preenche o formulário com os dados da entrega selecionada.
 function FormularioEditarEntrega({
   entregaSelecionada,
   clientes,
@@ -42,6 +43,7 @@ function FormularioEditarEntrega({
   ] = useState(false)
 
 
+  // Aplica a máscara dia/mês/ano durante a digitação.
   function formatarData(valor) {
     const numeros = valor
       .replace(/\D/g, '')
@@ -59,6 +61,7 @@ function FormularioEditarEntrega({
   }
 
 
+  // Confere o formato e se a data informada existe no calendário.
   function dataValida(valor) {
     const formatoCorreto =
       /^\d{2}\/\d{2}\/\d{4}$/.test(valor)
@@ -85,6 +88,7 @@ function FormularioEditarEntrega({
   }
 
 
+  // Atualiza o cliente selecionado e utiliza seu endereço cadastrado.
   function handleClienteChange(event) {
     const novoClienteId = event.target.value
 
@@ -104,6 +108,7 @@ function FormularioEditarEntrega({
   }
 
 
+  // Formata a data digitada e limpa os erros anteriores.
   function handleDataChange(event) {
     setData(
       formatarData(event.target.value)
@@ -114,6 +119,7 @@ function FormularioEditarEntrega({
   }
 
 
+  // Valida o cliente e a data antes de solicitar o salvamento da entrega.
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -168,6 +174,7 @@ function FormularioEditarEntrega({
   }
 
 
+  // Libera o formulário para uma nova edição após o sucesso.
   function handleEditarNovamente() {
     setErro('')
     setEditadaComSucesso(false)
@@ -396,6 +403,7 @@ function FormularioEditarEntrega({
 }
 
 
+// Aguarda os dados e localiza a entrega pelo código da rota.
 function EditarEntrega() {
   const { codigo } = useParams()
 

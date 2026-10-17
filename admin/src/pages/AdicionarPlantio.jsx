@@ -5,6 +5,7 @@ import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/AdicionarPlantio.css'
 
 
+// Controla o formulário de cadastro de plantios.
 function AdicionarPlantio() {
   const {
     adicionarPlantio,
@@ -24,6 +25,7 @@ function AdicionarPlantio() {
   const [erro, setErro] = useState('')
 
 
+  // Prepara os dados, converte os valores numéricos e solicita o cadastro.
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -48,6 +50,7 @@ function AdicionarPlantio() {
   }
 
 
+  // Limpa os campos para cadastrar outro plantio.
   function handleNovoPlantio() {
     setPlantio('')
     setTipoPlanta('')

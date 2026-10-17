@@ -6,6 +6,7 @@ import { useEntregas } from '../contexts/EntregasContext'
 import '../styles/AdicionarEntrega.css'
 
 
+// Controla o cadastro de entregas vinculadas a clientes.
 function AdicionarEntrega() {
   const {
     clientes,
@@ -32,6 +33,7 @@ function AdicionarEntrega() {
   ] = useState(false)
 
 
+  // Aplica a máscara dia/mês/ano durante a digitação.
   function formatarData(valor) {
     const numeros = valor
       .replace(/\D/g, '')
@@ -49,6 +51,7 @@ function AdicionarEntrega() {
   }
 
 
+  // Confere o formato e se a data informada existe no calendário.
   function dataValida(valor) {
     const formatoCorreto =
       /^\d{2}\/\d{2}\/\d{4}$/.test(valor)
@@ -75,6 +78,7 @@ function AdicionarEntrega() {
   }
 
 
+  // Atualiza o cliente selecionado e utiliza seu endereço cadastrado.
   function handleClienteChange(event) {
     const novoClienteId = event.target.value
 
@@ -92,6 +96,7 @@ function AdicionarEntrega() {
   }
 
 
+  // Formata a data digitada e limpa os erros anteriores.
   function handleDataChange(event) {
     setData(
       formatarData(event.target.value)
@@ -102,6 +107,7 @@ function AdicionarEntrega() {
   }
 
 
+  // Valida o cliente e a data antes de solicitar o salvamento da entrega.
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -153,6 +159,7 @@ function AdicionarEntrega() {
   }
 
 
+  // Limpa os campos e restaura o status Pendente para uma nova entrega.
   function handleNovaEntrega() {
     setClienteId('')
     setData('')

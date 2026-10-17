@@ -9,6 +9,7 @@ import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/EditarPlantio.css'
 
 
+// Preenche o formulário com os dados do plantio selecionado.
 function FormularioEditarPlantio({
   plantioSelecionado,
   id,
@@ -39,6 +40,7 @@ function FormularioEditarPlantio({
   const [erro, setErro] = useState('')
 
 
+  // Prepara os dados e solicita a atualização do plantio pelo contexto.
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -229,6 +231,7 @@ function FormularioEditarPlantio({
 }
 
 
+// Localiza o plantio pela rota e trata carregamento, erro e registro inexistente.
 function EditarPlantio() {
   const { id } = useParams()
 
