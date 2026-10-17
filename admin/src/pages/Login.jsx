@@ -7,6 +7,7 @@ import {
 import { useAuth } from '../contexts/AuthContext'
 import '../styles/Login.css'
 
+// Converte o motivo da falha de autenticação em uma mensagem para o usuário.
 function obterMensagemErro(motivo) {
   switch (motivo) {
     case 'credenciais_invalidas':
@@ -38,6 +39,7 @@ function obterMensagemErro(motivo) {
   }
 }
 
+// Controla o formulário de acesso ao painel.
 function Login() {
   const navigate = useNavigate()
 
@@ -55,16 +57,19 @@ function Login() {
   const [erro, setErro] =
     useState('')
 
+  // Atualiza o usuário e limpa a mensagem de erro anterior.
   function handleUsuarioChange(event) {
     setUsuario(event.target.value)
     setErro('')
   }
 
+  // Atualiza a senha e limpa a mensagem de erro anterior.
   function handleSenhaChange(event) {
     setSenha(event.target.value)
     setErro('')
   }
 
+  // Valida o usuário, solicita a autenticação e abre o Dashboard após o sucesso.
   async function handleSubmit(event) {
     event.preventDefault()
 

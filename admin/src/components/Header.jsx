@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import '../styles/Header.css'
 
+// Exibe a navegação do painel e o botão de saída da sessão.
 function Header() {
   const { sair } = useAuth()
 

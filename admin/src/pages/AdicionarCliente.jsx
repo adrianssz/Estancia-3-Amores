@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useClientes } from '../contexts/ClientesContext'
 import '../styles/AdicionarCliente.css'
 
+// Controla o cadastro de clientes e as mensagens de resultado.
 function AdicionarCliente() {
   const { adicionarCliente } = useClientes()
 
@@ -17,6 +18,7 @@ function AdicionarCliente() {
   const [salvando, setSalvando] = useState(false)
   const [erroCadastro, setErroCadastro] = useState('')
 
+  // Mantém até 11 dígitos e aplica a máscara de telefone.
   function formatarTelefone(valor) {
     const numeros = valor
       .replace(/\D/g, '')
@@ -33,12 +35,14 @@ function AdicionarCliente() {
     return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`
   }
 
+  // Aplica a máscara conforme o telefone é digitado.
   function handleTelefoneChange(event) {
     setTelefone(
       formatarTelefone(event.target.value)
     )
   }
 
+  // Valida o nome e solicita o cadastro pelo contexto de clientes.
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -79,6 +83,7 @@ function AdicionarCliente() {
     }
   }
 
+  // Limpa o formulário para cadastrar outro cliente.
   function handleNovoCliente() {
     setNome('')
     setTelefone('')

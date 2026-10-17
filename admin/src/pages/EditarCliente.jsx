@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useClientes } from '../contexts/ClientesContext'
 import '../styles/EditarCliente.css'
 
+// Preenche o formulário com os dados do cliente selecionado.
 function FormularioEditarCliente({
   cliente,
   codigo,
@@ -25,6 +26,7 @@ function FormularioEditarCliente({
   const [salvando, setSalvando] = useState(false)
   const [erroEdicao, setErroEdicao] = useState('')
 
+  // Mantém até 11 dígitos e aplica a máscara de telefone.
   function formatarTelefone(valor) {
     const numeros = valor
       .replace(/\D/g, '')
@@ -41,12 +43,14 @@ function FormularioEditarCliente({
     return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`
   }
 
+  // Aplica a máscara conforme o telefone é digitado.
   function handleTelefoneChange(event) {
     setTelefone(
       formatarTelefone(event.target.value)
     )
   }
 
+  // Valida o nome e solicita a atualização pelo contexto de clientes.
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -88,6 +92,7 @@ function FormularioEditarCliente({
     }
   }
 
+  // Libera o formulário para uma nova edição após o sucesso.
   function handleEditarNovamente() {
     setErroEdicao('')
     setEditadoComSucesso(false)
@@ -214,6 +219,7 @@ function FormularioEditarCliente({
   )
 }
 
+// Localiza o cliente pela rota e trata carregamento, erro e registro inexistente.
 function EditarCliente() {
   const { codigo } = useParams()
 
