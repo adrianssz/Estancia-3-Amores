@@ -8,6 +8,7 @@ import AuthContext from './AuthContext'
 
 const USUARIO_ADMIN = 'operador00'
 
+// Identifica se o login falhou por credenciais, conexão ou serviço.
 function classificarErroAutenticacao(error) {
   const codigo = String(
     error?.code ?? ''
@@ -51,6 +52,7 @@ function classificarErroAutenticacao(error) {
   return 'autenticacao'
 }
 
+// Compartilha a sessão e as funções de login e saída com o painel.
 function AuthProvider({ children }) {
   const [autenticado, setAutenticado] =
     useState(false)
@@ -66,6 +68,7 @@ function AuthProvider({ children }) {
   useEffect(() => {
     let ativo = true
 
+    // Recupera a sessão salva para manter o login ao atualizar a página.
     async function carregarSessao() {
       try {
         const {
@@ -99,6 +102,7 @@ function AuthProvider({ children }) {
 
     carregarSessao()
 
+    // Atualiza o painel quando a sessão muda no Supabase.
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(
@@ -119,12 +123,14 @@ function AuthProvider({ children }) {
       }
     )
 
+    // Para de acompanhar a sessão quando o componente é desmontado.
     return () => {
       ativo = false
       subscription.unsubscribe()
     }
   }, [])
 
+  // Confere o usuário e autentica no Supabase com o e-mail configurado.
   async function entrar(usuario, senha) {
     const usuarioNormalizado =
       usuario.trim()
@@ -196,6 +202,7 @@ function AuthProvider({ children }) {
     }
   }
 
+  // Solicita a saída no Supabase e limpa o usuário do estado do painel.
   async function sair() {
     await supabase.auth.signOut()
 
