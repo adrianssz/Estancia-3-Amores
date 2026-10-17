@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+// Informa que o endereço não existe e oferece retorno à página inicial.
 function NotFound() {
   return (
     <main>

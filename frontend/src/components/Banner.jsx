@@ -1,6 +1,7 @@
 import '../styles/Banner.css'
 
 
+// Exibe o banner informativo da Estância.
 function Banner() {
 
   return (

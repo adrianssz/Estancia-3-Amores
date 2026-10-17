@@ -1,6 +1,6 @@
 import '../styles/CategoryFilter.css'
 
-
+// Exibe os filtros de categoria e situação e comunica as seleções à página.
 function CategoryFilter({
   filtros,
   alternarFiltro
