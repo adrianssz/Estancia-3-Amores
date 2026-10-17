@@ -8,6 +8,7 @@ const EXTENSOES_POR_TIPO = {
   'image/png': 'png',
 }
 
+// Confere o tipo e o tamanho da imagem antes do envio.
 export function validarImagemProduto(arquivo) {
   if (!arquivo) {
     return
@@ -32,6 +33,7 @@ export function validarImagemProduto(arquivo) {
   }
 }
 
+// Envia a foto ao Storage com nome único e retorna sua URL pública.
 export async function enviarImagemProduto(arquivo) {
   validarImagemProduto(arquivo)
 
@@ -66,6 +68,7 @@ export async function enviarImagemProduto(arquivo) {
   return data.publicUrl
 }
 
+// Extrai o caminho se a URL pertence ao bucket e segue o padrão do Admin.
 export function extrairCaminhoImagemProduto(url) {
   if (typeof url !== 'string' || !url) {
     return null
@@ -88,6 +91,7 @@ export function extrairCaminhoImagemProduto(url) {
   return formato.test(caminho) ? caminho : null
 }
 
+// Remove a foto do Storage quando o caminho segue o padrão esperado.
 export async function removerImagemProduto(url) {
   const caminho = extrairCaminhoImagemProduto(url)
 
