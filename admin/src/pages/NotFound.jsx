@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+// Informa que o endereço não existe e oferece acesso ao Dashboard.
 function NotFound() {
   return (
     <main>
