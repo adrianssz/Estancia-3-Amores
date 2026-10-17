@@ -7,6 +7,7 @@ import { useEntregas } from '../contexts/EntregasContext'
 
 import '../styles/Relatorios.css'
 
+// Gera o relatório de entregas com filtros opcionais de cliente, status e data.
 function RelatorioEntregas() {
   const {
     entregas,
@@ -88,27 +89,32 @@ function RelatorioEntregas() {
     },
   ]
 
+  // Limpa o relatório anterior quando os filtros são alterados.
   function limparResultadoAnterior() {
     setResultados([])
     setMensagem('')
     setRelatorioGerado(false)
   }
 
+  // Atualiza o filtro de cliente e limpa o resultado anterior.
   function handleClienteChange(event) {
     setClienteSelecionado(event.target.value)
     limparResultadoAnterior()
   }
 
+  // Atualiza o filtro de status e limpa o resultado anterior.
   function handleStatusChange(event) {
     setStatusSelecionado(event.target.value)
     limparResultadoAnterior()
   }
 
+  // Atualiza o filtro de data e limpa o resultado anterior.
   function handleDataChange(event) {
     setDataSelecionada(event.target.value)
     limparResultadoAnterior()
   }
 
+  // Combina os filtros selecionados e informa quando nenhuma entrega corresponde.
   function handleSubmit(event) {
     event.preventDefault()
 

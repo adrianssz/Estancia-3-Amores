@@ -7,6 +7,7 @@ import { usePlantios } from '../contexts/PlantiosContext'
 
 import '../styles/Relatorios.css'
 
+// Gera o relatório de plantios conforme o nome e a área selecionados.
 function RelatorioPlantios() {
   const {
     plantios,
@@ -73,6 +74,7 @@ function RelatorioPlantios() {
     },
   ]
 
+  // Soma as quantidades dos resultados, ignorando valores numéricos inválidos.
   const totalQuantidade = resultados.reduce(
     (total, plantio) => {
       const quantidade = Number(plantio.quantidade)
@@ -84,22 +86,26 @@ function RelatorioPlantios() {
     0
   )
 
+  // Limpa o relatório anterior quando os filtros são alterados.
   function limparResultadoAnterior() {
     setResultados([])
     setMensagem('')
     setRelatorioGerado(false)
   }
 
+  // Atualiza o filtro de plantio e limpa o resultado anterior.
   function handlePlantioChange(event) {
     setPlantioSelecionado(event.target.value)
     limparResultadoAnterior()
   }
 
+  // Atualiza o filtro de área e limpa o resultado anterior.
   function handleAreaChange(event) {
     setAreaSelecionada(event.target.value)
     limparResultadoAnterior()
   }
 
+  // Exige os dois filtros e seleciona os plantios que correspondem a ambos.
   function handleSubmit(event) {
     event.preventDefault()
 
