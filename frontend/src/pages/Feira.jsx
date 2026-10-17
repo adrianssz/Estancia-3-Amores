@@ -12,6 +12,7 @@ import { supabase } from '../services/supabase'
 
 import '../styles/Feira.css'
 
+// Exibe os produtos com filtros de categoria e situação.
 function Feira() {
   const [produtos, setProdutos] = useState([])
 
@@ -33,6 +34,7 @@ function Feira() {
   useEffect(() => {
     let ativo = true
 
+    // Consulta os produtos pela view e converte preço e estoque para números.
     async function carregarProdutos() {
       setCarregandoProdutos(true)
       setErroProdutos('')
@@ -91,6 +93,7 @@ function Feira() {
     }
   }, [])
 
+  // Ativa ou desativa o filtro selecionado.
   function alternarFiltro(nomeFiltro) {
     setFiltros((estadoAtual) => ({
       ...estadoAtual,
@@ -98,6 +101,7 @@ function Feira() {
     }))
   }
 
+  // Mantém produtos com nome e valores numéricos válidos de preço e estoque.
   const produtosValidos = produtos.filter(
     (produto) =>
       produto.nome &&
@@ -133,6 +137,7 @@ function Feira() {
     statusSelecionados.push('em-crescimento')
   }
 
+  // Combina os filtros de categoria e situação selecionados.
   const produtosFiltrados =
     produtosValidos.filter((produto) => {
       const categoriaValida =
@@ -150,6 +155,7 @@ function Feira() {
       return categoriaValida && statusValido
     })
 
+  // Separa os produtos filtrados nas seções Pronta Entrega e Em Crescimento.
   const prontaEntrega =
     produtosFiltrados.filter(
       (produto) =>

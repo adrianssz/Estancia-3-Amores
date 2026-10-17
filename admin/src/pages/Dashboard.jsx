@@ -8,6 +8,7 @@ import { usePlantios } from '../contexts/PlantiosContext'
 import '../styles/Dashboard.css'
 
 
+// Converte a data em milissegundos para ordenar os pedidos.
 function converterDataParaNumero(data) {
   if (!data) {
     return 0
@@ -29,6 +30,7 @@ function converterDataParaNumero(data) {
 }
 
 
+// Define a cor de cada tipo de plantio no gráfico.
 function obterCorTipoPlantio(tipo, indice) {
   const tipoNormalizado = tipo
     .trim()
@@ -67,6 +69,7 @@ function obterCorTipoPlantio(tipo, indice) {
 }
 
 
+// Reúne os indicadores, gráficos e últimos pedidos do painel.
 function Dashboard() {
   const {
     clientes,
@@ -105,6 +108,7 @@ function Dashboard() {
     Boolean(erroPedidos) ||
     Boolean(erroPlantios)
 
+  // Libera os indicadores quando todas as consultas terminam sem erros.
   const dadosProntos =
     !carregandoDados &&
     !possuiErro
@@ -131,6 +135,7 @@ function Dashboard() {
     : null
 
 
+  // Conta os pedidos de cada status para montar o gráfico de barras.
   const quantidadePedidosPorStatus =
     dadosProntos
       ? pedidos.reduce(
@@ -159,6 +164,7 @@ function Dashboard() {
   )
 
 
+  // Agrupa os plantios por tipo e conta os registros de cada grupo.
   const plantiosPorTipo = dadosProntos
     ? plantios.reduce(
         (resultado, plantio) => {
@@ -188,6 +194,7 @@ function Dashboard() {
 
   let inicioGrafico = 0
 
+  // Calcula os limites e as cores das fatias do gráfico de plantios.
   const partesGraficoPlantios =
     tiposPlantio.map(
       ([tipo, quantidade], indice) => {
@@ -227,6 +234,7 @@ function Dashboard() {
         }
 
 
+  // Seleciona os cinco pedidos mais recentes, usando o ID para desempatar datas.
   const ultimosPedidos = dadosProntos
     ? [...pedidos]
         .sort((pedidoA, pedidoB) => {
