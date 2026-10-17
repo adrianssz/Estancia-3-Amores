@@ -5,6 +5,7 @@ import {
 
 const pedidosContext = createContext(null)
 
+// Dá acesso aos pedidos e às funções de cadastro, edição e exclusão.
 function usePedidos() {
   const context = useContext(pedidosContext)
 

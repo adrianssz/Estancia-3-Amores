@@ -7,6 +7,7 @@ import {
 import { supabase } from '../services/supabase'
 import ClientesContext from './ClientesContext'
 
+// Usa o ID do banco como código do cliente na tela.
 function normalizarCliente(cliente) {
   return {
     ...cliente,
@@ -14,6 +15,7 @@ function normalizarCliente(cliente) {
   }
 }
 
+// Busca os clientes no Supabase, ordenados pelo ID.
 async function buscarClientes() {
   const { data, error } = await supabase
     .from('clientes')
@@ -27,12 +29,14 @@ async function buscarClientes() {
   return (data ?? []).map(normalizarCliente)
 }
 
+// Compartilha os clientes e as ações de cadastro, edição e exclusão.
 function ClientesProvider({ children }) {
   const [clientes, setClientes] = useState([])
   const [carregandoClientes, setCarregandoClientes] =
     useState(true)
   const [erroClientes, setErroClientes] = useState('')
 
+  // Recarrega a lista de clientes e trata possíveis erros.
   const carregarClientes = useCallback(async () => {
     setCarregandoClientes(true)
     setErroClientes('')
@@ -90,6 +94,7 @@ function ClientesProvider({ children }) {
     }
   }, [])
 
+  // Salva o novo cliente no banco e atualiza a lista do painel.
   async function adicionarCliente(novoCliente) {
     const dadosCliente = {
       nome: novoCliente.nome,
@@ -117,6 +122,7 @@ function ClientesProvider({ children }) {
     return clienteNormalizado
   }
 
+  // Atualiza os dados do cliente no banco e na lista do painel.
   async function editarCliente(codigo, dadosAtualizados) {
     const dadosCliente = {
       nome: dadosAtualizados.nome,
@@ -148,6 +154,7 @@ function ClientesProvider({ children }) {
     return clienteNormalizado
   }
 
+  // Exclui o cliente do banco e remove da lista após a confirmação.
   async function excluirCliente(codigo) {
     const { error } = await supabase
       .from('clientes')
