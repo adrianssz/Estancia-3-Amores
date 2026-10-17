@@ -7,6 +7,7 @@ import { useProdutos } from '../contexts/ProdutosContext'
 
 import '../styles/EditarPedido.css'
 
+// Cria um item sem produto selecionado e com quantidade inicial igual a um.
 function criarItemVazio() {
   return {
     produtoId: '',
@@ -14,6 +15,7 @@ function criarItemVazio() {
   }
 }
 
+// Preenche o formulário e aplica as regras de edição do pedido.
 function FormularioEditarPedido({
   pedidoSelecionado,
   clientes,
@@ -56,6 +58,7 @@ function FormularioEditarPedido({
   const carregandoOpcoes =
     carregandoClientes || carregandoProdutos
 
+  // Usa o status recebido do pedido para definir as restrições da tela.
   const statusPersistido =
     pedidoSelecionado.status ?? 'Pendente'
 
@@ -65,9 +68,11 @@ function FormularioEditarPedido({
   const pedidoEntregue =
     statusPersistido === 'Entregue'
 
+  // Bloqueia alterações de itens em pedidos Em Rota ou Entregue.
   const itensBloqueados =
     pedidoEmRota || pedidoEntregue
 
+  // Limita as opções de status às transições permitidas.
   const opcoesStatus =
     statusPersistido === 'Pendente'
       ? ['Pendente', 'Em Rota']
@@ -101,6 +106,7 @@ function FormularioEditarPedido({
       quantidadesRegistradas.has(produto.id)
   )
 
+  // Calcula o limite considerando a quantidade registrada e o estoque disponível.
   function obterLimiteQuantidade(produtoId) {
     const id = Number(produtoId)
     const produto = produtos.find(
@@ -127,6 +133,7 @@ function FormularioEditarPedido({
     return quantidadeRegistrada + estoqueDisponivel
   }
 
+  // Aplica a máscara dia/mês/ano durante a digitação.
   function formatarData(valor) {
     const numeros = valor.replace(/\D/g, '').slice(0, 8)
 
@@ -141,6 +148,7 @@ function FormularioEditarPedido({
     return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4)}`
   }
 
+  // Confere se a data existe e não é posterior ao dia atual.
   function dataValida(valor) {
     if (!/^\d{2}\/\d{2}\/\d{4}$/.test(valor)) {
       return false
@@ -164,22 +172,26 @@ function FormularioEditarPedido({
     return dataInformada <= hoje
   }
 
+  // Limpa as mensagens de erro e sucesso da edição anterior.
   function limparMensagens() {
     setErro('')
     setEditadoComSucesso(false)
   }
 
+  // Atualiza o cliente selecionado e limpa as mensagens anteriores.
   function handleClienteChange(event) {
     setClienteId(event.target.value)
     limparMensagens()
   }
 
+  // Formata a data digitada e limpa os erros anteriores.
   function handleDataChange(event) {
     setData(formatarData(event.target.value))
     setErroData(false)
     limparMensagens()
   }
 
+  // Altera o item somente quando a edição está liberada e não há salvamento em andamento.
   function handleItemChange(indice, campo, valor) {
     if (itensBloqueados || salvando) {
       return
@@ -196,6 +208,7 @@ function FormularioEditarPedido({
     limparMensagens()
   }
 
+  // Adiciona um item somente quando a edição está liberada.
   function handleAdicionarItem() {
     if (itensBloqueados || salvando) {
       return
@@ -209,6 +222,7 @@ function FormularioEditarPedido({
     limparMensagens()
   }
 
+  // Respeita o bloqueio de edição e mantém pelo menos um item.
   function handleRemoverItem(indice) {
     if (
       itensBloqueados ||
@@ -227,6 +241,7 @@ function FormularioEditarPedido({
     limparMensagens()
   }
 
+  // Valida os dados e os limites de quantidade antes de solicitar a atualização.
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -626,6 +641,7 @@ function FormularioEditarPedido({
   )
 }
 
+// Localiza o pedido pela rota e fornece os dados necessários ao formulário.
 function EditarPedido() {
   const { id } = useParams()
 

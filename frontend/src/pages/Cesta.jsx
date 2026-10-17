@@ -10,12 +10,14 @@ import CartItem from '../components/CartItem'
 import '../styles/Cesta.css'
 
 
+// Controla os itens da cesta e a preparação da mensagem para o WhatsApp.
 function Cesta() {
   const [cesta, setCesta] = useState([])
 
   const telefoneWhatsApp = '5544998125510'
 
 
+  // Recupera a cesta salva no navegador e trata falhas de leitura.
   useEffect(() => {
     try {
       const cestaSalva =
@@ -35,6 +37,7 @@ function Cesta() {
   }, [])
 
 
+  // Atualiza a tela, salva no navegador e avisa os componentes da mudança.
   function atualizarCesta(novaCesta) {
     setCesta(novaCesta)
 
@@ -49,6 +52,7 @@ function Cesta() {
   }
 
 
+  // Remove o produto selecionado da cesta.
   function removerProduto(id) {
     const novaCesta =
       cesta.filter(
@@ -60,6 +64,7 @@ function Cesta() {
   }
 
 
+  // Aumenta a quantidade respeitando o estoque válido salvo na cesta.
   function aumentarQuantidade(id) {
     const novaCesta =
       cesta.map((produto) => {
@@ -97,6 +102,7 @@ function Cesta() {
   }
 
 
+  // Diminui a quantidade mantendo o mínimo de uma unidade.
   function diminuirQuantidade(id) {
     const novaCesta =
       cesta.map((produto) => {
@@ -124,6 +130,7 @@ function Cesta() {
   }
 
 
+  // Soma os subtotais usando os preços e as quantidades salvos na cesta.
   const total =
     cesta.reduce(
       (soma, produto) => {
@@ -144,6 +151,7 @@ function Cesta() {
     )
 
 
+  // Monta a mensagem com itens e total e abre o WhatsApp para o cliente enviar.
   function realizarPedido() {
     if (cesta.length === 0) {
       return

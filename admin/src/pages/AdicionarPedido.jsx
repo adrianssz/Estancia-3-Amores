@@ -8,6 +8,7 @@ import { useProdutos } from '../contexts/ProdutosContext'
 import '../styles/AdicionarPedido.css'
 
 
+// Cria um item sem produto selecionado e com quantidade inicial igual a um.
 function criarItemVazio() {
   return {
     produtoId: '',
@@ -16,6 +17,7 @@ function criarItemVazio() {
 }
 
 
+// Controla o cadastro do pedido e de seus itens.
 function AdicionarPedido() {
   const {
     clientes,
@@ -59,6 +61,7 @@ function AdicionarPedido() {
   const telefone =
     clienteSelecionado?.telefone ?? ''
 
+  // Oferece produtos em pronta entrega com estoque positivo.
   const produtosDisponiveis = produtos.filter(
     (produto) =>
       produto.status === 'pronta-entrega' &&
@@ -66,6 +69,7 @@ function AdicionarPedido() {
   )
 
 
+  // Aplica a máscara dia/mês/ano durante a digitação.
   function formatarData(valor) {
     const numeros = valor
       .replace(/\D/g, '')
@@ -83,6 +87,7 @@ function AdicionarPedido() {
   }
 
 
+  // Confere se a data existe e não é posterior ao dia atual.
   function dataValida(valor) {
     const formatoCorreto =
       /^\d{2}\/\d{2}\/\d{4}$/.test(valor)
@@ -119,6 +124,7 @@ function AdicionarPedido() {
   }
 
 
+  // Atualiza o cliente selecionado e limpa as mensagens anteriores.
   function handleClienteChange(event) {
     setClienteId(event.target.value)
     setErro('')
@@ -126,6 +132,7 @@ function AdicionarPedido() {
   }
 
 
+  // Formata a data digitada e limpa os erros anteriores.
   function handleDataChange(event) {
     setData(
       formatarData(event.target.value)
@@ -136,6 +143,7 @@ function AdicionarPedido() {
   }
 
 
+  // Atualiza o produto ou a quantidade do item indicado.
   function handleItemChange(
     indice,
     campo,
@@ -157,6 +165,7 @@ function AdicionarPedido() {
   }
 
 
+  // Adiciona uma nova linha de produto ao pedido.
   function handleAdicionarItem() {
     setItens((itensAtuais) => [
       ...itensAtuais,
@@ -167,6 +176,7 @@ function AdicionarPedido() {
   }
 
 
+  // Remove uma linha mantendo pelo menos um item no formulário.
   function handleRemoverItem(indice) {
     if (itens.length === 1) {
       return
@@ -183,6 +193,7 @@ function AdicionarPedido() {
   }
 
 
+  // Valida cliente, data, itens, duplicidades e estoque antes de solicitar o cadastro.
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -286,6 +297,7 @@ function AdicionarPedido() {
   }
 
 
+  // Limpa o formulário e inicia outro pedido com status Pendente.
   function handleNovoPedido() {
     setClienteId('')
     setStatus('Pendente')
