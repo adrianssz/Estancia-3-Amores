@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -73,18 +72,6 @@ function RelatorioPlantios() {
       titulo: 'Quantidade',
     },
   ]
-
-  // Soma as quantidades dos resultados, ignorando valores numéricos inválidos.
-  const totalQuantidade = resultados.reduce(
-    (total, plantio) => {
-      const quantidade = Number(plantio.quantidade)
-
-      return Number.isFinite(quantidade)
-        ? total + quantidade
-        : total
-    },
-    0
-  )
 
   // Limpa o relatório anterior quando os filtros são alterados.
   function limparResultadoAnterior() {
@@ -184,15 +171,6 @@ function RelatorioPlantios() {
           resultados={resultados}
           colunas={colunas}
           chaveRegistro="id"
-          totais={[
-            {
-              chave: 'quantidade-total',
-              rotulo: 'Soma das quantidades',
-              valor: new Intl.NumberFormat('pt-BR').format(
-                totalQuantidade
-              ),
-            },
-          ]}
           onRetornar={() =>
             setRelatorioGerado(false)
           }
