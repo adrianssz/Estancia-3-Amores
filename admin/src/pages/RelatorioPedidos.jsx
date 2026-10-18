@@ -1,4 +1,3 @@
-
 import {
   useEffect,
   useState,
@@ -205,18 +204,50 @@ function RelatorioPedidos() {
     }
   }, [])
 
+  // Mantém cada cliente separado pelo ID, mesmo quando existem nomes iguais.
+  const clientesPorId = new Map()
+
+  pedidos.forEach((pedido) => {
+    if (
+      pedido.clienteId !== undefined &&
+      pedido.clienteId !== null &&
+      pedido.cliente &&
+      pedido.cliente !== 'Cliente não encontrado'
+    ) {
+      clientesPorId.set(
+        String(pedido.clienteId),
+        {
+          id: String(pedido.clienteId),
+          nome: pedido.cliente,
+        }
+      )
+    }
+  })
+
   const clientes = [
-    ...new Set(
-      pedidos
-        .map((pedido) => pedido.cliente)
-        .filter(
-          (cliente) =>
-            cliente &&
-            cliente !== 'Cliente não encontrado'
-        )
-    ),
-  ].sort((clienteA, clienteB) =>
-    clienteA.localeCompare(clienteB, 'pt-BR')
+    ...clientesPorId.values(),
+  ].sort((clienteA, clienteB) => {
+    const comparacaoNome =
+      clienteA.nome.localeCompare(
+        clienteB.nome,
+        'pt-BR'
+      )
+
+    if (comparacaoNome !== 0) {
+      return comparacaoNome
+    }
+
+    return Number(clienteA.id) - Number(clienteB.id)
+  })
+
+  const quantidadePorNome = clientes.reduce(
+    (contagem, cliente) => {
+      contagem[cliente.nome] =
+        (contagem[cliente.nome] ?? 0) + 1
+
+      return contagem
+    },
+    {}
   )
 
   const statusPedidos = [
@@ -278,7 +309,7 @@ function RelatorioPedidos() {
     setRelatorioGerado(false)
   }
 
-  // Atualiza o filtro de cliente e limpa o resultado anterior.
+  // Atualiza o filtro pelo ID do cliente e limpa o resultado anterior.
   function handleClienteChange(event) {
     setClienteSelecionado(event.target.value)
     limparResultadoAnterior()
@@ -298,7 +329,8 @@ function RelatorioPedidos() {
       (pedido) => {
         const correspondeCliente =
           !clienteSelecionado ||
-          pedido.cliente === clienteSelecionado
+          String(pedido.clienteId) ===
+            clienteSelecionado
 
         const correspondeStatus =
           !statusSelecionado ||
@@ -427,10 +459,12 @@ function RelatorioPedidos() {
 
               {clientes.map((cliente) => (
                 <option
-                  key={cliente}
-                  value={cliente}
+                  key={cliente.id}
+                  value={cliente.id}
                 >
-                  {cliente}
+                  {quantidadePorNome[cliente.nome] > 1
+                    ? `${cliente.nome} (ID ${cliente.id})`
+                    : cliente.nome}
                 </option>
               ))}
             </select>
