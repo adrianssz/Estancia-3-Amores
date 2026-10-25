@@ -8,7 +8,6 @@ import {
   unidadeProdutoValida,
 } from '../constants/unidadesProduto'
 import { validarImagemProduto } from '../services/imagensProdutos'
-import '../styles/EditarProduto.css'
 
 // Preenche o formulário com os dados do produto selecionado.
 function FormularioEditarProduto({

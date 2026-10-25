@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useEntregas } from '../contexts/EntregasContext'
-import '../styles/Entregas.css'
 
 
 function IconePesquisar() {

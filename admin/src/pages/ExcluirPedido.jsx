@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom'
 
 import { usePedidos } from '../contexts/PedidosContext'
-import '../styles/ExcluirPedido.css'
 
 
 // Exibe os dados do pedido e o resultado da exclusão.

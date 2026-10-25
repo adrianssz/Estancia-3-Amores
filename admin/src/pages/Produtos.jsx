@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useProdutos } from '../contexts/ProdutosContext'
-import '../styles/Produtos.css'
 
 // Exibe os produtos e permite pesquisar por nome ou código.
 function Produtos() {

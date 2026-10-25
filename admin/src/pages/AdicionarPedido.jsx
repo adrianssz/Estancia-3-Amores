@@ -5,7 +5,6 @@ import { useClientes } from '../contexts/ClientesContext'
 import { usePedidos } from '../contexts/PedidosContext'
 import { useProdutos } from '../contexts/ProdutosContext'
 
-import '../styles/AdicionarPedido.css'
 
 
 // Cria um item sem produto selecionado e com quantidade inicial igual a um.

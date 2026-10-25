@@ -5,7 +5,6 @@ import { useEntregas } from '../contexts/EntregasContext'
 import { usePedidos } from '../contexts/PedidosContext'
 import { usePlantios } from '../contexts/PlantiosContext'
 
-import '../styles/Dashboard.css'
 
 
 // Converte a data em milissegundos para ordenar os pedidos.
@@ -40,27 +39,27 @@ function obterCorTipoPlantio(tipo, indice) {
     tipoNormalizado === 'fruta' ||
     tipoNormalizado === 'frutas'
   ) {
-    return '#4f8f5b'
+    return '#5dd62c'
   }
 
   if (
     tipoNormalizado === 'legume' ||
     tipoNormalizado === 'legumes'
   ) {
-    return '#8fbd72'
+    return '#337418'
   }
 
   if (
     tipoNormalizado === 'hortaliça' ||
     tipoNormalizado === 'hortaliças'
   ) {
-    return '#c9ddb9'
+    return '#a8e782'
   }
 
   const coresExtras = [
-    '#6fa966',
-    '#a7c98e',
-    '#d8e7cc',
+    '#75bd52',
+    '#c2f0aa',
+    '#78986b',
   ]
 
   return coresExtras[
@@ -403,6 +402,8 @@ function Dashboard() {
                           style={{
                             height: `${altura}%`,
                           }}
+                          role="img"
+                          aria-label={`${status}: ${quantidade} pedidos`}
                           title={`${status}: ${quantidade}`}
                         />
 
@@ -456,7 +457,13 @@ function Dashboard() {
                 className="dashboard-pizza"
                 style={estiloGraficoPlantios}
                 aria-label="Distribuição dos plantios por tipo"
-              />
+                role="img"
+              >
+                <span className="dashboard-pizza__centro" aria-hidden="true">
+                  <strong>{totalPlantios}</strong>
+                  <small>plantios</small>
+                </span>
+              </div>
 
 
               <div className="dashboard-legenda">

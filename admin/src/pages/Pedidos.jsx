@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { usePedidos } from '../contexts/PedidosContext'
-import '../styles/Pedidos.css'
 
 
 function IconeEditar() {

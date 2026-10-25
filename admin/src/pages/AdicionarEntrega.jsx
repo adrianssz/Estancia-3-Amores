@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 
 import { useClientes } from '../contexts/ClientesContext'
 import { useEntregas } from '../contexts/EntregasContext'
-import '../styles/AdicionarEntrega.css'
 
 
 // Controla o cadastro de entregas vinculadas a clientes.

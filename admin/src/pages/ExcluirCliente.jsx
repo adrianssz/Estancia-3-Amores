@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom'
 
 import { useClientes } from '../contexts/ClientesContext'
-import '../styles/ExcluirCliente.css'
 
 
 // Mantém os dados do cliente na tela durante e após a exclusão.
