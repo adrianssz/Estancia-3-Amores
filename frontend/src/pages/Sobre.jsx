@@ -3,7 +3,6 @@ import BottomMenu from '../components/BottomMenu'
 import Gallery from '../components/Gallery'
 import VisitMap from '../components/VisitMap'
 
-import '../styles/Sobre.css'
 
 
 // Apresenta a Estância, a galeria e o acesso à localização.
@@ -20,16 +19,11 @@ function Sobre() {
       <main className="sobre-page">
 
 
-        <div className="sobre-logo">
-
-          LOGO
-
-        </div>
+        <img className="sobre-logo" src="/logo-estancia.png" alt="Logo da Estância Três Amores" />
 
 
-        <h1>
-          Estância 3 Amores
-        </h1>
+        <span className="section-eyebrow sobre-eyebrow">Conheça nossa história</span>
+        <h1>Estância <em>3 Amores</em></h1>
 
 
         <p className="subtitulo">

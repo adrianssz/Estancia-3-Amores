@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import '../styles/BottomMenu.css'
+import { NavLink } from 'react-router-dom'
+import { FiHome, FiShoppingBag, FiHeart, FiMessageCircle } from 'react-icons/fi'
 
 
 // Exibe os atalhos de navegação no menu inferior do site.
@@ -9,36 +9,36 @@ function BottomMenu() {
 
     <nav className="bottom-menu">
 
-      <Link to="/">
-        🏠
+      <NavLink to="/" end>
+        <FiHome aria-hidden="true" />
         <span>
           Home
         </span>
-      </Link>
+      </NavLink>
 
 
-      <Link to="/feira">
-        🛒
+      <NavLink to="/feira">
+        <FiShoppingBag aria-hidden="true" />
         <span>
           Feira
         </span>
-      </Link>
+      </NavLink>
 
 
-      <Link to="/sobre">
-        ℹ️
+      <NavLink to="/sobre">
+        <FiHeart aria-hidden="true" />
         <span>
           Sobre
         </span>
-      </Link>
+      </NavLink>
 
 
-      <Link to="/contato">
-        💬
+      <NavLink to="/contato">
+        <FiMessageCircle aria-hidden="true" />
         <span>
           Contato
         </span>
-      </Link>
+      </NavLink>
 
 
     </nav>

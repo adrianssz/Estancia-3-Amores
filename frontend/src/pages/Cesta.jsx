@@ -7,10 +7,10 @@ import {
 import Header from '../components/Header'
 import BottomMenu from '../components/BottomMenu'
 import CartItem from '../components/CartItem'
+import OrganicAction from '../components/OrganicAction'
 
 import { supabase } from '../services/supabase'
 
-import '../styles/Cesta.css'
 
 
 // Recupera a cesta persistida no navegador e descarta conteúdo inválido.
@@ -631,7 +631,7 @@ function Cesta() {
             </strong>
           </div>
 
-          <button
+          <OrganicAction
             type="button"
             className="realizar-pedido-button"
             onClick={realizarPedido}
@@ -643,7 +643,7 @@ function Cesta() {
             {sincronizando
               ? 'ATUALIZANDO...'
               : 'REALIZAR PEDIDO'}
-          </button>
+          </OrganicAction>
         </section>
       </main>
 

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { FaTrash } from 'react-icons/fa'
 
-import '../styles/CartItem.css'
 
 
 // Exibe um item da cesta com quantidade, subtotal e ações de alteração.
