@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom'
 
 import { usePlantios } from '../contexts/PlantiosContext'
-import '../styles/EditarPlantio.css'
 
 
 // Preenche o formulário com os dados do plantio selecionado.

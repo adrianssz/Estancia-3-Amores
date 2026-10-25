@@ -8,7 +8,6 @@ import {
   unidadeProdutoValida,
 } from '../constants/unidadesProduto'
 import { validarImagemProduto } from '../services/imagensProdutos'
-import '../styles/AdicionarProduto.css'
 
 // Controla o cadastro de produtos com unidade padronizada e imagem opcional.
 function AdicionarProduto() {

@@ -7,7 +7,6 @@ import {
 
 import { useClientes } from '../contexts/ClientesContext'
 import { useEntregas } from '../contexts/EntregasContext'
-import '../styles/EditarEntrega.css'
 
 
 // Preenche o formulário com os dados da entrega selecionada.

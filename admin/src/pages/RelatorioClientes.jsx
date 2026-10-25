@@ -9,7 +9,6 @@ import RelatorioResultado from '../components/RelatorioResultado'
 import { useClientes } from '../contexts/ClientesContext'
 import { supabase } from '../services/supabase'
 
-import '../styles/Relatorios.css'
 
 // Gera o relatório de clientes com a contagem de pedidos de cada um.
 function RelatorioClientes() {

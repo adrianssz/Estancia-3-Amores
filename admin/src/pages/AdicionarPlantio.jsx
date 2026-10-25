@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { usePlantios } from '../contexts/PlantiosContext'
-import '../styles/AdicionarPlantio.css'
 
 
 // Controla o formulário de cadastro de plantios.

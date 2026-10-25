@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom'
 
 import { usePlantios } from '../contexts/PlantiosContext'
-import '../styles/ExcluirPlantio.css'
 
 
 // Exibe os dados do plantio e o resultado da exclusão.

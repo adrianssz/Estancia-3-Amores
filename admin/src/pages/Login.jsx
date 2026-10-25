@@ -5,7 +5,6 @@ import {
 } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext'
-import '../styles/Login.css'
 
 // Converte o motivo da falha de autenticação em uma mensagem para o usuário.
 function obterMensagemErro(motivo) {
@@ -133,7 +132,7 @@ function Login() {
           className="login-logo"
           aria-label="Logo Estância 3 Amores"
         >
-          Logo
+          <img src="/logo-estancia.png" alt="" />
         </div>
 
         <form

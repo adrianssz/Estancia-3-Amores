@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom'
 
 import { useEntregas } from '../contexts/EntregasContext'
-import '../styles/ExcluirEntrega.css'
 
 
 // Exibe os dados da entrega e o resultado da exclusão.

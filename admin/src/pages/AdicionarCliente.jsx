@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useClientes } from '../contexts/ClientesContext'
-import '../styles/AdicionarCliente.css'
 
 // Controla o cadastro de clientes e as mensagens de resultado.
 function AdicionarCliente() {

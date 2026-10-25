@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import RelatorioResultado from '../components/RelatorioResultado'
 import { usePlantios } from '../contexts/PlantiosContext'
 
-import '../styles/Relatorios.css'
 
 // Gera o relatório de plantios conforme o nome e a área selecionados.
 function RelatorioPlantios() {

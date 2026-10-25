@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom'
 import RelatorioResultado from '../components/RelatorioResultado'
 import { supabase } from '../services/supabase'
 
-import '../styles/Relatorios.css'
 
 const formatadorMoeda = new Intl.NumberFormat('pt-BR', {
   style: 'currency',

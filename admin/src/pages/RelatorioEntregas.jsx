@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom'
 import RelatorioResultado from '../components/RelatorioResultado'
 import { useEntregas } from '../contexts/EntregasContext'
 
-import '../styles/Relatorios.css'
 
 // Gera o relatório de entregas com filtros opcionais de cliente, status e data.
 function RelatorioEntregas() {

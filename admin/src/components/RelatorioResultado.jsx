@@ -25,11 +25,19 @@ function RelatorioResultado({
     <section className="relatorio-resultado">
       <div className="relatorio-impressao">
         <header className="relatorio-impressao__cabecalho">
-          <h1>{titulo}</h1>
-
-          <p>
-            Gerado em: {dataGeracao}
-          </p>
+          <div className="relatorio-marca">
+            <img
+              src="/logo-estancia.png"
+              alt="Estância 3 Amores"
+              width="92"
+              height="76"
+            />
+            <div>
+              <span className="relatorio-marca__tipo">Estância 3 Amores · Administrativo</span>
+              <h1>{titulo}</h1>
+              <p>Gerado em: {dataGeracao}</p>
+            </div>
+          </div>
         </header>
 
         <div className="relatorio-tabela-container">

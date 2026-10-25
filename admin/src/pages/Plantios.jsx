@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 
 import { usePlantios } from '../contexts/PlantiosContext'
-import '../styles/Plantios.css'
 
 
 function IconeEditar() {
@@ -118,9 +117,9 @@ function Plantios() {
   const graficoBackground =
     totalPlantios > 0
       ? `conic-gradient(
-          #4f8f5b 0% ${limiteFrutas}%,
-          #8fbd72 ${limiteFrutas}% ${limiteLegumes}%,
-          #c9ddb9 ${limiteLegumes}% 100%
+          #5dd62c 0% ${limiteFrutas}%,
+          #337418 ${limiteFrutas}% ${limiteLegumes}%,
+          #a8e782 ${limiteLegumes}% 100%
         )`
       : '#eeeeee'
 
@@ -148,7 +147,13 @@ function Plantios() {
               background: graficoBackground,
             }}
             aria-label="Gráfico de distribuição dos plantios por tipo"
-          />
+            role="img"
+          >
+            <span className="plantios-grafico__centro" aria-hidden="true">
+              <strong>{totalPlantios}</strong>
+              <small>plantios</small>
+            </span>
+          </div>
 
 
           <div className="plantios-grafico__legenda">

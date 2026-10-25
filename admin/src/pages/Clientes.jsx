@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useClientes } from '../contexts/ClientesContext'
-import '../styles/Clientes.css'
 
 function IconePesquisar() {
   return (

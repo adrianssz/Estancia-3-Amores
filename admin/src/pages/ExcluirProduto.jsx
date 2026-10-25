@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { useProdutos } from '../contexts/ProdutosContext'
-import '../styles/ExcluirProduto.css'
 
 // Mantém os dados do produto na tela durante e após a exclusão.
 function ConteudoExcluirProduto({

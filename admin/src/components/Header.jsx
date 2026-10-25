@@ -1,7 +1,6 @@
 import { Link, NavLink } from 'react-router-dom'
 
 import { useAuth } from '../contexts/AuthContext'
-import '../styles/Header.css'
 
 // Exibe a navegação do painel e o botão de saída da sessão.
 function Header() {
@@ -12,8 +11,9 @@ function Header() {
       <Link
         to="/dashboard"
         className="admin-header__logo"
+        aria-label="Estância 3 Amores, dashboard"
       >
-        Logo
+        <img src="/logo-estancia.png" alt="" />
       </Link>
 
       <nav className="admin-header__nav">

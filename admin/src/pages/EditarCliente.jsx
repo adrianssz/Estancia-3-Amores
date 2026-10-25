@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { useClientes } from '../contexts/ClientesContext'
-import '../styles/EditarCliente.css'
 
 // Preenche o formulário com os dados do cliente selecionado.
 function FormularioEditarCliente({
