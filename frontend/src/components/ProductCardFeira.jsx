@@ -1,7 +1,9 @@
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { FiCheck, FiX } from 'react-icons/fi'
+import { createPortal } from 'react-dom'
+import OrganicAction from './OrganicAction'
 
-import '../styles/ProductCardFeira.css'
 
 // Exibe o produto da Feira com disponibilidade e seleção de quantidade.
 function ProductCardFeira({ produto }) {
@@ -10,6 +12,15 @@ function ProductCardFeira({ produto }) {
 
   const [erroImagem, setErroImagem] =
     useState(false)
+
+  const [avisoCesta, setAvisoCesta] = useState(null)
+
+  // A confirmação visual desaparece sozinha e não interrompe a compra.
+  useEffect(() => {
+    if (!avisoCesta) return undefined
+    const tempo = window.setTimeout(() => setAvisoCesta(null), 3500)
+    return () => window.clearTimeout(tempo)
+  }, [avisoCesta])
 
   const prontaEntrega =
     produto.status === 'pronta-entrega'
@@ -141,14 +152,16 @@ function ProductCardFeira({ produto }) {
       new Event('cestaAtualizada')
     )
 
-    alert(
-      `${quantidade} ${unidade} adicionado(s) à cesta!`
-    )
+    setAvisoCesta({
+      texto: `${quantidade} ${unidade} adicionado(s) à cesta!`,
+      id: Date.now(),
+    })
 
     setQuantidade(1)
   }
 
   return (
+    <>
     <article
       className={`feira-card ${
         !prontaEntrega
@@ -228,7 +241,7 @@ function ProductCardFeira({ produto }) {
             {produto.estoque} {unidade} disponíveis
           </p>
 
-          <button
+          <OrganicAction
             type="button"
             className="adicionar-button"
             onClick={adicionarNaCesta}
@@ -237,7 +250,7 @@ function ProductCardFeira({ produto }) {
             {possuiEstoque
               ? 'Adicionar'
               : 'Esgotado'}
-          </button>
+          </OrganicAction>
         </>
       ) : (
         <div className="crescimento-info">
@@ -245,6 +258,17 @@ function ProductCardFeira({ produto }) {
         </div>
       )}
     </article>
+    {avisoCesta && createPortal(
+      <div className="cart-toast" role="status" aria-live="polite">
+        <span className="cart-toast-check"><FiCheck aria-hidden="true" /></span>
+        <span>{avisoCesta.texto}</span>
+        <button type="button" onClick={() => setAvisoCesta(null)} aria-label="Fechar aviso">
+          <FiX aria-hidden="true" />
+        </button>
+      </div>,
+      document.body
+    )}
+    </>
   )
 }
 

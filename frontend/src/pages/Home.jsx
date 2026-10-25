@@ -11,7 +11,6 @@ import BottomMenu from '../components/BottomMenu'
 
 import { supabase } from '../services/supabase'
 
-import '../styles/Home.css'
 
 // Exibe a página inicial com produtos em destaque e localização.
 function Home() {
@@ -100,10 +99,12 @@ function Home() {
         <Banner />
 
         <div className="home-content">
-          <section>
-            <h2 className="home-section-title">
-              Destaques
-            </h2>
+          <section className="home-highlights">
+            <div className="section-intro">
+              <span className="section-eyebrow">Da nossa produção</span>
+              <h2 className="home-section-title">Destaques <em>da Estância</em></h2>
+              <p>Produtos que conquistaram espaço na mesa de quem compra com a gente.</p>
+            </div>
 
             {carregandoDestaques && (
               <p>

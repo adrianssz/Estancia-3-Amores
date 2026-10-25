@@ -10,7 +10,6 @@ import ProductCardFeira from '../components/ProductCardFeira'
 
 import { supabase } from '../services/supabase'
 
-import '../styles/Feira.css'
 
 // Exibe os produtos com filtros de categoria e situação.
 function Feira() {
@@ -176,9 +175,11 @@ function Feira() {
       <Header />
 
       <main className="feira-page">
-        <h1 className="feira-title">
-          Produtos
-        </h1>
+        <div className="section-intro feira-intro">
+          <span className="section-eyebrow">Escolha seus produtos</span>
+          <h1 className="feira-title">Feira <em>da Estância</em></h1>
+          <p>Explore as opções disponíveis e acompanhe o que está em crescimento.</p>
+        </div>
 
         <CategoryFilter
           filtros={filtros}
