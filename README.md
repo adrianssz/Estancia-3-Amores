@@ -40,7 +40,5 @@ O Vite informa o endereço de cada aplicação no terminal. Para verificar uma a
 
 ## Documentação do TCC
 
-- [Documentação acadêmica versionada](docs/tcc/documentacao-tcc-estancia-3-amores.pdf)
-- [Metodologias](https://docs.google.com/document/d/1-6WqNS4hUqL5-6Ctsz_9rhBrO_dMUhKxSv2nxRVAifM/edit?usp=sharing)
-- [Resultados preliminares](https://docs.google.com/document/d/1SMs7qH7hjlmIzyZoq1plR00QBkzERfeJb6tjXzhxjyA/edit?usp=sharing)
-- [Dificuldades encontradas](https://docs.google.com/document/d/1uuAkYxvUNCXbfhRp9fzeGlJ2ThKh2rx-OPuMG5MMggE/edit?usp=sharing)
+- [Documentação final do TCC (PDF)](https://drive.google.com/file/d/1pPQ58ziD6FCCBHuSVnYGNK0ep4PfqgcY/view?usp=sharing)
+- [Demais documentos do TCC (Google Drive)](https://drive.google.com/drive/folders/1RatNDjvDf3hjcUmclLtJr5gp3RQ0J2WX?usp=sharing)
