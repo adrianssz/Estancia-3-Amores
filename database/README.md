@@ -30,6 +30,7 @@ Requisitos:
 | 007 | 007_preservar_precos_pedidos.sql | Preservação dos preços dos produtos mantidos na edição. |
 | 008 | 008_storage_produtos.sql | Bucket de fotos e policies de acesso ao Storage. |
 | 009 | 009_estoque_automatico_pedidos.sql | Controle transacional de estoque e escrita de pedidos exclusivamente por RPC. |
+| 010 | 010_bloqueio_itens_pedidos.sql | Bloqueio de alterações de itens em pedidos em rota ou entregues e de retorno a status anteriores. |
 
 Os arquivos são executados manualmente no SQL Editor.
 Esta pasta não utiliza automaticamente o mecanismo de migrations da CLI.
@@ -138,11 +139,11 @@ produtos.estoque representa a quantidade disponível para novos pedidos.
 - Marcar como Entregue mantém o desconto realizado anteriormente.
 - Excluir um pedido Pendente ou Em Rota devolve suas quantidades.
 - Excluir um pedido Entregue não devolve estoque.
-- Pedidos já entregues não permitem alterar itens nem retornar de status.
+- Pedidos em rota ou entregues não permitem alterar itens. Pedidos em rota não voltam para Pendente e pedidos entregues permanecem como Entregue.
 - Novos produtos e aumentos exigem status pronta-entrega e estoque suficiente.
 - Quantidades devem ser inteiras e positivas; um produto não pode aparecer repetido no pedido.
 
-Na edição, o limite de um produto em pronta entrega corresponde à
+Na edição de um pedido com itens liberados, o limite de um produto em pronta entrega corresponde à
 quantidade já reservada no pedido somada ao estoque disponível.
 Para produtos em crescimento, a quantidade existente pode ser
 mantida ou reduzida, sem aumento.

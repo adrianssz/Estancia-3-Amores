@@ -28,4 +28,8 @@ Para executar o Frontend é necessário possuir:
 Dentro da pasta `frontend/`, execute:
 
 ```bash
-npm install
+npm ci
+npm run dev
+```
+
+Consulte o [README principal](../README.md#executar-localmente) para configurar o Supabase e as variáveis de ambiente.

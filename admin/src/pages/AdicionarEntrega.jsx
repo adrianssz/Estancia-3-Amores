@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { useClientes } from '../contexts/ClientesContext'
 import { useEntregas } from '../contexts/EntregasContext'
+import { formatarData, validarData } from '../utils/datas'
 
 
 // Controla o cadastro de entregas vinculadas a clientes.
@@ -22,7 +23,7 @@ function AdicionarEntrega() {
   const [status, setStatus] = useState('Pendente')
   const [endereco, setEndereco] = useState('')
 
-  const [erroData, setErroData] = useState(false)
+  const [erroData, setErroData] = useState('')
   const [erro, setErro] = useState('')
   const [adicionando, setAdicionando] = useState(false)
 
@@ -30,51 +31,6 @@ function AdicionarEntrega() {
     adicionadaComSucesso,
     setAdicionadaComSucesso,
   ] = useState(false)
-
-
-  // Aplica a máscara dia/mês/ano durante a digitação.
-  function formatarData(valor) {
-    const numeros = valor
-      .replace(/\D/g, '')
-      .slice(0, 8)
-
-    if (numeros.length <= 2) {
-      return numeros
-    }
-
-    if (numeros.length <= 4) {
-      return `${numeros.slice(0, 2)}/${numeros.slice(2)}`
-    }
-
-    return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4)}`
-  }
-
-
-  // Confere o formato e se a data informada existe no calendário.
-  function dataValida(valor) {
-    const formatoCorreto =
-      /^\d{2}\/\d{2}\/\d{4}$/.test(valor)
-
-    if (!formatoCorreto) {
-      return false
-    }
-
-    const [dia, mes, ano] = valor
-      .split('/')
-      .map(Number)
-
-    const dataInformada = new Date(
-      ano,
-      mes - 1,
-      dia
-    )
-
-    return (
-      dataInformada.getFullYear() === ano &&
-      dataInformada.getMonth() === mes - 1 &&
-      dataInformada.getDate() === dia
-    )
-  }
 
 
   // Atualiza o cliente selecionado e utiliza seu endereço cadastrado.
@@ -101,7 +57,7 @@ function AdicionarEntrega() {
       formatarData(event.target.value)
     )
 
-    setErroData(false)
+    setErroData('')
     setErro('')
   }
 
@@ -119,8 +75,9 @@ function AdicionarEntrega() {
       return
     }
 
-    if (!dataValida(data)) {
-      setErroData(true)
+    const mensagemData = validarData(data)
+    if (mensagemData) {
+      setErroData(mensagemData)
       return
     }
 
@@ -153,7 +110,7 @@ function AdicionarEntrega() {
       return
     }
 
-    setErroData(false)
+    setErroData('')
     setAdicionadaComSucesso(true)
   }
 
@@ -164,7 +121,7 @@ function AdicionarEntrega() {
     setData('')
     setStatus('Pendente')
     setEndereco('')
-    setErroData(false)
+    setErroData('')
     setErro('')
     setAdicionadaComSucesso(false)
   }
@@ -231,6 +188,9 @@ function AdicionarEntrega() {
             value={data}
             onChange={handleDataChange}
             placeholder="DD/MM/AAAA"
+            inputMode="numeric"
+            aria-invalid={Boolean(erroData)}
+            aria-describedby={erroData ? 'data-erro' : undefined}
             maxLength="10"
             disabled={
               adicionadaComSucesso ||
@@ -240,8 +200,8 @@ function AdicionarEntrega() {
           />
 
           {erroData && (
-            <p className="adicionar-entrega-form__erro">
-              Data Inválida
+            <p id="data-erro" role="alert" className="adicionar-entrega-form__erro">
+              {erroData}
             </p>
           )}
 

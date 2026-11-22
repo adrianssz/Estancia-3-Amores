@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useClientes } from '../contexts/ClientesContext'
 import { usePedidos } from '../contexts/PedidosContext'
 import { useProdutos } from '../contexts/ProdutosContext'
+import { formatarData, validarData } from '../utils/datas'
 
 
 
@@ -47,7 +48,7 @@ function AdicionarPedido() {
     setAdicionadoComSucesso,
   ] = useState(false)
 
-  const [erroData, setErroData] = useState(false)
+  const [erroData, setErroData] = useState('')
   const [erro, setErro] = useState('')
   const [salvando, setSalvando] = useState(false)
 
@@ -68,61 +69,6 @@ function AdicionarPedido() {
   )
 
 
-  // Aplica a máscara dia/mês/ano durante a digitação.
-  function formatarData(valor) {
-    const numeros = valor
-      .replace(/\D/g, '')
-      .slice(0, 8)
-
-    if (numeros.length <= 2) {
-      return numeros
-    }
-
-    if (numeros.length <= 4) {
-      return `${numeros.slice(0, 2)}/${numeros.slice(2)}`
-    }
-
-    return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4)}`
-  }
-
-
-  // Confere se a data existe e não é posterior ao dia atual.
-  function dataValida(valor) {
-    const formatoCorreto =
-      /^\d{2}\/\d{2}\/\d{4}$/.test(valor)
-
-    if (!formatoCorreto) {
-      return false
-    }
-
-    const [dia, mes, ano] = valor
-      .split('/')
-      .map(Number)
-
-    const dataInformada = new Date(
-      ano,
-      mes - 1,
-      dia
-    )
-
-    const dataExiste =
-      dataInformada.getFullYear() === ano &&
-      dataInformada.getMonth() === mes - 1 &&
-      dataInformada.getDate() === dia
-
-    if (!dataExiste) {
-      return false
-    }
-
-    const hoje = new Date()
-
-    hoje.setHours(0, 0, 0, 0)
-    dataInformada.setHours(0, 0, 0, 0)
-
-    return dataInformada <= hoje
-  }
-
-
   // Atualiza o cliente selecionado e limpa as mensagens anteriores.
   function handleClienteChange(event) {
     setClienteId(event.target.value)
@@ -137,7 +83,7 @@ function AdicionarPedido() {
       formatarData(event.target.value)
     )
 
-    setErroData(false)
+    setErroData('')
     setErro('')
   }
 
@@ -197,7 +143,7 @@ function AdicionarPedido() {
     event.preventDefault()
 
     setErro('')
-    setErroData(false)
+    setErroData('')
 
     if (!clienteSelecionado) {
       setErro(
@@ -206,8 +152,9 @@ function AdicionarPedido() {
       return
     }
 
-    if (!dataValida(data)) {
-      setErroData(true)
+    const mensagemData = validarData(data, { permitirFuturo: false })
+    if (mensagemData) {
+      setErroData(mensagemData)
       return
     }
 
@@ -304,7 +251,7 @@ function AdicionarPedido() {
     setItens([
       criarItemVazio(),
     ])
-    setErroData(false)
+    setErroData('')
     setErro('')
     setAdicionadoComSucesso(false)
   }
@@ -433,6 +380,9 @@ function AdicionarPedido() {
             value={data}
             onChange={handleDataChange}
             placeholder="DD/MM/AAAA"
+            inputMode="numeric"
+            aria-invalid={Boolean(erroData)}
+            aria-describedby={erroData ? 'data-erro' : undefined}
             maxLength="10"
             disabled={
               adicionadoComSucesso ||
@@ -442,8 +392,8 @@ function AdicionarPedido() {
           />
 
           {erroData && (
-            <p className="adicionar-pedido-form__erro">
-              Data inválida! Por favor, corrija.
+            <p id="data-erro" role="alert" className="adicionar-pedido-form__erro">
+              {erroData}
             </p>
           )}
 
