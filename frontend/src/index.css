@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap');
+/* ESTÂNCIA 3 AMORES — estilos reunidos em um arquivo. */
+
 * {
   margin: 0;
   padding: 0;
@@ -7,3 +10,2043 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+/* BANNER: estilos da tela ou componente correspondente. */
+
+.banner {
+  width: 100%;
+
+  padding: 20px;
+}
+
+
+.banner-container {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+
+  background-color: #eeeeee;
+}
+
+
+.banner-image {
+  width: 100%;
+  height: 220px;
+
+  display: block;
+
+  object-fit: cover;
+  object-position: center;
+}
+
+
+@media (max-width: 600px) {
+
+  .banner {
+    padding: 15px;
+  }
+
+
+  .banner-image {
+    height: 170px;
+  }
+
+}
+
+
+/* BOTTOMMENU: estilos da tela ou componente correspondente. */
+
+.bottom-menu {
+
+  position: fixed;
+
+  bottom: 0;
+
+  left: 0;
+
+  width: 100%;
+
+  height: 70px;
+
+  background: white;
+
+  border-top: 1px solid #ddd;
+
+  display: flex;
+
+  justify-content: space-around;
+
+  align-items: center;
+
+}
+
+
+.bottom-menu a {
+
+  text-decoration: none;
+
+  color: #333;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  font-size: 14px;
+
+}
+
+
+.bottom-menu span {
+
+  margin-top: 5px;
+
+}
+
+
+/* CARTITEM: estilos da tela ou componente correspondente. */
+
+.cart-item {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 15px 0;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+
+.cart-product-image {
+  width: 100px;
+  height: 120px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #ffffff;
+
+  border: 1px solid #555555;
+  border-radius: 6px;
+
+  overflow: hidden;
+}
+
+
+.cart-product-image-real {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+
+.cart-product-image-content {
+  padding: 8px;
+
+  font-size: 13px;
+  text-align: center;
+
+  color: #555555;
+}
+
+
+.cart-item-info {
+  min-height: 120px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 7px;
+}
+
+
+.cart-remove-button {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+
+  background-color: transparent;
+
+  color: #333333;
+
+  cursor: pointer;
+
+  font-size: 18px;
+
+  transition: transform 0.2s ease;
+}
+
+
+.cart-remove-button:hover {
+  transform: scale(1.1);
+}
+
+
+.cart-remove-button:active {
+  transform: scale(0.95);
+}
+
+
+.cart-product-name {
+  margin: 0;
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+
+.cart-product-unit {
+  margin: 0;
+
+  font-size: 13px;
+  color: #555555;
+}
+
+
+.cart-quantity-selector {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+.cart-quantity-selector button {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid #777777;
+  border-radius: 4px;
+
+  background-color: #ffffff;
+
+  cursor: pointer;
+
+  font-size: 18px;
+}
+
+
+.cart-quantity-selector button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+
+.cart-quantity-selector span {
+  min-width: 24px;
+
+  text-align: center;
+
+  font-size: 15px;
+  font-weight: 600;
+}
+
+
+.cart-stock-info {
+  margin: 0;
+
+  font-size: 12px;
+
+  color: #666666;
+}
+
+
+.cart-product-price {
+  font-size: 15px;
+
+  white-space: nowrap;
+}
+
+
+@media (max-width: 480px) {
+
+  .cart-item {
+    grid-template-columns: 85px 1fr auto;
+
+    gap: 10px;
+  }
+
+
+  .cart-product-image {
+    width: 80px;
+    height: 100px;
+  }
+
+
+  .cart-product-image-content {
+    font-size: 11px;
+  }
+
+
+  .cart-product-name {
+    font-size: 14px;
+  }
+
+
+  .cart-product-price {
+    font-size: 14px;
+  }
+
+
+  .cart-quantity-selector {
+    gap: 6px;
+  }
+
+
+  .cart-quantity-selector button {
+    width: 28px;
+    height: 28px;
+  }
+
+}
+
+
+/* CATEGORYFILTER: estilos da tela ou componente correspondente. */
+
+.category-filter {
+  width: 100%;
+
+  margin-bottom: 25px;
+
+  padding: 14px;
+
+  border: 1px solid #777777;
+
+  background-color: #ffffff;
+}
+
+
+.category-title {
+  display: block;
+
+  margin-bottom: 12px;
+
+  font-size: 14px;
+
+  color: #333333;
+}
+
+
+.category-groups {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 20px;
+}
+
+
+.category-group {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+.category-group label {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  min-width: 0;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+
+.category-group input {
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+
+  cursor: pointer;
+}
+
+
+@media (max-width: 400px) {
+
+  .category-filter {
+    padding: 12px;
+  }
+
+
+  .category-groups {
+    gap: 12px;
+  }
+
+
+  .category-group label {
+    gap: 6px;
+
+    font-size: 13px;
+  }
+
+
+  .category-group input {
+    width: 18px;
+    height: 18px;
+  }
+
+}
+
+
+/* CESTA: estilos da tela ou componente correspondente. */
+
+.cesta-page {
+  min-height: calc(100vh - 140px);
+
+  padding: 25px 20px 110px;
+
+  background-color: #ffffff;
+}
+
+
+.cesta-title {
+  font-size: 18px;
+  font-weight: 500;
+
+  margin-bottom: 30px;
+
+  color: #333333;
+}
+
+
+.cesta-container {
+  width: 100%;
+  max-width: 520px;
+
+  margin: 0 auto;
+
+  padding: 15px;
+
+  background-color: #d3d3d3;
+
+  border: 1px solid #666666;
+}
+
+
+.cesta-vazia {
+  min-height: 250px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+}
+
+
+.cesta-total-area {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 5px;
+
+  margin-top: 25px;
+  margin-bottom: 15px;
+}
+
+
+.cesta-total-area span {
+  font-size: 22px;
+}
+
+
+.cesta-total-area strong {
+  font-size: 18px;
+}
+
+
+.realizar-pedido-button {
+  width: 100%;
+  max-width: 220px;
+
+  min-height: 45px;
+
+  display: block;
+
+  margin: 0 auto;
+
+  border: 1px solid #444444;
+
+  border-radius: 5px;
+
+  background-color: #ffffff;
+
+  color: #333333;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+
+.realizar-pedido-button:hover:not(:disabled) {
+  background-color: #eeeeee;
+}
+
+
+.realizar-pedido-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+
+.realizar-pedido-button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+@media (max-width: 480px) {
+
+  .cesta-page {
+    padding:
+      20px
+      15px
+      100px;
+  }
+
+
+  .cesta-container {
+    padding: 10px;
+  }
+
+}
+
+
+/* CONTATO: estilos da tela ou componente correspondente. */
+
+.contato-page {
+  min-height: calc(100vh - 140px);
+  padding: 25px 20px 100px;
+  background-color: #ffffff;
+}
+
+.contato-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 30px;
+}
+
+.contato-box {
+  width: 100%;
+  max-width: 420px;
+  min-height: 470px;
+
+  margin: 0 auto;
+
+  background-color: #d3d3d3;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 30px;
+
+  padding: 35px 20px;
+
+  border: 1px solid #777777;
+}
+
+.contato-link {
+  width: 80px;
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #333333;
+
+  text-decoration: none;
+
+  border-radius: 12px;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.contato-link:hover {
+  transform: scale(1.08);
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.contato-link:active {
+  transform: scale(0.95);
+}
+
+.contato-icon {
+  font-size: 55px;
+}
+
+.localizacao-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 5px;
+
+  text-decoration: none;
+  color: #333333;
+
+  cursor: pointer;
+}
+
+.localizacao-area:hover .contato-endereco {
+  text-decoration: underline;
+}
+
+.contato-endereco {
+  font-size: 20px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Tablets e telas maiores */
+@media (min-width: 768px) {
+  .contato-page {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  .contato-box {
+    max-width: 500px;
+  }
+}
+
+/* Celulares menores */
+@media (max-width: 480px) {
+  .contato-page {
+    padding: 20px 15px 100px;
+  }
+
+  .contato-box {
+    min-height: 450px;
+    gap: 22px;
+  }
+
+  .contato-link {
+    width: 70px;
+    height: 70px;
+  }
+
+  .contato-icon {
+    font-size: 48px;
+  }
+
+  .contato-endereco {
+    font-size: 18px;
+  }
+}
+
+
+/* FEIRA: estilos da tela ou componente correspondente. */
+
+.feira-page {
+  min-height: 100vh;
+
+  padding:
+    25px
+    20px
+    140px;
+
+  background-color: #ffffff;
+}
+
+
+.feira-title {
+  margin-bottom: 20px;
+
+  font-size: 18px;
+
+  font-weight: 500;
+}
+
+
+.feira-section {
+  margin-bottom: 35px;
+}
+
+
+.feira-section h2 {
+  margin-bottom: 15px;
+
+  font-size: 16px;
+
+  font-weight: 500;
+
+  color: #333333;
+}
+
+
+.feira-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 18px 12px;
+}
+
+
+.sem-produtos {
+  padding: 30px 15px;
+
+  text-align: center;
+
+  color: #666666;
+}
+
+
+@media (min-width: 768px) {
+
+  .feira-page {
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding-bottom: 140px;
+  }
+
+
+  .feira-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+}
+
+
+@media (max-width: 400px) {
+
+  .feira-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+
+  .feira-grid {
+    gap: 12px 8px;
+  }
+
+}
+
+
+/* GALLERY: estilos da tela ou componente correspondente. */
+
+.gallery {
+  width: 100%;
+  max-width: 700px;
+
+  margin: 30px auto 0;
+}
+
+.gallery-title {
+  margin-bottom: 20px;
+
+  text-align: center;
+}
+
+.gallery-grid {
+  width: 100%;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 15px;
+}
+
+.gallery-image {
+  width: 100%;
+  height: 180px;
+
+  display: block;
+
+  object-fit: cover;
+
+  border-radius: 8px;
+}
+
+@media (max-width: 480px) {
+  .gallery {
+    max-width: 100%;
+  }
+
+  .gallery-grid {
+    gap: 10px;
+  }
+
+  .gallery-image {
+    height: 130px;
+  }
+}
+
+
+/* HEADER: estilos da tela ou componente correspondente. */
+
+.header {
+  width: 100%;
+  height: 75px;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #ffffff;
+
+  border-bottom: 1px solid #777777;
+
+  box-sizing: border-box;
+}
+
+
+.header-logo {
+  width: 55px;
+  height: 55px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #555555;
+  border-radius: 50%;
+
+  font-size: 11px;
+
+  color: #333333;
+
+  background-color: #ffffff;
+}
+
+
+.cart-button {
+  position: absolute;
+
+  top: 50%;
+  right: 20px;
+
+  transform: translateY(-50%);
+
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #333333;
+
+  text-decoration: none;
+}
+
+
+.cart-icon {
+  font-size: 25px;
+}
+
+
+.cart-counter {
+  position: absolute;
+
+  top: 0;
+  right: -2px;
+
+  min-width: 19px;
+  height: 19px;
+
+  padding: 0 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background-color: #333333;
+
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: bold;
+
+  box-sizing: border-box;
+}
+
+
+/* HOME: estilos da tela ou componente correspondente. */
+
+.home-page {
+  width: 100%;
+
+  padding-bottom: 110px;
+
+  background-color: #ffffff;
+}
+
+
+.home-content {
+  width: 100%;
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  padding: 30px 20px;
+}
+
+
+.home-section-title {
+  margin-bottom: 20px;
+
+  text-align: center;
+
+  font-size: 24px;
+  font-weight: 600;
+
+  color: #333333;
+}
+
+
+.home-products-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 20px;
+
+  margin-bottom: 40px;
+}
+
+
+@media (max-width: 600px) {
+
+  .home-content {
+    padding: 25px 12px;
+  }
+
+
+  .home-section-title {
+    font-size: 21px;
+  }
+
+
+  .home-products-grid {
+    width: 100%;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+  }
+
+}
+
+
+/* MAP: estilos da tela ou componente correspondente. */
+
+.map-section {
+  width: 100%;
+  max-width: 700px;
+
+  margin: 20px auto 0;
+}
+
+.map-title {
+  margin-bottom: 20px;
+
+  text-align: center;
+
+  font-size: 24px;
+  font-weight: 600;
+
+  color: #333333;
+}
+
+.map-link {
+  display: block;
+
+  color: #222222;
+  text-decoration: none;
+}
+
+.map-box {
+  width: 100%;
+  min-height: 220px;
+
+  padding: 30px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  background-color: #dddddd;
+
+  border: 1px solid #bbbbbb;
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.map-box:hover {
+  transform: translateY(-2px);
+
+  background-color: #d3d3d3;
+}
+
+.map-box:active {
+  transform: scale(0.99);
+}
+
+.map-icon {
+  font-size: 42px;
+}
+
+.map-text {
+  font-size: 18px;
+}
+
+.map-helper {
+  font-size: 14px;
+
+  color: #555555;
+}
+
+@media (max-width: 600px) {
+
+  .map-title {
+    font-size: 21px;
+  }
+
+  .map-box {
+    min-height: 180px;
+
+    padding: 25px 15px;
+  }
+
+  .map-icon {
+    font-size: 36px;
+  }
+
+}
+
+
+/* PRODUCTCARD: estilos da tela ou componente correspondente. */
+
+.product-card {
+  width: 100%;
+
+  overflow: hidden;
+
+  background-color: #ffffff;
+
+  border: 1px solid #dddddd;
+  border-radius: 10px;
+}
+
+
+.product-card-image-area {
+  width: 100%;
+  height: 230px;
+
+  background-color: #eeeeee;
+
+  overflow: hidden;
+}
+
+
+.product-card-image {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+  object-position: center;
+}
+
+
+.product-card-no-image {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #666666;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+.product-card-content {
+  padding: 12px;
+}
+
+
+.product-card-content h3 {
+  margin: 0 0 10px;
+
+  font-size: 16px;
+  line-height: 1.3;
+
+  color: #222222;
+}
+
+
+.product-card-content strong {
+  display: block;
+
+  font-size: 15px;
+
+  color: #222222;
+}
+
+
+@media (max-width: 600px) {
+
+  .product-card-image-area {
+    height: 150px;
+  }
+
+
+  .product-card-content {
+    padding: 10px;
+  }
+
+
+  .product-card-content h3 {
+    font-size: 14px;
+  }
+
+
+  .product-card-content strong {
+    font-size: 14px;
+  }
+
+}
+
+
+/* PRODUCTCARDFEIRA: estilos da tela ou componente correspondente. */
+
+.feira-card {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border: 1px solid #d0d0d0;
+  border-radius: 10px;
+
+  background-color: #ffffff;
+}
+
+
+.feira-card-image {
+  width: 100%;
+  height: 220px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  background-color: #f4f4f4;
+
+  font-size: 42px;
+}
+
+
+.feira-card-image img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+  object-position: center;
+}
+
+
+.feira-card-content {
+  padding: 12px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.feira-card-content h3 {
+  margin: 0;
+
+  font-size: 16px;
+  line-height: 1.3;
+
+  color: #222222;
+}
+
+
+.feira-card-content p {
+  margin: 0;
+
+  font-size: 13px;
+
+  color: #666666;
+}
+
+
+.feira-card-content strong {
+  margin-top: 3px;
+
+  font-size: 16px;
+
+  color: #222222;
+}
+
+
+.quantidade-selector {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    42px
+    minmax(0, 1fr)
+    42px;
+
+  align-items: center;
+
+  border-top: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
+}
+
+
+.quantidade-selector button {
+  height: 42px;
+
+  border: none;
+
+  background-color: #f3f3f3;
+
+  font-size: 20px;
+
+  cursor: pointer;
+}
+
+
+.quantidade-selector button:hover:not(:disabled) {
+  background-color: #e7e7e7;
+}
+
+
+.quantidade-selector button:disabled {
+  opacity: 0.4;
+
+  cursor: not-allowed;
+}
+
+
+.quantidade-selector span {
+  text-align: center;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  color: #222222;
+}
+
+
+.estoque-info {
+  margin: 0;
+
+  padding: 9px 5px;
+
+  text-align: center;
+
+  font-size: 11px;
+
+  color: #666666;
+}
+
+
+.adicionar-button {
+  width: 100%;
+  min-height: 42px;
+
+  margin-top: auto;
+
+  border: none;
+  border-top: 1px solid #dddddd;
+
+  background-color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+
+.adicionar-button:hover {
+  background-color: #eeeeee;
+}
+
+
+.adicionar-button:active {
+  transform: scale(0.98);
+}
+
+
+.produto-crescimento {
+  opacity: 0.85;
+}
+
+
+.produto-crescimento .feira-card-image {
+  background-color: #eeeeee;
+}
+
+
+.crescimento-info {
+  margin-top: auto;
+
+  padding: 12px;
+
+  text-align: center;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  background-color: #eeeeee;
+
+  color: #555555;
+
+  border-top: 1px solid #dddddd;
+}
+
+
+@media (max-width: 480px) {
+
+  .feira-card-image {
+    height: 170px;
+
+    font-size: 36px;
+  }
+
+
+  .feira-card-content {
+    padding: 10px;
+  }
+
+
+  .feira-card-content h3 {
+    font-size: 14px;
+  }
+
+
+  .feira-card-content strong {
+    font-size: 14px;
+  }
+
+
+  .quantidade-selector {
+    grid-template-columns:
+      38px
+      minmax(0, 1fr)
+      38px;
+  }
+
+
+  .quantidade-selector button {
+    height: 40px;
+
+    font-size: 18px;
+  }
+
+
+  .estoque-info {
+    font-size: 10px;
+  }
+
+}
+
+
+/* SOBRE: estilos da tela ou componente correspondente. */
+
+.sobre-page {
+  width: 100%;
+  padding: 20px 20px 120px;
+  text-align: center;
+}
+
+.sobre-logo {
+  width: 100px;
+  height: 100px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #dddddd;
+  border-radius: 50%;
+}
+
+.sobre-page h1 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.subtitulo {
+  margin-top: 0;
+  margin-bottom: 30px;
+
+  font-size: 14px;
+}
+
+.sobre-page section {
+  margin-top: 30px;
+}
+
+.visita {
+  margin-top: 40px;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .sobre-page {
+    padding: 15px 15px 120px;
+  }
+
+  .sobre-logo {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+
+/* VISITMAP: estilos da tela ou componente correspondente. */
+
+.visit-map {
+  width: 100%;
+  max-width: 700px;
+
+  margin: 30px auto 0;
+}
+
+.visit-map-title {
+  margin-bottom: 20px;
+
+  text-align: center;
+}
+
+.visit-map-link {
+  display: block;
+
+  color: #222222;
+  text-decoration: none;
+}
+
+.visit-map-box {
+  width: 100%;
+  min-height: 220px;
+
+  padding: 30px 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  background-color: #dddddd;
+
+  border: 1px solid #b5b5b5;
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.visit-map-box:hover {
+  transform: translateY(-2px);
+  background-color: #d3d3d3;
+}
+
+.visit-map-box:active {
+  transform: scale(0.99);
+}
+
+.visit-map-icon {
+  font-size: 42px;
+}
+
+.visit-map-text {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.visit-map-helper {
+  font-size: 14px;
+  color: #555555;
+}
+
+@media (max-width: 480px) {
+
+  .visit-map {
+    max-width: 100%;
+  }
+
+  .visit-map-box {
+    min-height: 180px;
+    padding: 25px 15px;
+  }
+
+  .visit-map-icon {
+    font-size: 36px;
+  }
+
+  .visit-map-text {
+    font-size: 16px;
+  }
+
+}
+/* ================================================================
+   IDENTIDADE VISUAL FINAL — ESTÂNCIA 3 AMORES
+   Os blocos anteriores preservam a estrutura original das telas. Estes
+   estilos dão unidade visual aos componentes sem mudar suas regras.
+   ================================================================ */
+
+/* 01. Paleta, tipografia e padrões de acessibilidade. */
+:root {
+  --forest: #02110c;
+  --olive: #1a422f;
+  --cream: #f3ebd6;
+  --paper: #fffcf3;
+  --leaf: #5b833e;
+  --gold: #d5ad65;
+  --muted: #5c6e60;
+  --line: #d8deca;
+  --shadow: 0 22px 60px rgba(2, 17, 12, .11);
+  --content: 1120px;
+}
+html { scroll-behavior: smooth; }
+body { min-width: 320px; color: var(--forest); background: var(--cream); font-family: 'DM Sans', Arial, sans-serif; }
+button, input { font: inherit; }
+button:disabled { cursor: not-allowed; }
+:focus-visible { outline: 3px solid #a0b96f; outline-offset: 3px; }
+::selection { color: var(--paper); background: var(--olive); }
+h1, h2, h3 { font-family: Fraunces, Georgia, serif; }
+
+/* 02. Cabeçalho: marca tipográfica temporária até a logo definitiva. */
+.header {
+  position: relative; z-index: 20; width: 100%; min-height: 82px; height: auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px max(24px, calc((100vw - var(--content)) / 2));
+  border: 0; background: var(--forest); color: var(--cream);
+  box-shadow: 0 8px 28px rgba(2, 17, 12, .16);
+}
+.header-logo { display: flex; align-items: center; gap: 13px; width: auto; height: auto; border: 0; border-radius: 0; color: inherit; background: none; text-decoration: none; }
+.brand-mark { display: grid; place-items: center; width: 49px; height: 49px; flex: none; border: 1px solid rgba(243,235,214,.55); border-radius: 50%; color: var(--gold); background: radial-gradient(circle at 30% 15%, #31553d, #071e13 75%); font: 600 27px Fraunces,Georgia,serif; }
+.brand-name { font: 600 22px/1 Fraunces,Georgia,serif; letter-spacing: -.035em; }
+.brand-name small { display: block; margin-top: 5px; color: #bdc9aa; font: 600 9px/1 'DM Sans',sans-serif; letter-spacing: .23em; text-transform: uppercase; }
+.cart-button { position: relative; top: auto; right: auto; transform: none; width: 49px; height: 49px; border: 1px solid rgba(243,235,214,.28); border-radius: 17px; color: var(--cream); background: rgba(243,235,214,.09); transition: transform .25s, background .25s, border-color .25s; }
+.cart-button:hover { transform: translateY(-3px); background: var(--olive); border-color: var(--gold); }
+.cart-icon { font-size: 23px; }
+.cart-counter { right: -7px; top: -8px; min-width: 22px; height: 22px; background: var(--gold); color: var(--forest); }
+
+/* 03. Menu flutuante: interação em forma de ilha inspirada na Cult UI.
+   O link ativo cresce; cada item mantém a rota original do projeto. */
+.bottom-menu { position: fixed; z-index: 30; bottom: max(16px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); width: min(560px, calc(100vw - 28px)); min-height: 68px; height: auto; display: flex; align-items: center; justify-content: space-around; gap: 4px; padding: 7px; border: 1px solid rgba(243,235,214,.23); border-radius: 25px; background: rgba(2,17,12,.96); color: var(--cream); box-shadow: 0 16px 40px rgba(2,17,12,.28); backdrop-filter: blur(18px); }
+.bottom-menu a { min-width: 0; min-height: 52px; flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px; padding: 8px 11px; border-radius: 18px; color: #d2dbc8; white-space: nowrap; transition: flex .35s ease, background .3s, color .3s, transform .3s; }
+.bottom-menu a:hover { color: #fff; background: rgba(243,235,214,.12); transform: translateY(-2px); }
+.bottom-menu a.active { flex: 1.35; background: var(--cream); color: var(--forest); font-weight: 700; }
+.bottom-menu svg { flex: none; width: 20px; height: 20px; }
+.bottom-menu span { overflow: hidden; margin: 0; font-size: 13px; text-overflow: ellipsis; }
+
+/* 04. Banner: o GIF futuro substitui a imagem, sem alterar a moldura.
+   A proporção móvel reserva um enquadramento diferente para a segunda arte. */
+.home-page { min-height: 100vh; padding-bottom: 120px; background: var(--cream); }
+.banner { padding: 28px 24px 0; }
+.banner-container { position: relative; max-width: var(--content); aspect-ratio: 4.09 / 1; margin: 0 auto; overflow: hidden; border-radius: 30px; background: var(--olive); box-shadow: var(--shadow); }
+.banner-container::after { content: ''; position: absolute; inset: 0; pointer-events: none; border: 1px solid rgba(255,255,255,.23); border-radius: inherit; }
+.banner-image { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.home-content { width: min(var(--content), calc(100% - 48px)); max-width: none; margin: 0 auto; padding: 48px 0 0; }
+.home-section-title, .map-title, .gallery-title, .visit-map-title { margin-bottom: 23px; color: var(--forest); font-size: clamp(28px, 4vw, 38px); line-height: 1.15; letter-spacing: -.035em; }
+.home-section-title::before, .gallery-title::before, .map-title::before { content: ''; display: inline-block; width: 9px; height: 9px; margin: 0 12px 5px 0; border-radius: 50%; background: var(--leaf); }
+.home-products-grid { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; margin-bottom: 70px; }
+
+/* 05. Cartões: fotos valorizadas e movimento curto em hover.
+   A superfície arredondada segue a linguagem dos Organic Cards da Cult UI. */
+.product-card, .feira-card { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); box-shadow: 0 10px 30px rgba(2,17,12,.055); transition: transform .3s, box-shadow .3s, border-color .3s; }
+.product-card:hover, .feira-card:hover { transform: translateY(-6px); border-color: #a7ba8b; box-shadow: var(--shadow); }
+.product-card-image-area, .feira-card-image { height: 200px; overflow: hidden; background: #e5e6d8; }
+.product-card-image, .feira-card-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+.product-card:hover img, .feira-card:hover img { transform: scale(1.055); }
+.product-card-no-image, .feira-card-image span { display: grid; place-items: center; height: 100%; color: var(--muted); font-size: 13px; }
+.product-card-content, .feira-card-content { padding: 18px; }
+.product-card-content h3, .feira-card-content h3 { margin: 0 0 12px; color: var(--forest); font-size: 19px; line-height: 1.25; }
+.product-card-content strong, .feira-card-content strong { color: var(--olive); font-size: 17px; }
+
+/* 06. Feira: filtros em chips, produtos, quantidades e botões orgânicos. */
+.feira-page, .cesta-page, .sobre-page, .contato-page { width: min(var(--content), calc(100% - 48px)); max-width: none; min-height: calc(100vh - 82px); margin: 0 auto; padding: 45px 0 145px; background: transparent; }
+.feira-title, .cesta-title, .contato-title, .sobre-page h1 { margin-bottom: 27px; color: var(--forest); font-size: clamp(34px,5vw,56px); line-height: 1.08; letter-spacing: -.045em; font-weight: 600; }
+.category-filter { margin-bottom: 42px; padding: 23px 25px; border: 1px solid var(--line); border-radius: 24px; background: var(--paper); box-shadow: 0 10px 35px rgba(2,17,12,.04); }
+.category-title { margin-bottom: 15px; color: var(--olive); font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.category-groups { display: flex; flex-wrap: wrap; gap: 10px 24px; }
+.category-group { display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px; }
+.category-group label { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 41px; padding: 8px 15px; border: 1px solid var(--line); border-radius: 999px; color: var(--olive); background: #f5f4e8; font-size: 13px; font-weight: 600; transition: background .2s, color .2s, transform .2s; }
+.category-group label:hover { transform: translateY(-2px); border-color: var(--leaf); }
+.category-group label:has(input:checked) { color: var(--cream); background: var(--olive); border-color: var(--olive); }
+.category-group input { width: 15px; height: 15px; margin: 0; accent-color: var(--gold); }
+.feira-section { margin-bottom: 50px; }
+.feira-section h2 { margin-bottom: 19px; color: var(--forest); font-size: 27px; font-weight: 600; }
+.feira-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+.sem-produtos { padding: 34px; border: 1px dashed #aabd9b; border-radius: 20px; color: var(--muted); background: var(--paper); }
+.feira-card-image { height: 220px; }
+.feira-card-content { gap: 4px; }
+.feira-card-content h3 { margin: 0; }
+.feira-card-content p { color: var(--muted); }
+.feira-card-content strong { margin-top: 8px; font-size: 21px; }
+.quantidade-selector { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: calc(100% - 36px); margin: auto 18px 0; padding: 5px; border: 1px solid var(--line); border-radius: 14px; background: #f5f5e9; }
+.quantidade-selector button, .cart-quantity-selector button { display: grid; place-items: center; flex: none; width: 37px; height: 37px; padding: 0; border: 0; border-radius: 11px; color: var(--olive); background: var(--paper); font-size: 20px; transition: background .2s, transform .2s; }
+.quantidade-selector button:hover:not(:disabled), .cart-quantity-selector button:hover:not(:disabled) { color: white; background: var(--olive); transform: scale(1.06); }
+.quantidade-selector button:disabled, .cart-quantity-selector button:disabled { opacity: .35; }
+.quantidade-selector span { font-weight: 700; }
+.estoque-info { margin: 9px 18px 12px; color: var(--muted); font-size: 12px; }
+.adicionar-button, .realizar-pedido-button { position: relative; min-height: 48px; border: 1px solid var(--olive); border-radius: 15px; color: var(--cream); background: var(--olive); font-weight: 700; box-shadow: inset 0 1px 0 rgba(255,255,255,.15); transition: transform .25s, background .25s, box-shadow .25s; }
+.adicionar-button { width: calc(100% - 36px); margin: 0 18px 18px; }
+.adicionar-button:hover:not(:disabled), .realizar-pedido-button:hover:not(:disabled) { transform: translateY(-3px); background: #2b6245; box-shadow: 0 10px 20px rgba(26,66,47,.2); }
+.adicionar-button:disabled, .realizar-pedido-button:disabled { opacity: .5; box-shadow: none; }
+.produto-crescimento { opacity: 1; background: #f7f5e9; }
+.crescimento-info { margin: auto 18px 18px; padding: 12px; border: 0; border-radius: 12px; color: var(--olive); background: #e4ead7; font-size: 13px; font-weight: 700; }
+
+/* 07. Cesta: itens editáveis e total em destaque. */
+.cesta-container { max-width: 780px; margin: 0 auto; padding: 20px 28px 28px; border: 1px solid var(--line); border-radius: 28px; background: var(--paper); box-shadow: var(--shadow); }
+.cesta-vazia { color: var(--muted); }
+.cart-item { grid-template-columns: 105px minmax(0,1fr) auto; gap: 18px; padding: 20px 0; border-bottom: 1px solid var(--line); }
+.cart-product-image { width: 105px; height: 105px; border: 0; border-radius: 18px; background: #e8eadb; }
+.cart-product-image-content { color: var(--muted); }
+.cart-item-info { min-width: 0; }
+.cart-product-name { color: var(--forest); font: 600 19px Fraunces,Georgia,serif; }
+.cart-product-unit, .cart-stock-info { color: var(--muted); }
+.cart-remove-button { width: 30px; height: 30px; border-radius: 50%; color: #8a483a; background: #f7e9df; }
+.cart-quantity-selector { gap: 10px; padding: 3px; border: 1px solid var(--line); border-radius: 12px; }
+.cart-quantity-selector button { width: 31px; height: 31px; }
+.cart-product-price { color: var(--olive); font-size: 18px; }
+.cesta-total-area { display: flex; flex-direction: row; align-items: baseline; justify-content: space-between; gap: 15px; margin: 27px 0; }
+.cesta-total-area span { font-size: 16px; }
+.cesta-total-area strong { color: var(--olive); font: 600 29px Fraunces,Georgia,serif; }
+.realizar-pedido-button { display: block; width: 100%; max-width: 320px; margin: 0 0 0 auto; padding: 11px 20px; }
+
+/* 08. Sobre, galeria, mapas e contato. */
+.sobre-page { text-align: center; }
+.sobre-logo { display: grid; place-items: center; width: 95px; height: 95px; margin: 0 auto 18px; color: var(--gold); background: var(--olive); font: 600 29px Fraunces,Georgia,serif; }
+.subtitulo { margin-bottom: 45px; color: var(--muted); font-size: 16px; }
+.sobre-page > section:not(.gallery):not(.visit-map) { max-width: 750px; margin: 35px auto; }
+.sobre-page > section > h2 { color: var(--forest); font-size: 30px; }
+.sobre-page > section > p { color: var(--muted); line-height: 1.75; }
+.gallery { max-width: 900px; margin: 58px auto; }
+.gallery-grid { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 13px; }
+.gallery-image { height: 220px; border-radius: 20px; transition: transform .3s; }
+.gallery-image:hover { transform: translateY(-5px); }
+.map-section, .visit-map { max-width: 900px; margin: 50px auto 0; text-align: center; }
+.map-box, .visit-map-box { min-height: 210px; padding: 28px; border: 1px solid var(--line); border-radius: 24px; color: var(--cream); background: radial-gradient(circle at 80% 20%, #35694a, var(--olive) 67%); transition: transform .3s, box-shadow .3s; }
+.map-box:hover, .visit-map-box:hover { transform: translateY(-4px); box-shadow: var(--shadow); background: radial-gradient(circle at 80% 20%, #35694a, var(--olive) 67%); }
+.map-text, .visit-map-text { font: 600 23px Fraunces,Georgia,serif; }
+.map-helper, .visit-map-helper { color: #d8e7ce; }
+.contato-box { max-width: 630px; min-height: 0; margin: 0 auto; padding: 28px; display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; border: 1px solid var(--line); border-radius: 27px; background: var(--paper); box-shadow: var(--shadow); }
+.contato-link { display: grid; place-items: center; width: 100%; height: auto; min-height: 126px; border: 1px solid var(--line); border-radius: 20px; color: var(--olive); background: #f2f4e8; }
+.contato-link:hover { transform: translateY(-4px); color: var(--cream); background: var(--olive); }
+.contato-icon { font-size: 38px; }
+.localizacao-area { grid-column: 1/-1; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 15px; min-height: 95px; padding: 15px; border: 1px solid var(--line); border-radius: 18px; color: var(--olive); }
+.localizacao-area:hover { background: #f2f4e8; }
+.localizacao-area .contato-icon { flex: none; font-size: 25px; }
+.contato-endereco { margin: 0; font-size: 16px; }
+
+/* 09. Telas intermediárias: duas colunas para manter leitura confortável. */
+@media (max-width: 800px) {
+  .home-products-grid, .feira-grid, .gallery-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+
+/* 10. Celular: o GIF usa recorte de 2:1 e a ilha vira navegação compacta. */
+@media (max-width: 600px) {
+  .header { min-height: 72px; padding: 11px 17px; }
+  .brand-name { font-size: 19px; }
+  .brand-mark { width: 42px; height: 42px; font-size: 24px; }
+  .cart-button { width: 44px; height: 44px; }
+  .bottom-menu { bottom: max(9px, env(safe-area-inset-bottom)); min-height: 63px; border-radius: 22px; }
+  .bottom-menu a { min-height: 48px; flex-direction: column; gap: 2px; padding: 5px 3px; }
+  .bottom-menu a.active { flex: 1.15; }
+  .bottom-menu span { font-size: 10px; }
+  .banner { padding: 16px 14px 0; }
+  .banner-container { aspect-ratio: 2 / 1; border-radius: 21px; }
+  .banner-image { height: 100%; }
+  .home-content, .feira-page, .cesta-page, .sobre-page, .contato-page { width: calc(100% - 28px); padding: 29px 0 105px; }
+  .home-products-grid { gap: 10px; margin-bottom: 45px; }
+  .home-section-title, .map-title, .gallery-title, .visit-map-title { font-size: 28px; }
+  .product-card, .feira-card { border-radius: 18px; }
+  .product-card-image-area, .feira-card-image { height: 160px; }
+  .product-card-content, .feira-card-content { padding: 12px; }
+  .product-card-content h3, .feira-card-content h3 { font-size: 16px; }
+  .feira-grid { gap: 10px; }
+  .category-filter { padding: 18px; }
+  .category-groups { gap: 15px; }
+  .category-group { gap: 7px; }
+  .category-group label { min-height: 37px; padding: 7px 10px; font-size: 12px; }
+  .quantidade-selector { width: calc(100% - 22px); margin: auto 11px 0; }
+  .estoque-info { margin: 8px 8px 10px; }
+  .adicionar-button { width: calc(100% - 22px); margin: 0 11px 11px; }
+  .cesta-container { padding: 12px 16px 20px; }
+  .gallery-image { height: 145px; }
+  .contato-box { min-height: 0; padding: 15px; gap: 9px; }
+  .contato-link { min-height: 90px; }
+  .contato-icon { font-size: 29px; }
+}
+
+/* 11. Celulares estreitos: itens da cesta não se sobrepõem. */
+@media (max-width: 420px) {
+  .brand-name { font-size: 17px; }
+  .brand-name small { font-size: 8px; }
+  .product-card-image-area, .feira-card-image { height: 140px; }
+  .feira-card-content strong { font-size: 17px; }
+  .quantidade-selector button { width: 32px; height: 32px; }
+  .cart-item { grid-template-columns: 70px minmax(0,1fr); gap: 10px; }
+  .cart-product-image { width: 70px; height: 78px; }
+  .cart-product-name { font-size: 16px; }
+  .cart-product-price { grid-column: 2; font-size: 16px; }
+  .cesta-total-area strong { font-size: 24px; }
+}
+
+/* 12. Preferência de movimento reduzido: mantém todas as ações utilizáveis. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* 13. Organic Button adaptado: curvas SVG da Cult UI e ação nativa.
+   Mantemos o botão real para teclado, disabled e leitores de tela. */
+.organic-action {
+  --organic-surface: var(--olive);
+  display: flex; align-items: stretch; justify-content: center; gap: 0;
+  min-height: 48px; padding: 0; overflow: visible; border: 0;
+  border-radius: 0; color: var(--cream); background: transparent;
+  box-shadow: none; transition: transform .25s, filter .25s;
+}
+.organic-action .organic-cap { width: 12px; height: 48px; flex: none; fill: var(--organic-surface); }
+.organic-action .organic-slope { width: 15px; height: 48px; flex: none; fill: var(--organic-surface); }
+.organic-action .organic-slope-up { margin-left: -1px; }
+.organic-action .organic-label { display: flex; align-items: center; justify-content: center; min-width: 0; flex: 1; height: 48px; padding: 0 5px; color: var(--cream); background: var(--organic-surface); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.organic-action .organic-icon { display: grid; place-items: center; width: 27px; height: 48px; flex: none; color: var(--cream); background: var(--organic-surface); }
+.organic-action .organic-icon svg { transition: transform .25s ease; }
+.organic-action:hover:not(:disabled) { transform: translateY(-3px); filter: brightness(1.18); background: transparent; box-shadow: none; }
+.organic-action:hover:not(:disabled) .organic-icon svg { transform: rotate(45deg) scale(1.13); }
+.organic-action:active:not(:disabled) { transform: scale(.97); }
+.organic-action:disabled { opacity: .5; filter: grayscale(.4); }
+
+/* 14. Controle do vídeo: legível sobre imagens claras ou escuras. */
+.banner-toggle { position: absolute; z-index: 2; right: 18px; bottom: 18px; min-height: 37px; padding: 7px 13px; border: 1px solid rgba(255,255,255,.45); border-radius: 999px; color: #fff; background: rgba(2,17,12,.82); font-size: 12px; font-weight: 700; backdrop-filter: blur(8px); }
+.banner-toggle:hover { background: var(--olive); }
+@media (max-width: 600px) { .banner-toggle { right: 10px; bottom: 10px; min-height: 32px; font-size: 11px; } }
+
+/* 15. O banner permanece em reprodução e se dissolve durante a rolagem.
+   A opacidade é calculada em Banner.jsx conforme a distância percorrida. */
+.banner-container { will-change: opacity; }
+.cart-icon svg { display: block; width: 23px; height: 23px; }
+
+/* 16. Google Maps incorporado: mapa real, arredondado e com rota acessível. */
+.location-section { width: min(100%, var(--content)); margin: 56px auto 0; }
+.location-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 19px; text-align: left; }
+.section-eyebrow { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 10px; color: var(--leaf); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.location-heading h2 { margin: 0; color: var(--forest); font-size: clamp(28px, 4vw, 38px); line-height: 1.15; letter-spacing: -.035em; }
+.location-directions { display: inline-flex; align-items: center; gap: 7px; padding: 10px 15px; border: 1px solid var(--olive); border-radius: 999px; color: var(--olive); font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; transition: color .25s, background .25s, transform .25s; }
+.location-directions:hover { transform: translateY(-2px); color: var(--cream); background: var(--olive); }
+.location-frame { height: 350px; overflow: hidden; border: 6px solid var(--paper); border-radius: 25px; background: #e5e6d8; box-shadow: var(--shadow); }
+.location-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+/* 17. Contato: apresentação acolhedora e três caminhos claros. */
+.contact-intro { position: relative; overflow: hidden; margin-bottom: 24px; padding: clamp(30px, 5vw, 62px); border-radius: 29px; color: var(--cream); background: radial-gradient(circle at 88% 15%, #336849, var(--olive) 58%, var(--forest)); }
+.contact-intro::after { content: ''; position: absolute; right: -65px; bottom: -105px; width: 270px; height: 270px; border: 1px solid rgba(243,235,214,.16); border-radius: 50%; box-shadow: 0 0 0 40px rgba(243,235,214,.035), 0 0 0 90px rgba(243,235,214,.025); pointer-events: none; }
+.contact-intro .section-eyebrow { color: #c9dbaf; }
+.contact-intro .contato-title { position: relative; z-index: 1; max-width: 600px; margin-bottom: 17px; color: var(--cream); }
+.contact-intro p { position: relative; z-index: 1; max-width: 480px; margin: 0; color: #e1e9d6; font-size: 16px; line-height: 1.6; }
+.contact-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+.contact-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 22px; min-height: 260px; padding: 24px; border: 1px solid var(--line); border-radius: 23px; color: var(--forest); background: var(--paper); text-decoration: none; box-shadow: 0 10px 30px rgba(2,17,12,.055); transition: transform .3s, box-shadow .3s, border-color .3s; }
+.contact-card:hover { transform: translateY(-6px); border-color: #a7ba8b; box-shadow: var(--shadow); }
+.contact-card-featured { color: var(--cream); background: var(--olive); border-color: var(--olive); }
+.contact-card-icon { display: grid; place-items: center; width: 55px; height: 55px; border-radius: 18px; color: var(--olive); background: #edf1e2; font-size: 27px; }
+.contact-card-featured .contact-card-icon { color: var(--cream); background: rgba(243,235,214,.16); }
+.contact-card-copy { display: flex; flex-direction: column; gap: 8px; }
+.contact-card-copy small { color: var(--leaf); font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+.contact-card-featured .contact-card-copy small { color: #c9dbaf; }
+.contact-card-copy strong { font: 600 26px/1.1 Fraunces,Georgia,serif; }
+.contact-card-copy > span { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.contact-card-featured .contact-card-copy > span { color: #e1e9d6; }
+.contact-card-arrow { position: absolute; top: 29px; right: 27px; width: 20px; height: 20px; transition: transform .25s; }
+.contact-card:hover .contact-card-arrow { transform: translate(3px,-3px); }
+.contato-page .location-section { margin-top: 58px; }
+
+/* 18. Confirmação da cesta: aviso leve, sem janela bloqueando a navegação. */
+.cart-toast { position: fixed; z-index: 100; top: 96px; right: max(18px, calc((100vw - var(--content)) / 2)); display: flex; align-items: center; gap: 12px; max-width: min(410px, calc(100vw - 36px)); min-height: 64px; padding: 12px 13px; border: 1px solid #9db985; border-radius: 18px; color: var(--forest); background: var(--paper); box-shadow: 0 16px 45px rgba(2,17,12,.2); font-size: 13px; font-weight: 700; animation: toast-enter .35s both; }
+.cart-toast-check { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 12px; color: var(--cream); background: var(--olive); font-size: 20px; }
+.cart-toast button { display: grid; place-items: center; width: 30px; height: 30px; margin-left: auto; padding: 0; border: 0; border-radius: 50%; color: var(--olive); background: transparent; font-size: 18px; }
+.cart-toast button:hover { background: #edf1e2; }
+
+/* 19. Entradas sutis dão movimento sem competir com os produtos. */
+@keyframes toast-enter { from { opacity: 0; transform: translateY(-12px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes section-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+.home-products-grid .product-card, .feira-grid .feira-card, .contact-card { animation: section-enter .6s backwards; }
+.home-products-grid > :nth-child(2), .feira-grid > :nth-child(2), .contact-card:nth-child(2) { animation-delay: .08s; }
+.home-products-grid > :nth-child(3), .feira-grid > :nth-child(3), .contact-card:nth-child(3) { animation-delay: .16s; }
+.home-products-grid > :nth-child(4), .feira-grid > :nth-child(4) { animation-delay: .24s; }
+
+@media (max-width: 700px) {
+  .contact-grid { grid-template-columns: 1fr; gap: 10px; }
+  .contact-card { min-height: 0; flex-direction: row; align-items: center; gap: 15px; padding: 17px; }
+  .contact-card-icon { width: 48px; height: 48px; flex: none; border-radius: 15px; font-size: 23px; }
+  .contact-card-copy { gap: 4px; padding-right: 18px; }
+  .contact-card-copy strong { font-size: 21px; }
+  .contact-card-arrow { top: 20px; right: 17px; width: 17px; }
+  .location-frame { height: 300px; }
+}
+@media (max-width: 600px) {
+  .contact-intro { padding: 32px 25px; border-radius: 23px; }
+  .contact-intro p { font-size: 14px; }
+  .location-heading { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .location-directions { align-self: flex-start; }
+  .location-frame { height: 270px; border-width: 4px; border-radius: 20px; }
+  .cart-toast { top: 82px; right: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cart-toast, .home-products-grid .product-card, .feira-grid .feira-card, .contact-card { animation: none; }
+}
+
+/* 20. Logo oficial: o arquivo já tem transparência; o recorte CSS remove
+   apenas margens vazias ao exibi-lo, preservando a arte original. */
+.header-logo { overflow: hidden; flex: none; border: 0; }
+.brand-logo-image { display: block; width: 120px; height: 83px; object-fit: cover; object-position: center; transition: transform .3s ease; }
+.header-logo:hover .brand-logo-image { transform: scale(1.035); }
+.sobre-logo { display: block; width: min(260px, 75vw); height: 180px; margin: 0 auto 18px; border-radius: 0; background: transparent; object-fit: cover; object-position: center; }
+@media (max-width: 600px) {
+  .brand-logo-image { width: 104px; height: 72px; }
+  .sobre-logo { width: min(220px, 70vw); height: 152px; }
+}
+
+
+/* 21. barra superior header, efeito glass iphone. */
+.header {
+  position: sticky;
+  top: 10px;
+  z-index: 40;
+  width: min(1180px, calc(100% - 28px));
+  min-height: 0;
+  margin: 10px auto 0;
+  padding: 7px 20px;
+  border: 1px solid rgba(243, 235, 214, .25);
+  border-radius: 25px;
+  background: rgba(2, 17, 12, .86);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15),
+              0 16px 38px rgba(2, 17, 12, .22);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+}
+
+@media (max-width: 600px) {
+  .header {
+    top: 9px;
+    padding: 5px 14px;
+    border-radius: 23px;
+  }
+}/* 22. Ao rolar, a superfície de vidro encolhe até mostrar só o carrinho.
+   O espaço do cabeçalho não muda de altura, evitando saltos na página. */
+.header {
+  height: 98px;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.header-surface {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 98px;
+  margin-left: auto;
+  padding: 7px 20px;
+  border: 1px solid rgba(243, 235, 214, .25);
+  border-radius: 25px;
+  background: rgba(2, 17, 12, .86);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 16px 38px rgba(2, 17, 12, .22);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+  transition: width .38s cubic-bezier(.2,.8,.2,1), height .38s ease,
+    border-radius .38s ease, background .38s ease, box-shadow .38s ease;
+}
+.header-logo { transition: width .25s ease, opacity .22s ease, transform .25s ease; }
+.header--compact .header-surface {
+  width: 60px;
+  height: 60px;
+  padding: 6px;
+  border-radius: 19px;
+  background: rgba(2, 17, 12, .58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .21), 0 9px 27px rgba(2, 17, 12, .15);
+}
+.header--compact .header-logo { width: 0; opacity: 0; transform: scale(.7); pointer-events: none; }
+.header--compact .cart-button { width: 46px; height: 46px; border: 0; background: transparent; }
+.header--compact .cart-button:hover { transform: none; background: rgba(243, 235, 214, .12); }
+
+/* A primeira moldura começa quase encostada no cabeçalho. */
+.banner { padding-top: 5px; }
+@media (max-width: 600px) {
+  .header { height: 84px; padding: 0; }
+  .header-surface { height: 84px; padding: 5px 14px; border-radius: 23px; }
+  .header--compact .header-surface { width: 58px; height: 58px; padding: 5px; border-radius: 18px; }
+  .banner { padding-top: 5px; }
+}
+
+/* 23. Revisão final: o vídeo fica limpo e a página termina perto do conteúdo.
+   A folga móvel ainda reserva a altura necessária ao menu flutuante. */
+.home-page { min-height: 0; padding-bottom: 0; }
+.home-content { padding-bottom: 48px; }
+.feira-page, .sobre-page { min-height: 0; padding-bottom: 48px; }
+.home-products-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); margin-bottom: 46px; }
+.feira-section:last-child { margin-bottom: 0; }
+.banner-toggle { display: none; }
+
+/* Títulos com pequena faixa orgânica: dão personalidade sem tirar a leitura.
+   A descrição mostra o propósito da seção antes dos cartões e dos filtros. */
+.section-intro { margin-bottom: 26px; }
+.section-intro .section-eyebrow, .sobre-eyebrow { margin-bottom: 12px; }
+.section-intro .section-eyebrow::before, .sobre-eyebrow::before {
+  content: ''; width: 17px; height: 2px; background: var(--leaf); border-radius: 2px;
+}
+.section-intro h1, .section-intro h2 { margin-bottom: 11px; }
+.section-intro p { max-width: 650px; color: var(--muted); font-size: 16px; line-height: 1.55; }
+.home-section-title::before { display: none; }
+.section-intro em, .sobre-page h1 em {
+  padding: 0 .08em; color: var(--olive); font-style: italic;
+  box-shadow: inset 0 -.24em #dce7cb;
+}
+.sobre-eyebrow { justify-content: center; }
+.sobre-page .subtitulo { max-width: 580px; margin: 5px auto 36px; font-size: 17px; }
+.sobre-page > section > p { font-size: 16px; }
+.contact-intro em { color: #f0d49d; font-style: italic; }
+
+/* A largura da marca sai de um valor conhecido para zero sem saltar de quadro.
+   Duração curta e desfoque leve mantêm a interação ágil durante a rolagem. */
+.header-logo { width: 120px; transition: width .17s ease-out, opacity .12s ease-out, transform .17s ease-out; }
+.header-surface {
+  backdrop-filter: blur(11px) saturate(125%);
+  -webkit-backdrop-filter: blur(11px) saturate(125%);
+  transition: width .19s ease-out, height .19s ease-out,
+    border-radius .19s ease-out, background-color .19s ease-out;
+}
+.header--compact .header-surface {
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+}
+
+/* Na apresentação em monitor grande, o menu ocupa a lateral e deixa os
+   títulos, cartões e mapa completamente livres no centro da tela. */
+@media (min-width: 1440px) {
+  :root { --content: 1240px; }
+  .header, .banner-container, .home-content,
+  .feira-page, .sobre-page, .contato-page, .cesta-page {
+    width: min(1240px, calc(100% - 240px));
+    max-width: none;
+  }
+  .bottom-menu {
+    top: 50%; right: 22px; bottom: auto; left: auto;
+    transform: translateY(-50%); width: 96px; min-height: 0;
+    flex-direction: column; border-radius: 25px;
+  }
+  .bottom-menu a, .bottom-menu a.active {
+    width: 100%; min-height: 69px; flex: none; flex-direction: column;
+    gap: 4px; padding: 8px 3px; border-radius: 18px;
+  }
+  .bottom-menu span { font-size: 12px; }
+}
+@media (max-width: 600px) {
+  .header-logo { width: 104px; }
+  .home-content { padding-top: 29px; padding-bottom: 88px; }
+  .feira-page, .sobre-page { padding-bottom: 88px; }
+  .home-products-grid { margin-bottom: 35px; }
+  .section-intro p { font-size: 14px; }
+  .section-intro { margin-bottom: 21px; }
+}
+

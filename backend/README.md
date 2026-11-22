@@ -1,5 +1,3 @@
 # Backend
 
-Diretório reservado para a implementação futura do backend do projeto Estância 3 Amores.
-
-Nesta etapa, o projeto está em fase de desenvolvimento do esqueleto da interface web.
+O backend da Estância 3 Amores é fornecido pelo Supabase. As aplicações React usam a API do Supabase para consultar dados e executar operações. Os scripts e as funções PostgreSQL do projeto ficam em [database/](../database/README.md).

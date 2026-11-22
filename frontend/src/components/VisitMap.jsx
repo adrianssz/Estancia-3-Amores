@@ -1,30 +1,8 @@
-import '../styles/VisitMap.css'
+import LocationMap from './LocationMap'
 
-
-function VisitMap(){
-
-
-return (
-
-<section className="visit-map">
-
-<h2>
-Localização
-</h2>
-
-
-<div>
-
-Mapa da Estância
-
-</div>
-
-
-</section>
-
-)
-
+// Mostra a localização também na página Sobre Nós.
+function VisitMap() {
+  return <LocationMap title="Venha nos visitar" />
 }
-
 
 export default VisitMap

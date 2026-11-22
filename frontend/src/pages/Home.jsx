@@ -1,74 +1,156 @@
+import {
+  useEffect,
+  useState,
+} from 'react'
+
 import Header from '../components/Header'
 import Banner from '../components/Banner'
 import ProductCard from '../components/ProductCard'
 import Map from '../components/Map'
 import BottomMenu from '../components/BottomMenu'
 
+import { supabase } from '../services/supabase'
 
+
+// Exibe a página inicial com produtos em destaque e localização.
 function Home() {
+  const [produtosDestaque, setProdutosDestaque] =
+    useState([])
 
-  const produtos = [
-  {
-    nome: "Produto Natural 1",
-    preco: "25,00",
-    imagem: "https://images.unsplash.com/photo-1542838132-92c53300491e"
-  },
+  const [carregandoDestaques, setCarregandoDestaques] =
+    useState(true)
 
-  {
-    nome: "Produto Natural 2",
-    preco: "18,00",
-    imagem: "https://images.unsplash.com/photo-1488459716781-31db52582fe9"
-  },
+  const [erroDestaques, setErroDestaques] =
+    useState('')
 
-  {
-    nome: "Produto Natural 3",
-    preco: "32,00",
-    imagem: "https://images.unsplash.com/photo-1466637574441-749b8f19452f"
-  },
+  useEffect(() => {
+    let ativo = true
 
-  {
-    nome: "Produto Natural 4",
-    preco: "15,00",
-    imagem: "https://images.unsplash.com/photo-1498837167922-ddd27525d352"
+    // Consulta até quatro produtos da view de mais vendidos, em ordem de vendas.
+    async function carregarDestaques() {
+      setCarregandoDestaques(true)
+      setErroDestaques('')
+
+      const { data, error } = await supabase
+        .from('vw_produtos_mais_vendidos')
+        .select(`
+          id,
+          nome,
+          preco,
+          imagem,
+          total_vendido
+        `)
+        .order('total_vendido', {
+          ascending: false,
+        })
+        .order('id', {
+          ascending: true,
+        })
+        .limit(4)
+
+      if (!ativo) {
+        return
+      }
+
+      if (error) {
+        console.error(
+          'Erro ao carregar produtos em destaque:',
+          error
+        )
+
+        setProdutosDestaque([])
+        setErroDestaques(
+          'Não foi possível carregar os produtos em destaque.'
+        )
+        setCarregandoDestaques(false)
+        return
+      }
+
+      setProdutosDestaque(data ?? [])
+      setCarregandoDestaques(false)
+    }
+
+    carregarDestaques()
+
+    return () => {
+      ativo = false
+    }
+  }, [])
+
+  // Formata o preço com duas casas decimais e trata valores inválidos.
+  function formatarPreco(preco) {
+    const valor = Number(preco)
+
+    if (!Number.isFinite(valor)) {
+      return '0,00'
+    }
+
+    return valor.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
   }
-]
-
 
   return (
     <>
-
       <Header />
 
-      <Banner />
+      <main className="home-page">
+        <Banner />
 
+        <div className="home-content">
+          <section className="home-highlights">
+            <div className="section-intro">
+              <span className="section-eyebrow">Da nossa produção</span>
+              <h2 className="home-section-title">Destaques <em>da Estância</em></h2>
+              <p>Produtos que conquistaram espaço na mesa de quem compra com a gente.</p>
+            </div>
 
-      <h2>
-        Destaques
-      </h2>
+            {carregandoDestaques && (
+              <p>
+                Carregando produtos em destaque...
+              </p>
+            )}
 
+            {erroDestaques && (
+              <p role="alert">
+                {erroDestaques}
+              </p>
+            )}
 
-      <section className="products-grid">
+            {!carregandoDestaques &&
+              !erroDestaques &&
+              produtosDestaque.length === 0 && (
+                <p>
+                  Nenhum produto disponível no momento.
+                </p>
+              )}
 
-        {
-          produtos.map((produto, index) => (
-            <ProductCard
-              key={index}
-              {...produto}
-            />
-          ))
-        }
+            {!carregandoDestaques &&
+              !erroDestaques &&
+              produtosDestaque.length > 0 && (
+                <div className="home-products-grid">
+                  {produtosDestaque.map((produto) => (
+                    <ProductCard
+                      key={produto.id}
+                      imagem={produto.imagem}
+                      nome={produto.nome}
+                      preco={formatarPreco(
+                        produto.preco
+                      )}
+                    />
+                  ))}
+                </div>
+              )}
+          </section>
 
-      </section>
-
-
-      <Map />
+          <Map />
+        </div>
+      </main>
 
       <BottomMenu />
-
-
     </>
   )
 }
-
 
 export default Home

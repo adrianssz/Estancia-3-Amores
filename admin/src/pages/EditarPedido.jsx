@@ -1,0 +1,689 @@
+import { useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+
+import { useClientes } from '../contexts/ClientesContext'
+import { usePedidos } from '../contexts/PedidosContext'
+import { useProdutos } from '../contexts/ProdutosContext'
+import { formatarData, validarData } from '../utils/datas'
+
+
+// Cria um item sem produto selecionado e com quantidade inicial igual a um.
+function criarItemVazio() {
+  return {
+    produtoId: '',
+    quantidade: '1',
+  }
+}
+
+// Preenche o formulário e aplica as regras de edição do pedido.
+function FormularioEditarPedido({
+  pedidoSelecionado,
+  clientes,
+  produtos,
+  carregandoClientes,
+  carregandoProdutos,
+  erroClientes,
+  erroProdutos,
+  editarPedido,
+}) {
+  const [clienteId, setClienteId] = useState(
+    String(pedidoSelecionado.clienteId ?? '')
+  )
+
+  const [status, setStatus] = useState(
+    pedidoSelecionado.status ?? 'Pendente'
+  )
+
+  const [data, setData] = useState(
+    pedidoSelecionado.data ?? ''
+  )
+
+  const [itens, setItens] = useState(() => {
+    if (pedidoSelecionado.itens?.length) {
+      return pedidoSelecionado.itens.map((item) => ({
+        produtoId: String(item.produtoId),
+        quantidade: String(item.quantidade),
+      }))
+    }
+
+    return [criarItemVazio()]
+  })
+
+  const [editadoComSucesso, setEditadoComSucesso] =
+    useState(false)
+  const [erroData, setErroData] = useState('')
+  const [erro, setErro] = useState('')
+  const [salvando, setSalvando] = useState(false)
+
+  const carregandoOpcoes =
+    carregandoClientes || carregandoProdutos
+
+  // Usa o status recebido do pedido para definir as restrições da tela.
+  const statusPersistido =
+    pedidoSelecionado.status ?? 'Pendente'
+
+  const pedidoEmRota =
+    statusPersistido === 'Em Rota'
+
+  const pedidoEntregue =
+    statusPersistido === 'Entregue'
+
+  // Bloqueia alterações de itens em pedidos Em Rota ou Entregue.
+  const itensBloqueados =
+    pedidoEmRota || pedidoEntregue
+
+  // Limita as opções de status às transições permitidas.
+  const opcoesStatus =
+    statusPersistido === 'Pendente'
+      ? ['Pendente', 'Em Rota']
+      : statusPersistido === 'Em Rota'
+        ? ['Em Rota', 'Entregue']
+        : ['Entregue']
+
+  const clienteSelecionado = clientes.find(
+    (cliente) => cliente.id === Number(clienteId)
+  )
+
+  const telefone = clienteSelecionado?.telefone ?? ''
+  const quantidadesRegistradas = new Map()
+
+  for (const item of pedidoSelecionado.itens ?? []) {
+    const produtoId = Number(item.produtoId)
+
+    quantidadesRegistradas.set(
+      produtoId,
+      (quantidadesRegistradas.get(produtoId) ?? 0) +
+        Number(item.quantidade)
+    )
+  }
+
+  const produtosDisponiveis = produtos.filter(
+    (produto) =>
+      (
+        produto.status === 'pronta-entrega' &&
+        Number(produto.estoque) > 0
+      ) ||
+      quantidadesRegistradas.has(produto.id)
+  )
+
+  // Calcula o limite considerando a quantidade registrada e o estoque disponível.
+  function obterLimiteQuantidade(produtoId) {
+    const id = Number(produtoId)
+    const produto = produtos.find(
+      (produtoAtual) => produtoAtual.id === id
+    )
+
+    if (!produto) {
+      return undefined
+    }
+
+    const quantidadeRegistrada =
+      quantidadesRegistradas.get(id) ?? 0
+
+    if (itensBloqueados) {
+      return quantidadeRegistrada
+    }
+
+    const estoqueDisponivel =
+      produto.status === 'pronta-entrega'
+        ? Number(produto.estoque)
+        : 0
+
+    // As unidades deste pedido já foram descontadas do estoque.
+    return quantidadeRegistrada + estoqueDisponivel
+  }
+
+  // Limpa as mensagens de erro e sucesso da edição anterior.
+  function limparMensagens() {
+    setErro('')
+    setEditadoComSucesso(false)
+  }
+
+  // Atualiza o cliente selecionado e limpa as mensagens anteriores.
+  function handleClienteChange(event) {
+    setClienteId(event.target.value)
+    limparMensagens()
+  }
+
+  // Formata a data digitada e limpa os erros anteriores.
+  function handleDataChange(event) {
+    setData(formatarData(event.target.value))
+    setErroData('')
+    limparMensagens()
+  }
+
+  // Altera o item somente quando a edição está liberada e não há salvamento em andamento.
+  function handleItemChange(indice, campo, valor) {
+    if (itensBloqueados || salvando) {
+      return
+    }
+
+    setItens((itensAtuais) =>
+      itensAtuais.map((item, indiceAtual) =>
+        indiceAtual === indice
+          ? { ...item, [campo]: valor }
+          : item
+      )
+    )
+
+    limparMensagens()
+  }
+
+  // Adiciona um item somente quando a edição está liberada.
+  function handleAdicionarItem() {
+    if (itensBloqueados || salvando) {
+      return
+    }
+
+    setItens((itensAtuais) => [
+      ...itensAtuais,
+      criarItemVazio(),
+    ])
+
+    limparMensagens()
+  }
+
+  // Respeita o bloqueio de edição e mantém pelo menos um item.
+  function handleRemoverItem(indice) {
+    if (
+      itensBloqueados ||
+      salvando ||
+      itens.length === 1
+    ) {
+      return
+    }
+
+    setItens((itensAtuais) =>
+      itensAtuais.filter(
+        (_, indiceAtual) => indiceAtual !== indice
+      )
+    )
+
+    limparMensagens()
+  }
+
+  // Valida os dados e os limites de quantidade antes de solicitar a atualização.
+  async function handleSubmit(event) {
+    event.preventDefault()
+
+    if (salvando || carregandoOpcoes) {
+      return
+    }
+
+    limparMensagens()
+    setErroData('')
+
+    if (erroClientes || erroProdutos) {
+      setErro(
+        'Não foi possível carregar as opções do pedido. Atualize a página.'
+      )
+      return
+    }
+
+    if (!clienteSelecionado) {
+      setErro('Selecione um cliente válido.')
+      return
+    }
+
+    const mensagemData = validarData(data, { permitirFuturo: false })
+    if (mensagemData) {
+      setErroData(mensagemData)
+      return
+    }
+
+    const itensNormalizados = itens.map((item) => ({
+      produtoId: Number(item.produtoId),
+      quantidade: Number(item.quantidade),
+    }))
+
+    if (
+      itensNormalizados.length === 0 ||
+      itensNormalizados.some(
+        (item) =>
+          !Number.isInteger(item.produtoId) ||
+          item.produtoId <= 0 ||
+          !Number.isInteger(item.quantidade) ||
+          item.quantidade <= 0
+      )
+    ) {
+      setErro(
+        'Selecione um produto e informe uma quantidade válida para cada item.'
+      )
+      return
+    }
+
+    const idsProdutos = itensNormalizados.map(
+      (item) => item.produtoId
+    )
+
+    if (new Set(idsProdutos).size !== idsProdutos.length) {
+      setErro(
+        'O mesmo produto não pode ser adicionado mais de uma vez ao pedido.'
+      )
+      return
+    }
+
+    if (
+      itensNormalizados.some(
+        (item) =>
+          !produtos.some(
+            (produto) => produto.id === item.produtoId
+          )
+      )
+    ) {
+      setErro(
+        'Um dos produtos não foi encontrado. Atualize a página.'
+      )
+      return
+    }
+
+    if (
+      itensNormalizados.some(
+        (item) =>
+          item.quantidade >
+          obterLimiteQuantidade(item.produtoId)
+      )
+    ) {
+      setErro(
+        'A quantidade não pode ultrapassar as unidades já reservadas neste pedido somadas ao estoque disponível. Aumentos exigem produto em pronta entrega.'
+      )
+      return
+    }
+
+    setSalvando(true)
+
+    try {
+      const resultado = await editarPedido(
+        pedidoSelecionado.id,
+        {
+          clienteId: clienteSelecionado.id,
+          cliente: clienteSelecionado.nome,
+          telefone: clienteSelecionado.telefone,
+          status,
+          data,
+          itens: itensNormalizados,
+        }
+      )
+
+      if (!resultado.sucesso) {
+        setErro(resultado.mensagem)
+        return
+      }
+
+      setEditadoComSucesso(true)
+    } catch (error) {
+      console.error('Erro ao editar pedido:', error)
+      setErro(
+        'Não foi possível editar o pedido. Tente novamente.'
+      )
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  return (
+    <section className="editar-pedido-page">
+      <h1 className="editar-pedido-page__title">
+        Editar
+      </h1>
+
+      <form
+        className="editar-pedido-form"
+        onSubmit={handleSubmit}
+      >
+        <div className="editar-pedido-form__grupo">
+          <label htmlFor="cliente">Cliente</label>
+
+          <select
+            id="cliente"
+            value={clienteId}
+            onChange={handleClienteChange}
+            disabled={salvando || carregandoClientes}
+            required
+          >
+            <option value="">
+              {carregandoClientes
+                ? 'Carregando clientes...'
+                : 'Selecione um cliente'}
+            </option>
+
+            {clientes.map((cliente) => (
+              <option key={cliente.id} value={cliente.id}>
+                {cliente.nome}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="editar-pedido-form__grupo">
+          <label htmlFor="telefone">Telefone</label>
+
+          <input
+            id="telefone"
+            type="tel"
+            value={telefone}
+            readOnly
+            disabled={salvando}
+          />
+        </div>
+
+        <div className="editar-pedido-form__grupo">
+          <label htmlFor="status">Status</label>
+
+          <select
+            id="status"
+            value={status}
+            onChange={(event) => {
+              setStatus(event.target.value)
+              limparMensagens()
+            }}
+            disabled={salvando || pedidoEntregue}
+            required
+          >
+            {opcoesStatus.map((opcao) => (
+              <option key={opcao} value={opcao}>
+                {opcao}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="editar-pedido-form__grupo">
+          <label htmlFor="data">Data</label>
+
+          <input
+            id="data"
+            type="text"
+            value={data}
+            onChange={handleDataChange}
+            placeholder="DD/MM/AAAA"
+            inputMode="numeric"
+            aria-invalid={Boolean(erroData)}
+            aria-describedby={erroData ? 'data-erro' : undefined}
+            maxLength="10"
+            disabled={salvando}
+            required
+          />
+
+          {erroData && (
+            <p id="data-erro" role="alert" className="editar-pedido-form__erro">
+              {erroData}
+            </p>
+          )}
+        </div>
+
+        {itensBloqueados && (
+          <p>
+            {pedidoEntregue
+              ? 'Os produtos e as quantidades não podem ser alterados porque este pedido já foi entregue.'
+              : 'Os produtos e as quantidades não podem ser alterados porque este pedido está em rota.'}
+          </p>
+        )}
+
+        {itens.map((item, indice) => {
+          const quantidadeRegistrada =
+            quantidadesRegistradas.get(
+              Number(item.produtoId)
+            ) ?? 0
+
+          return (
+            <div key={indice}>
+              <div className="editar-pedido-form__grupo">
+                <label htmlFor={`produto-${indice}`}>
+                  Produto {indice + 1}
+                </label>
+
+                <select
+                  id={`produto-${indice}`}
+                  value={item.produtoId}
+                  onChange={(event) =>
+                    handleItemChange(
+                      indice,
+                      'produtoId',
+                      event.target.value
+                    )
+                  }
+                  disabled={
+                    salvando ||
+                    carregandoProdutos ||
+                    itensBloqueados
+                  }
+                  required
+                >
+                  <option value="">
+                    {carregandoProdutos
+                      ? 'Carregando produtos...'
+                      : 'Selecione um produto'}
+                  </option>
+
+                  {produtosDisponiveis.map((produto) => (
+                    <option
+                      key={produto.id}
+                      value={produto.id}
+                    >
+                      {produto.nome}
+                      {' - '}
+                      Estoque disponível: {produto.estoque}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="editar-pedido-form__grupo">
+                <label htmlFor={`quantidade-${indice}`}>
+                  Quantidade
+                </label>
+
+                <input
+                  id={`quantidade-${indice}`}
+                  type="number"
+                  min="1"
+                  step="1"
+                  max={obterLimiteQuantidade(item.produtoId)}
+                  value={item.quantidade}
+                  onChange={(event) =>
+                    handleItemChange(
+                      indice,
+                      'quantidade',
+                      event.target.value
+                    )
+                  }
+                  disabled={
+                    salvando ||
+                    carregandoProdutos ||
+                    itensBloqueados
+                  }
+                  required
+                />
+
+                {quantidadeRegistrada > 0 && (
+                  <p>
+                    {pedidoEntregue
+                      ? 'Quantidade entregue: '
+                      : pedidoEmRota
+                        ? 'Quantidade em rota: '
+                        : 'Quantidade já reservada: '}
+                    {quantidadeRegistrada}.
+                    {!itensBloqueados && (
+                      <>
+                        {' '}
+                        Limite com o estoque disponível:
+                        {' '}
+                        {obterLimiteQuantidade(item.produtoId)}.
+                      </>
+                    )}
+                  </p>
+                )}
+              </div>
+
+              {itens.length > 1 && !itensBloqueados && (
+                <div className="editar-pedido-form__acoes">
+                  <button
+                    type="button"
+                    className="editar-pedido-form__retornar"
+                    onClick={() => handleRemoverItem(indice)}
+                    disabled={salvando || carregandoOpcoes}
+                  >
+                    Remover produto
+                  </button>
+                </div>
+              )}
+            </div>
+          )
+        })}
+
+        {!itensBloqueados && (
+          <div className="editar-pedido-form__acoes">
+            <button
+              type="button"
+              className="editar-pedido-form__retornar"
+              onClick={handleAdicionarItem}
+              disabled={
+                salvando ||
+                carregandoOpcoes ||
+                Boolean(erroClientes || erroProdutos) ||
+                produtosDisponiveis.length === 0
+              }
+            >
+              + Adicionar outro produto
+            </button>
+          </div>
+        )}
+
+        {(erroClientes || erroProdutos) && (
+          <div
+            className="editar-pedido-form__erro"
+            role="alert"
+          >
+            {erroClientes || erroProdutos}
+          </div>
+        )}
+
+        {erro && (
+          <div
+            className="editar-pedido-form__erro"
+            role="alert"
+          >
+            {erro}
+          </div>
+        )}
+
+        {editadoComSucesso && (
+          <div className="editar-pedido-alert" role="alert">
+            Pedido editado! Clique em
+            {' '}
+            &apos;Retornar a Pedidos&apos;
+            {' '}
+            para retornar, ou altere os campos
+            disponíveis para editar novamente.
+          </div>
+        )}
+
+        <div className="editar-pedido-form__acoes">
+          <button
+            type="submit"
+            className="editar-pedido-form__salvar"
+            disabled={
+              salvando ||
+              carregandoOpcoes ||
+              Boolean(erroClientes || erroProdutos)
+            }
+          >
+            {salvando
+              ? 'Salvando...'
+              : 'Salvar alterações'}
+          </button>
+
+          <Link
+            to="/pedidos"
+            className="editar-pedido-form__retornar"
+          >
+            Retornar a Pedidos
+          </Link>
+        </div>
+      </form>
+    </section>
+  )
+}
+
+// Localiza o pedido pela rota e fornece os dados necessários ao formulário.
+function EditarPedido() {
+  const { id } = useParams()
+
+  const {
+    pedidos,
+    carregando,
+    erro: erroPedidos,
+    editarPedido,
+  } = usePedidos()
+
+  const {
+    clientes,
+    carregandoClientes,
+    erroClientes,
+  } = useClientes()
+
+  const {
+    produtos,
+    carregandoProdutos,
+    erroProdutos,
+  } = useProdutos()
+
+  const pedidoSelecionado = pedidos.find(
+    (pedido) => pedido.id === Number(id)
+  )
+
+  // Atualizar produtos não desmonta o formulário em edição.
+  if (carregando) {
+    return (
+      <section className="editar-pedido-page">
+        <h1 className="editar-pedido-page__title">
+          Carregando...
+        </h1>
+      </section>
+    )
+  }
+
+  if (erroPedidos || !pedidoSelecionado) {
+    return (
+      <section className="editar-pedido-page">
+        <h1 className="editar-pedido-page__title">
+          {erroPedidos
+            ? 'Erro ao carregar pedido'
+            : 'Pedido não encontrado'}
+        </h1>
+
+        {erroPedidos && (
+          <div className="editar-pedido-alert" role="alert">
+            {erroPedidos}
+          </div>
+        )}
+
+        <div className="editar-pedido-form__acoes">
+          <Link
+            to="/pedidos"
+            className="editar-pedido-form__retornar"
+          >
+            Retornar a Pedidos
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <FormularioEditarPedido
+      key={pedidoSelecionado.id}
+      pedidoSelecionado={pedidoSelecionado}
+      clientes={clientes}
+      produtos={produtos}
+      carregandoClientes={carregandoClientes}
+      carregandoProdutos={carregandoProdutos}
+      erroClientes={erroClientes}
+      erroProdutos={erroProdutos}
+      editarPedido={editarPedido}
+    />
+  )
+}
+
+export default EditarPedido

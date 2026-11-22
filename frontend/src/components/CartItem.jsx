@@ -1,37 +1,77 @@
-import '../styles/CartItem.css'
+import { useState } from 'react'
+import { FaTrash } from 'react-icons/fa'
 
 
+
+// Exibe um item da cesta com quantidade, subtotal e ações de alteração.
 function CartItem({
   produto,
-  removerProduto
+  removerProduto,
+  aumentarQuantidade,
+  diminuirQuantidade,
 }) {
+  const [erroImagem, setErroImagem] =
+    useState(false)
 
+  const preco =
+    Number(produto.preco) || 0
 
+  const quantidade =
+    Number(
+      produto.quantidadeCesta
+    ) || 1
+
+  const estoque =
+    Number(produto.estoque)
+
+  // Calcula o valor do item conforme a quantidade selecionada.
   const subtotal =
-    produto.preco *
-    produto.quantidadeCesta
+    preco * quantidade
+
+  const mostrarImagem =
+    Boolean(produto.imagem) &&
+    !erroImagem
+
+  // Desabilita o aumento quando a quantidade atinge o estoque informado.
+  const limiteEstoqueAtingido =
+    Number.isFinite(estoque) &&
+    quantidade >= estoque
 
 
   return (
-
     <article className="cart-item">
-
-
       <div className="cart-product-image">
-        🍇
+        {mostrarImagem ? (
+          <img
+            className="cart-product-image-real"
+            src={produto.imagem}
+            alt={produto.nome}
+            loading="lazy"
+            onError={() =>
+              setErroImagem(true)
+            }
+          />
+        ) : (
+          <span className="cart-product-image-content">
+            Sem Foto
+          </span>
+        )}
       </div>
 
 
       <div className="cart-item-info">
-
         <button
+          type="button"
           className="cart-remove-button"
           onClick={() =>
             removerProduto(produto.id)
           }
-          aria-label={`Remover ${produto.nome} da cesta`}
+          aria-label={
+            `Remover ${produto.nome} da cesta`
+          }
+          title="Remover produto"
         >
-          🗑️
+          <FaTrash />
         </button>
 
 
@@ -39,27 +79,63 @@ function CartItem({
           {produto.nome}
         </p>
 
-
-        <p className="cart-product-quantity">
-          {produto.quantidadeCesta} X
+        <p className="cart-product-unit">
+          {produto.unidade}
         </p>
 
+
+        <div className="cart-quantity-selector">
+          <button
+            type="button"
+            onClick={() =>
+              diminuirQuantidade(
+                produto.id
+              )
+            }
+            disabled={
+              quantidade <= 1
+            }
+            aria-label="Diminuir quantidade"
+          >
+            −
+          </button>
+
+          <span>
+            {quantidade}
+          </span>
+
+          <button
+            type="button"
+            onClick={() =>
+              aumentarQuantidade(
+                produto.id
+              )
+            }
+            disabled={
+              limiteEstoqueAtingido
+            }
+            aria-label="Aumentar quantidade"
+          >
+            +
+          </button>
+        </div>
+
+
+        {Number.isFinite(estoque) && (
+          <p className="cart-stock-info">
+            Estoque: {estoque}
+          </p>
+        )}
       </div>
 
 
       <strong className="cart-product-price">
-
         R$ {subtotal
           .toFixed(2)
           .replace('.', ',')}
-
       </strong>
-
-
     </article>
-
   )
-
 }
 
 

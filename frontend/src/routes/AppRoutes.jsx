@@ -1,35 +1,33 @@
-import { Routes, Route } from 'react-router-dom'
+import {
+  Route,
+  Routes,
+} from 'react-router-dom'
 
 import Home from '../pages/Home'
 import Feira from '../pages/Feira'
 import Sobre from '../pages/Sobre'
 import Contato from '../pages/Contato'
 import Cesta from '../pages/Cesta'
+import NotFound from '../pages/NotFound'
 
-
+// Define as páginas do site e a tela para endereços inexistentes.
 function AppRoutes() {
-
   return (
-
     <Routes>
-
-      <Route 
+      <Route
         path="/"
         element={<Home />}
       />
-
 
       <Route
         path="/feira"
         element={<Feira />}
       />
 
-
       <Route
         path="/sobre"
         element={<Sobre />}
       />
-
 
       <Route
         path="/contato"
@@ -41,10 +39,12 @@ function AppRoutes() {
         element={<Cesta />}
       />
 
+      <Route
+        path="*"
+        element={<NotFound />}
+      />
     </Routes>
-
   )
 }
-
 
 export default AppRoutes

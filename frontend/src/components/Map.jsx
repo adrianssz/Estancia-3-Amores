@@ -1,19 +1,8 @@
-import '../styles/Map.css'
+import LocationMap from './LocationMap'
 
+// Compartilha o mesmo mapa da Estância na página inicial.
 function Map() {
-  return (
-    <section className="map-section">
-
-      <h2>
-        Nossa localização
-      </h2>
-
-      <div className="map-placeholder">
-        Mapa da Estância
-      </div>
-
-    </section>
-  )
+  return <LocationMap />
 }
 
 export default Map
